@@ -735,7 +735,6 @@ Board::load_from_stringified_representation( std::string const & str ) {
   }//x
 }
 
-__attribute__((unused))
 std::string
 Board::get_safe_moves() const {
   std::stringstream ss;
