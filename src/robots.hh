@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <array>
 #include <vector>
 #include <set>
@@ -27,8 +26,6 @@ using GameOverBool = bool;
 
 // signed char fails for some stupid reason
 using sm_int = signed short int; //char; //-127 to 127
-
-#define GO_HUMAN_SPEED true
 
 constexpr sm_int WIDTH = 45;
 constexpr sm_int HEIGHT = 30;
@@ -87,8 +84,6 @@ struct Position {
   }
 
 };
-
-namespace {
 
 constexpr Position STARTING_POSITION({ 23, 15 });
 
@@ -171,7 +166,6 @@ public:
   bool
   move_is_cascade_safe( sm_int const dx, sm_int const dy, int & n_robots_remaining ) const;
 
-  __attribute__((unused))  
   std::string
   get_stringified_representation() const;
 
@@ -199,7 +193,7 @@ private:
   PositionVec robot_positions_;
   Position human_position_;
 };
-}
+
 
 struct ForecastResults {
   bool legal = false;
@@ -231,7 +225,7 @@ forcast_move( Board const & board, sm_int const dx, sm_int const dy ){
   return results;
 }
 
-__attribute__((unused))
+
 std::array< std::array< ForecastResults, 3 >, 3 >
 forcast_all_moves( Board const & board ) {
   std::array< std::array< ForecastResults, 3 >, 3 > forecasts;
@@ -256,7 +250,7 @@ struct NullVisualizer {
   static void show( Board const & ){}
 };
 
-template< typename Visualizer = NullVisualizer, bool go_slow = GO_HUMAN_SPEED, int sleepsize = 500 >
+template< typename Visualizer = NullVisualizer, int sleepsize = 500 >
 class RobotsGame {
 public:
   RobotsGame( int const round = 1, int const tele = 0 ) :
@@ -276,31 +270,21 @@ public:
 
   void
   new_round(){
-#ifndef MUTE
-    std::cout << "You have " << n_safe_teleports_remaining_ << " safe teleports remaining" << std::endl;
-    std::cout << "Score: " << score_ << std::endl;
-#endif
 
     long int expected_score = 0;
     for( int r = 1; r <= round_; ++r ){
       expected_score += r * 10;
     }
-#ifndef MUTE
+
     if( score_ != expected_score ){
       std::cout << "Expected score is " << expected_score << std::endl;
     }
-#endif
 
     if( round_ == MAX_N_ROUNDS ){
       latest_result_ = MoveResult::YOU_WIN_GAME;
-#ifndef MUTE
-      std::cout << "YOU WIN!" << std::endl;
-#endif
     } else {
       board_.init( ++round_ );
-      if( GO_HUMAN_SPEED ){
-	std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
-      }
+      if( sleepsize > 0 ) std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
       Visualizer::show( board_ );    
     }
   }
@@ -314,9 +298,7 @@ public:
     while( latest_result_ == MoveResult::CONTINUE ){
       latest_result_ = board_.move_robots_1_step();
       Visualizer::show( board_ );
-      if( go_slow ){
-	std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
-      }
+      if( sleepsize > 0 ) std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
     }
 
     if( latest_result_ == MoveResult::YOU_WIN_ROUND ){
@@ -345,9 +327,7 @@ public:
     while( latest_result_ == MoveResult::CONTINUE ){
       latest_result_ = board_.move_robots_1_step();
       updater();
-      if( go_slow ){
-	std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
-      }
+      if( sleepsize > 0 ) std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
     }
 
     if( latest_result_ == MoveResult::YOU_WIN_ROUND ){
