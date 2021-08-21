@@ -35,13 +35,13 @@ public: //game logic
   template< unsigned int sleepsize = 0 >
   GameOverBool
   cascade(){  
-    auto && show = [=](){};
+    auto && show = [=]( RobotsGame const & ){};
     return cascade< sleepsize >( show );
   }
 
-  template< typename T, unsigned int sleepsize = 0 >
+  template< typename Renderer, unsigned int sleepsize = 0 >
   GameOverBool
-  cascade( T && updater );
+  cascade( Renderer && updater );
 
   //true if game over
   GameOverBool
@@ -134,7 +134,7 @@ RobotsGame::cascade( T && updater ){
   latest_result_ = MoveResult::CONTINUE;
   while( latest_result_ == MoveResult::CONTINUE ){
     latest_result_ = board_.move_robots_1_step();
-    updater();
+    updater( *this );
     if constexpr( sleepsize > 0 ) std::this_thread::sleep_for( std::chrono::milliseconds(sleepsize) );
   }
 

@@ -4,6 +4,7 @@
 #include <robots_core/strategy/null_renderer.hh>
 #include <robots_core/strategy/recursion.hh>
 #include <robots_core/strategy/stall.hh>
+#include <robots_core/metaprotocols/skip_to_risky_spring2021.hh>
 
 #include <array>
 
@@ -24,7 +25,10 @@ loop_smart_autopilot_spring2021(
     // Deeper Recursion
     bool const recursive_solution_found =
       run_recursive_search< 6 >( game, 7, renderer );
-    if( recursive_solution_found ) continue;
+    if( recursive_solution_found ){
+      game.cascade();
+      continue;
+    }
 
     //////////////////
     // Stall For Time

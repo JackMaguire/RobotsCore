@@ -5,7 +5,7 @@
 namespace robots_core{
 
 struct NullRenderer {
-  void render( RobotsGame const & ){};
+  void operator()( RobotsGame const & ){};
 };
 
 }
