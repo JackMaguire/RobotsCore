@@ -1,6 +1,7 @@
 #include <iostream>
 
-#include <robots_core/board.hh>
+#include <robots_core/game.hh>
+#include <robots_core/forecasting.hh>
 
 //Example: g++ test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17
 
