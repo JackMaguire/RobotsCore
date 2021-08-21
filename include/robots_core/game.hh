@@ -213,7 +213,8 @@ RobotsGame::load_from_stringified_representation(
   score_ = score;
 }
 
-void reset(){
+void
+RobotsGame::reset(){
   board_ = Board();
   round_ = 0;
   n_safe_teleports_remaining_ = 0;
