@@ -39,24 +39,20 @@ public:
 
   signed char dx() const {   
     switch( data & 0b11 ){
-    case( 1 ): 
-      return 1;
-    case( 2 ): 
-      return -1;
-    case( 3 ): 
-      return 0;
+    case( 1 ):       return 1;
+    case( 2 ):       return -1;
+    case( 3 ):       return 0;
     }
+    return 0;
   }
 
   signed char dy() const {   
     switch( (data & 0b1100) >> 2 ){
-    case( 1 ): 
-      return 1;
-    case( 2 ): 
-      return -1;
-    case( 3 ): 
-      return 0;
+    case( 1 ):       return 1;
+    case( 2 ):       return -1;
+    case( 3 ):       return 0;
     }
+    return 0;
   }
 };
 

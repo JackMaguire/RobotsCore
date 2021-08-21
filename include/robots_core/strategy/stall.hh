@@ -32,7 +32,7 @@ stall_for_time(
 
         if( move_result != MoveResult::CONTINUE ) continue;
 
-        solution_found = copy.n_robots() == game_.board().n_robots();
+        solution_found = (copy.n_robots() == game.board().n_robots());
 
 	//GREEDY!
         if( solution_found ) {
@@ -54,7 +54,7 @@ bool
 stall_for_time(
   RobotsGame & game
 ){
-  Renderer r;
+  NullRenderer r;
   return stall_for_time( game, r );
 }
 
