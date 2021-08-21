@@ -1,15 +1,14 @@
 #pragma once
 
-#include <iostream>
 #include <robots_core/board.hh>
+#include <robots_core/strategy/null_renderer.hh>
 
-#include <vector>
 #include <array>
 
 namespace robots_core{
 
 //TODO compress this
-struct Move {
+struct MoveLegacy {
   signed char dx = -2; //nullop
   signed char dy = -2; //nullop
   bool nullop = true;
@@ -37,7 +36,7 @@ public:
     }
   }
 
-  signed char dx() const {   
+  signed char dx() const {
     switch( data & 0b11 ){
     case( 1 ):       return 1;
     case( 2 ):       return -1;
@@ -46,7 +45,7 @@ public:
     return 0;
   }
 
-  signed char dy() const {   
+  signed char dy() const {
     switch( (data & 0b1100) >> 2 ){
     case( 1 ):       return 1;
     case( 2 ):       return -1;
@@ -64,13 +63,16 @@ struct Move2 { //2 bytes
     return dx == -2 and dy == -2;
   }
 
-  void set_nullop() {
-    dx = -2;
-    dy = -2;
+  void set_nullop( bool const setting ) {
+    if( setting ) {
+      dx = -2;
+      dy = -2;
+    }
   }
 
 };
 
+using Move = Move2;
 
 //static_assert( sizeof(Move) );
 
@@ -78,14 +80,14 @@ template< int DEPTH >
 struct SearchResult {
   //path
   std::array< Move, DEPTH > moves; //default construct to nullop
-  
+
   //outcome
   bool cascade = false;
   int nrobots_killed_cascading = -1; //-1 UNLESS CASCADE
 
   bool
   is_better_than( SearchResult< DEPTH > const & other ) const {
-    
+
     if( cascade ){
 
       if( other.cascade ) return nrobots_killed_cascading > other.nrobots_killed_cascading;
@@ -96,7 +98,7 @@ struct SearchResult {
       if( other.cascade ) return false;
       else                return false; //both are losers
 
-    }    
+    }
   }
 };
 
@@ -170,7 +172,7 @@ _recursive_search(
       case( MoveResult::YOU_WIN_GAME ):
 	result.moves[ recursion_round ].dx = dx;
 	result.moves[ recursion_round ].dy = dy;
-	result.moves[ recursion_round ].nullop = false;
+	result.moves[ recursion_round ].set_nullop( false );
 	result.cascade = true; //technically...
 	result.nrobots_killed_cascading = 0;
 	break;
@@ -178,7 +180,7 @@ _recursive_search(
       case( MoveResult::CONTINUE ):
 	result.moves[ recursion_round ].dx = dx;
 	result.moves[ recursion_round ].dy = dy;
-	result.moves[ recursion_round ].nullop = false;	
+	result.moves[ recursion_round ].set_nullop( false );
 
 	int const inner_suff_cutoff = std::min( min_sufficient_robots_killed, copy.n_robots() );
 
@@ -226,6 +228,40 @@ recursive_search_for_cascade(
     0,
     true
   );
+}
+
+template< unsigned int DEPTH, typename Renderer = NullRenderer >
+bool
+run_recursive_seach(
+  RobotsGame & game,
+  int const n_tele_desired,
+  Renderer & renderer
+){
+
+  int const min_n_robots = std::min(
+    n_tele_desired - game.n_safe_teleports_remaining(),
+    game.board().n_robots()
+  );
+
+  SearchResult< DEPTH > const search_result =
+    recursive_search_for_cascade< DEPTH >( game.board() );
+
+  if( not search_result.cascade ){
+    return false;
+  }
+
+  if( search_result.nrobots_killed_cascading < min_n_robots ){
+    return false;
+  }
+
+  for( Move const m : search_result.moves ){
+    if( m.nullop() ) break;
+
+    game.move_human( m.dx, m.dy );
+    renderer.render( game );
+  }
+
+  return true;
 }
 
 }

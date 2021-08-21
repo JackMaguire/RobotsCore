@@ -1,17 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <robots_core/game.hh>
-
-#include <vector>
-#include <array>
-#include <chrono>         // std::chrono::seconds
+#include <robots_core/strategy/null_renderer.hh>
 
 namespace robots_core{
-
-struct NullRenderer {
-  void render( RobotsGame const & ){};
-};
 
 template< typename Renderer = NullRenderer >
 bool
@@ -38,13 +30,13 @@ stall_for_time(
         if( solution_found ) {
           any_solution_found = true;
 	  game.move_human( dx, dy );
+	  renderer.render( game );
           break;
         }
       }
       if( solution_found ) break;
     }
 
-    renderer.render( game );
   }
 
   return any_solution_found;
