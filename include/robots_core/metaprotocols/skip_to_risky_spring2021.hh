@@ -21,18 +21,18 @@ skip_to_risky_spring2021(
     // Deeper Recursion
     bool const recursive_solution_found =
       run_recursive_search< 4 >( game, 7, renderer );
-    if( recursive_solution_found ) continue;
 
     if( recursive_solution_found ){
-      bool const game_over_rec = handle_move( 0, 0, false, true );
-
-      //TODO RAII?
-      this->update();
-      app_->processEvents();
-
-      if( game_over_rec ) return true;
+      bool const game_over_rec = game.cascade();
+      renderer( game );
+      //if( game_over_rec ) return true; //impossible
       continue;
     }
+
+    // TODO
+    foo const outcome = run_ml( game );
+    //pick up here
+    
 
     AutoPilotResult const apr =
       run_autopilot( game_, current_prediction_ );

@@ -2,6 +2,7 @@
 
 #include <robots_core/global.hh>
 #include <robots_core/board.hh>
+#include <robots_core/null_renderer.hh>
 
 #include <array>
 #include <vector>
@@ -35,8 +36,8 @@ public: //game logic
   template< unsigned int sleepsize = 0 >
   GameOverBool
   cascade(){  
-    auto && show = [=]( RobotsGame const & ){};
-    return cascade< sleepsize >( show );
+    NullRenderer nr;
+    return cascade< sleepsize >( nr );
   }
 
   template< typename Renderer, unsigned int sleepsize = 0 >
