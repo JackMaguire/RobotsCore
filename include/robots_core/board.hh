@@ -1,5 +1,7 @@
 #pragma once
 
+#include <robots_core/global.hh>
+
 #include <array>
 #include <vector>
 #include <set>
@@ -22,74 +24,7 @@
 
 namespace robots_core {
 
-using GameOverBool = bool;
-
-// signed char fails for some stupid reason
-using sm_int = signed short int; //char; //-127 to 127
-
-constexpr sm_int WIDTH = 45;
-constexpr sm_int HEIGHT = 30;
-
-constexpr int MAX_N_ROUNDS = 66;
-constexpr int MAX_N_ROBOTS = MAX_N_ROUNDS * 10;
-
-enum class Occupant : unsigned char
-{
- EMPTY = 0,
- ROBOT,
- HUMAN,
- FIRE,
- OOB
-};
-
-enum class MoveResult : unsigned char
-{
- CONTINUE = 0,
- YOU_LOSE = 1,
- YOU_WIN_ROUND = 2,
- YOU_WIN_GAME = 3
-};
-
-
-struct Position {
-  
-  bool operator==( Position const & o ) const {
-    return x == o.x && y == o.y;
-  }
-
-  bool operator!=( Position const & o ) const {
-    return ! ( *this == o );
-  }
-
-  sm_int x;
-  sm_int y;
-
-  Position operator+( Position const & o ) const {
-    Position p;
-    p.x = x + o.x;
-    p.y = y + o.y;
-    return p;
-  }
-
-  Position operator-( Position const & o ) const {
-    Position p;
-    p.x = x - o.x;
-    p.y = y - o.y;
-    return p;
-  }
-
-  float distance( Position const & o ) const {
-    Position diff = (*this) - o;
-    return sqrt( diff.x*diff.x + diff.y*diff.y );
-  }
-
-};
-
 constexpr Position STARTING_POSITION({ 23, 15 });
-
-int nrobots_per_round( int round ){
-  return round * 10;
-}
 
 sm_int random_x(){
   return rand() % WIDTH;
@@ -119,18 +54,9 @@ public:
 
   void clear_board();
 
-  //should this be const?
-  Position
-  find_open_space( bool const allow_robot_movement = true );
-
-  bool
-  cell_is_safe_for_teleport( Position const p ) const;
-
-  MoveResult
-  teleport( bool const safe );
-
   void init( int const round );
 
+public: //inlined getters
   Occupant & cell( Position const & p ){
     return cells_[ p.x ][ p.y ];
   }
@@ -147,12 +73,27 @@ public:
     return cells_[ x ][ y ];
   }
 
-  MoveResult
-  move_robots_1_step( bool const human_is_safe = false );
-
   int n_robots() const {
     return robot_positions_.size();
   }
+
+  Position const & human_position() const {
+    return human_position_;
+  }
+
+  PositionVec const & robots() const {
+    return robot_positions_;
+  }
+
+public: //game logic
+  bool
+  cell_is_safe_for_teleport( Position const p ) const;
+
+  MoveResult
+  teleport( bool const safe );
+
+  MoveResult
+  move_robots_1_step( bool const human_is_safe = false );
 
   MoveResult
   move_human( sm_int const dx, sm_int const dy );
@@ -166,26 +107,28 @@ public:
   bool
   move_is_cascade_safe( sm_int const dx, sm_int const dy, int & n_robots_remaining ) const;
 
+  // legacy serialization method
+  std::string
+  get_safe_moves() const;
+
+public: // serialization
   std::string
   get_stringified_representation() const;
 
   void
   load_from_stringified_representation( std::string const & str );
 
-  std::string
-  get_safe_moves() const;
 
-  Position const & human_position() const {
-    return human_position_;
-  }
-
+public: //static utilities
   static bool position_is_in_bounds( Position p ){
     return p.x >= 0 && p.x < WIDTH && p.y >= 0 && p.y < HEIGHT;
   }
 
-  PositionVec const & robots() const {
-    return robot_positions_;
-  }
+protected:
+  //should this be const?
+  Position
+  find_open_space( bool const allow_robot_movement = true );
+
 
 private:
   std::array< std::array< Occupant, HEIGHT >, WIDTH > cells_;
@@ -244,210 +187,6 @@ forcast_all_moves( Board const & board ) {
 
   return forecasts;
 }
-
-
-struct NullVisualizer {
-  static void show( Board const & ){}
-};
-
-template< typename Visualizer = NullVisualizer, int sleepsize = 500 >
-class RobotsGame {
-public:
-  RobotsGame( int const round = 1, int const tele = 0 ) :
-    round_( round ),
-    n_safe_teleports_remaining_( tele )
-  {
-    board_.init( round_ );
-
-    long int expected_score = 0;
-    for( int r = 1; r <= round_; ++r ){
-      expected_score += r * 10;
-    }
-    score_ = expected_score;
-
-    Visualizer::show( board_ );
-  }
-
-  void
-  new_round(){
-
-    long int expected_score = 0;
-    for( int r = 1; r <= round_; ++r ){
-      expected_score += r * 10;
-    }
-
-    if( score_ != expected_score ){
-      std::cout << "Expected score is " << expected_score << std::endl;
-    }
-
-    if( round_ == MAX_N_ROUNDS ){
-      latest_result_ = MoveResult::YOU_WIN_GAME;
-    } else {
-      board_.init( ++round_ );
-      if( sleepsize > 0 ) std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
-      Visualizer::show( board_ );    
-    }
-  }
-
-  GameOverBool
-  old_cascade(){
-    //TODO call lower function from this one
-    int const n_robots_start = board_.n_robots();
-
-    latest_result_ = MoveResult::CONTINUE;
-    while( latest_result_ == MoveResult::CONTINUE ){
-      latest_result_ = board_.move_robots_1_step();
-      Visualizer::show( board_ );
-      if( sleepsize > 0 ) std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
-    }
-
-    if( latest_result_ == MoveResult::YOU_WIN_ROUND ){
-      score_ += n_robots_start;
-      n_safe_teleports_remaining_ += n_robots_start;
-      if( n_safe_teleports_remaining_ > 10 ) n_safe_teleports_remaining_ = 10;
-      new_round();
-    }
-
-    //std::cout << "result: " << int( result ) << std::endl;
-    return latest_result_ == MoveResult::YOU_LOSE || latest_result_ == MoveResult::YOU_WIN_GAME;
-  }
-
-  GameOverBool
-  cascade(){  
-    auto && show = [=](){ Visualizer::show( board_ ); };
-    return cascade( show );
-  }
-
-  template< typename T >
-  GameOverBool
-  cascade( T && updater ){
-    int const n_robots_start = board_.n_robots();
-
-    latest_result_ = MoveResult::CONTINUE;
-    while( latest_result_ == MoveResult::CONTINUE ){
-      latest_result_ = board_.move_robots_1_step();
-      updater();
-      if( sleepsize > 0 ) std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
-    }
-
-    if( latest_result_ == MoveResult::YOU_WIN_ROUND ){
-      score_ += n_robots_start;
-      n_safe_teleports_remaining_ += n_robots_start;
-      if( n_safe_teleports_remaining_ > 10 ) n_safe_teleports_remaining_ = 10;
-      new_round();
-    }
-
-    return latest_result_ == MoveResult::YOU_LOSE || latest_result_ == MoveResult::YOU_WIN_GAME;
-  }
-
-  //true if game over
-  GameOverBool
-  move_human( sm_int const dx, sm_int const dy ){
-    int const n_robots_start = board_.n_robots();
-
-    latest_result_ = board_.move_human( dx, dy );
-    Visualizer::show( board_ );
-
-    score_ += ( n_robots_start - board_.n_robots() );
-
-    if( latest_result_ == MoveResult::YOU_WIN_ROUND ){
-      new_round();
-    }
-
-    return latest_result_ == MoveResult::YOU_LOSE || latest_result_ == MoveResult::YOU_WIN_GAME;
-  }
-
-private:
-  void danger_tele(){
-      latest_result_ = board_.teleport( false );
-      Visualizer::show( board_ );
-
-      if( latest_result_ == MoveResult::CONTINUE ){
-	assert( board_.n_robots() > 0 );
-      }
-  }
-
-  void safe_tele(){
-    latest_result_ = board_.teleport( true );
-    Visualizer::show( board_ );
-    --n_safe_teleports_remaining_;
-  }
-
-public:  
-  GameOverBool
-  teleport(){
-    int const n_robots_start = board_.n_robots();
-    
-    if( n_safe_teleports_remaining_ == 0 ) danger_tele();
-    else safe_tele();
-
-    score_ += ( n_robots_start - board_.n_robots() );
-    
-    if( latest_result_ == MoveResult::YOU_WIN_ROUND ){
-      new_round();
-    }
-    else if( latest_result_ == MoveResult::CONTINUE ){
-      assert( board_.n_robots() > 0 );
-    }
-
-    GameOverBool const game_over =
-      (latest_result_ == MoveResult::YOU_LOSE || latest_result_ == MoveResult::YOU_WIN_GAME);
-    return game_over;
-  }
-
-  Board const & board() const {
-    return board_;
-  }
-
-  int n_safe_teleports_remaining() const {
-    return n_safe_teleports_remaining_;
-  }
-
-  int round() const {
-    return round_;
-  }
-
-  void
-  load_from_stringified_representation(
-    std::string const & str,
-    int const round,
-    int const n_safe_teleports_remaining,
-    long int const score
-  ) {
-    board_.load_from_stringified_representation( str );
-    round_ = round;
-    n_safe_teleports_remaining_ = n_safe_teleports_remaining;
-    score_ = score;
-  }
-
-  MoveResult latest_result() const {
-    return latest_result_;
-  }
-
-  long int score() const {
-    return score_;
-  }
-
-  void reset(){
-    board_ = Board();
-    round_ = 1;
-    n_safe_teleports_remaining_ = 0;
-    score_ = 0;
-    latest_result_ = MoveResult::CONTINUE;
-    new_round();
-  }
-  
-private:
-  Board board_;
-
-  int round_;
-  int n_safe_teleports_remaining_;
-
-  long int score_ = 0;
-  
-  MoveResult latest_result_ = MoveResult::CONTINUE;
-};
-
 
 void Board::clear_board(){
   for( std::array< Occupant, HEIGHT > & arr : cells_ ){
