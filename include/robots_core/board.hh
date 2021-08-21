@@ -14,13 +14,13 @@
 #include <chrono>         // std::chrono::seconds
 #include <math.h> //sqrt
 
-#define USE_BOOST_SMALL_VEC //benchmarked - slightly faster with N = MAX_ROBOT / 10
+//#define RC_USE_BOOST_SMALL_VEC //benchmarked - slightly faster with N = MAX_ROBOT / 10
 
-#ifdef USE_BOOST_SMALL_VEC
+#ifdef RC_USE_BOOST_SMALL_VEC
 #include <boost/container/small_vector.hpp>
 #endif
 
-namespace robots {
+namespace robots_core {
 
 using GameOverBool = bool;
 
@@ -102,7 +102,7 @@ sm_int random_y(){
 class Board {
 public:
 
-#ifdef USE_BOOST_SMALL_VEC
+#ifdef RC_USE_BOOST_SMALL_VEC
   using PositionVec = boost::container::small_vector< Position, MAX_N_ROBOTS >;
 #else
   using PositionVec = std::vector< Position >;
@@ -748,4 +748,4 @@ Board::get_safe_moves() const {
   return ss.str();
 }
 
-} // namespace robots
+} // namespace robots_core

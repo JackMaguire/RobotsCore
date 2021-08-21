@@ -1,0 +1,10 @@
+#include <iostream>
+
+#include <robots_core/board.hh>
+
+//Example: g++ test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17
+
+int main(){
+  robots_core::Board b;
+  std::cout << b.get_stringified_representation() << std::endl;
+}
