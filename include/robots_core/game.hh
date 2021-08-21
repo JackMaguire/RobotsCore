@@ -19,11 +19,6 @@
 
 namespace robots_core {
 
-struct NullVisualizer {
-  static void show( Board const & ){}
-};
-
-template< typename Visualizer = NullVisualizer, int sleepsize = 500 >
 class RobotsGame {
 public:
   RobotsGame( int const round = 1, int const tele = 0 ) :
@@ -33,14 +28,13 @@ public:
     board_.init( round_ );
 
     long int expected_score = 0;
-    for( int r = 1; r <= round_; ++r ){
-      expected_score += r * 10;
+    for( int r = 1; r < round_; ++r ){
+      expected_score += nrobots_per_round( r );
     }
     score_ = expected_score;
-
-    Visualizer::show( board_ );
   }
 
+  template< unsigned int sleepsize = 0 >
   void
   new_round(){
 
@@ -63,31 +57,8 @@ public:
   }
 
   GameOverBool
-  old_cascade(){
-    //TODO call lower function from this one
-    int const n_robots_start = board_.n_robots();
-
-    latest_result_ = MoveResult::CONTINUE;
-    while( latest_result_ == MoveResult::CONTINUE ){
-      latest_result_ = board_.move_robots_1_step();
-      Visualizer::show( board_ );
-      if( sleepsize > 0 ) std::this_thread::sleep_for (std::chrono::milliseconds(sleepsize));
-    }
-
-    if( latest_result_ == MoveResult::YOU_WIN_ROUND ){
-      score_ += n_robots_start;
-      n_safe_teleports_remaining_ += n_robots_start;
-      if( n_safe_teleports_remaining_ > 10 ) n_safe_teleports_remaining_ = 10;
-      new_round();
-    }
-
-    //std::cout << "result: " << int( result ) << std::endl;
-    return latest_result_ == MoveResult::YOU_LOSE || latest_result_ == MoveResult::YOU_WIN_GAME;
-  }
-
-  GameOverBool
   cascade(){  
-    auto && show = [=](){ Visualizer::show( board_ ); };
+    auto && show = [=](){};
     return cascade( show );
   }
 
@@ -119,7 +90,6 @@ public:
     int const n_robots_start = board_.n_robots();
 
     latest_result_ = board_.move_human( dx, dy );
-    Visualizer::show( board_ );
 
     score_ += ( n_robots_start - board_.n_robots() );
 
@@ -133,7 +103,6 @@ public:
 private:
   void danger_tele(){
       latest_result_ = board_.teleport( false );
-      Visualizer::show( board_ );
 
       if( latest_result_ == MoveResult::CONTINUE ){
 	assert( board_.n_robots() > 0 );
@@ -142,7 +111,6 @@ private:
 
   void safe_tele(){
     latest_result_ = board_.teleport( true );
-    Visualizer::show( board_ );
     --n_safe_teleports_remaining_;
   }
 
