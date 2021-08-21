@@ -1,7 +1,7 @@
 #pragma once
 
 #include <robots_core/board.hh>
-#include <robots_core/strategy/null_renderer.hh>
+#include <robots_core/null_renderer.hh>
 #include <robots_core/strategy/recursion.hh>
 #include <robots_core/strategy/stall.hh>
 

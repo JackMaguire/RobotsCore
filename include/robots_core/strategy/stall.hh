@@ -1,7 +1,7 @@
 #pragma once
 
 #include <robots_core/game.hh>
-#include <robots_core/strategy/null_renderer.hh>
+#include <robots_core/null_renderer.hh>
 
 namespace robots_core{
 
