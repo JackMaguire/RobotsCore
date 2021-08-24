@@ -44,7 +44,9 @@ enum class Occupant : unsigned char
  ROBOT,
  HUMAN,
  FIRE,
- OOB
+ OOB,
+
+ count //number of possible occupants, this should stay at the end
 };
 
 enum class MoveResult : unsigned char
