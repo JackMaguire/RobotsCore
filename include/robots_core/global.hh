@@ -27,9 +27,6 @@ using GameOverBool = bool;
 // signed char fails for some stupid reason
 using sm_int = signed short int; //char; //-127 to 127
 
-constexpr sm_int WIDTH = 45;
-constexpr sm_int HEIGHT = 30;
-
 constexpr int nrobots_per_round( int round ){
   return round * 10;
 }
@@ -44,10 +41,9 @@ enum class Occupant : unsigned char
  ROBOT,
  HUMAN,
  FIRE,
- OOB,
-
- count //number of possible occupants, this should stay at the end
+ OOB //out of bounds
 };
+constexpr unsigned char NOccupantTypes = 5;
 
 enum class MoveResult : unsigned char
 {

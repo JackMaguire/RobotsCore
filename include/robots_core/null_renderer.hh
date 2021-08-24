@@ -1,11 +1,13 @@
 #pragma once
 
-#include <robots_core/board.hh>
+#include <robots_core/game.hh>
 
 namespace robots_core{
 
+class RobotsGame;
+
 struct NullRenderer {
-  void operator()( RobotsGame const & ){};
+  void render( RobotsGame const & ){};
 };
 
 }

@@ -26,16 +26,12 @@ namespace robots_core {
 
 constexpr Position STARTING_POSITION({ 23, 15 });
 
-sm_int random_x(){
-  return rand() % WIDTH;
-}
-
-sm_int random_y(){
-  return rand() % HEIGHT;
-}
-
 class Board {
-public:
+
+public: //constexpr and typing
+
+static constexpr sm_int WIDTH = 45;
+static constexpr sm_int HEIGHT = 30;
 
 #ifdef RC_USE_BOOST_SMALL_VEC
   using PositionVec = boost::container::small_vector< Position, MAX_N_ROBOTS >;
@@ -43,6 +39,7 @@ public:
   using PositionVec = std::vector< Position >;
 #endif
 
+public:
   Board(){
     srand(time(NULL));
     init( 1 );
@@ -129,9 +126,20 @@ protected:
   Position
   find_open_space( bool const allow_robot_movement = true );
 
+  static
+  sm_int
+  random_x(){
+    return rand() % WIDTH;
+  }
+
+  static
+  sm_int
+  random_y(){
+    return rand() % HEIGHT;
+  }
 
 private:
-  std::array< std::array< Occupant, HEIGHT >, WIDTH > cells_;
+  std::array< std::array< Occupant, Board::HEIGHT >, Board::WIDTH > cells_;
 
   PositionVec robot_positions_;
   Position human_position_;

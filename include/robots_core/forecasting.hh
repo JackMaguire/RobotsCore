@@ -57,10 +57,10 @@ forecast_all_moves( Board const & board ) {
   Position const human_position = board.human_position();
 
   for( sm_int dx = -1; dx <= 1; ++dx ){
-    if( human_position.x+dx < 0 || human_position.x+dx >= WIDTH ) continue;
+    if( human_position.x+dx < 0 || human_position.x+dx >= Board::WIDTH ) continue;
 
     for( sm_int dy = -1; dy <= 1; ++dy ){
-      if( human_position.y+dy < 0 || human_position.y+dy >= HEIGHT ) continue;
+      if( human_position.y+dy < 0 || human_position.y+dy >= Board::HEIGHT ) continue;
 
       forecasts[ dx+1 ][ dy+1 ] = forecast_move( board, dx, dy );
     }
