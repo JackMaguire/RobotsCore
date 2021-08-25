@@ -7,7 +7,6 @@
 #include <robots_core/graph/node.hh>
 
 //#include <array>
-//#include <cassert>
 #include <cmath>  //log
 
 namespace robots_core{

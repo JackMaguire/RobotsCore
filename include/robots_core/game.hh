@@ -3,6 +3,7 @@
 #include <robots_core/global.hh>
 #include <robots_core/board.hh>
 #include <robots_core/null_renderer.hh>
+#include <robots_core/asserts.hh>
 
 #include <array>
 #include <vector>
@@ -13,7 +14,6 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
-#include <assert.h>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
 #include <math.h> //sqrt
@@ -167,11 +167,9 @@ RobotsGame::move_human( sm_int const dx, sm_int const dy ){
 void 
 RobotsGame::danger_tele(){
   latest_result_ = board_.teleport( false );
-#ifndef NDEBUG
   if( latest_result_ == MoveResult::CONTINUE ){
-    assert( board_.n_robots() > 0 );
+    RC_DEBUG_ASSERT( board_.n_robots() > 0 );
   }
-#endif
 }
 
 void
@@ -193,7 +191,7 @@ RobotsGame::teleport(){
     new_round();
   }
   else if( latest_result_ == MoveResult::CONTINUE ){
-    assert( board_.n_robots() > 0 );
+    RC_DEBUG_ASSERT( board_.n_robots() > 0 );
   }
 
   GameOverBool const game_over =

@@ -11,10 +11,6 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
-#include <assert.h>
-#include <thread>         // std::this_thread::sleep_for
-#include <chrono>         // std::chrono::seconds
-#include <math.h> //sqrt
 
 //#define RC_USE_BOOST_SMALL_VEC //benchmarked - slightly faster with N = MAX_ROBOT / 10
 

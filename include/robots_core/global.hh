@@ -1,24 +1,8 @@
 #pragma once
 
-#include <array>
-#include <vector>
-#include <set>
-
-#include <cstdlib> //rand()
-#include <random>
-#include <iostream>
-#include <algorithm>
-#include <sstream>
-#include <assert.h>
-#include <thread>         // std::this_thread::sleep_for
-#include <chrono>         // std::chrono::seconds
+//#include <cstdlib> //rand()
+//#include <algorithm>
 #include <math.h> //sqrt
-
-//#define RC_USE_BOOST_SMALL_VEC //benchmarked - slightly faster with N = MAX_ROBOT / 10
-
-#ifdef RC_USE_BOOST_SMALL_VEC
-#include <boost/container/small_vector.hpp>
-#endif
 
 namespace robots_core {
 
