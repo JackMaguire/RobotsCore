@@ -2,9 +2,9 @@
 
 #include <robots_core/game.hh>
 #include <robots_core/forecasting.hh>
+#include <robots_core/asserts.hh>
 
 //#include <array>
-#include <cassert>
 #include <cmath>  //log
 
 namespace robots_core{
@@ -49,7 +49,7 @@ struct Node {
     case SpecialCaseNodes::C:
       return 1;
     default:
-      assert( false );
+      RC_DEBUG_ASSERT( false );
     }
   };
 
@@ -68,7 +68,7 @@ struct Node {
     case SpecialCaseNodes::E:
       return 1;
     default:
-      assert( false );
+      RC_DEBUG_ASSERT( false );
     }
   };
 };

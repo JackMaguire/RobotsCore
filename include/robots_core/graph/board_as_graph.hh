@@ -2,11 +2,12 @@
 
 #include <robots_core/game.hh>
 #include <robots_core/forecasting.hh>
+#include <robots_core/asserts.hh>
 
 #include <robots_core/graph/node.hh>
 
 //#include <array>
-#include <cassert>
+//#include <cassert>
 #include <cmath>  //log
 
 namespace robots_core{
@@ -84,7 +85,7 @@ GraphDecorator::edge_should_exist(
     case SpecialCaseNodes::RIGHT_OOB:  distance = Board::WIDTH -  j.position.x; break;
     case SpecialCaseNodes::BOTTOM_OOB: distance = 1 +             j.position.y; break;
     case SpecialCaseNodes::TOP_OOB:    distance = Board::HEIGHT - j.position.y; break;
-    default: assert( false ); break;
+    default: RC_DEBUG_ASSERT( false ); break;
     }
   } else if ( occ_j == Occupant::OOB ){
     switch( j.special_case ){
@@ -92,7 +93,7 @@ GraphDecorator::edge_should_exist(
     case SpecialCaseNodes::RIGHT_OOB:  distance = Board::WIDTH  - i.position.x; break;
     case SpecialCaseNodes::BOTTOM_OOB: distance = 1 +             i.position.y; break;
     case SpecialCaseNodes::TOP_OOB:    distance = Board::HEIGHT - i.position.y; break;
-    default: assert( false ); break;
+    default: RC_DEBUG_ASSERT( false ); break;
     }
   } else {
     distance = i.position.distance( j.position );

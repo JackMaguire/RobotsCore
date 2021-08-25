@@ -12,7 +12,6 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
-#include <assert.h>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
 #include <math.h> //sqrt
