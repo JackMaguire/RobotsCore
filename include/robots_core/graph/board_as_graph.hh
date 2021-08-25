@@ -3,75 +3,14 @@
 #include <robots_core/game.hh>
 #include <robots_core/forecasting.hh>
 
+#include <robots_core/graph/node.hh>
+
 //#include <array>
 #include <cassert>
 #include <cmath>  //log
 
 namespace robots_core{
 namespace graph{
-
-enum class SpecialCaseNodes {
-  Q = 0,
-  W,
-  E,
-  A,
-  S,
-  D,
-  Z,
-  X,
-  C,
-  LEFT_OOB,
-  TOP_OOB,
-  RIGHT_OOB,
-  BOTTOM_OOB,
-  
-  count, //these should stay at the end
-  none = count //these should stay at the end
-};
-
-
-struct Node {
-  Position position;
-  SpecialCaseNodes special_case = SpecialCaseNodes::none;
-
-  int dx() const {
-    switch( special_case ){
-    case SpecialCaseNodes::Q:
-    case SpecialCaseNodes::A:
-    case SpecialCaseNodes::Z:
-      return -1;
-    case SpecialCaseNodes::W:
-    case SpecialCaseNodes::S:
-    case SpecialCaseNodes::X:
-      return 0;
-    case SpecialCaseNodes::E:
-    case SpecialCaseNodes::D:
-    case SpecialCaseNodes::C:
-      return 1;
-    default:
-      assert( false );
-    }
-  };
-
-  int dy() const {
-    switch( special_case ){
-    case SpecialCaseNodes::Z:
-    case SpecialCaseNodes::X:
-    case SpecialCaseNodes::C:
-      return -1;
-    case SpecialCaseNodes::A:
-    case SpecialCaseNodes::S:
-    case SpecialCaseNodes::D:
-      return 0;
-    case SpecialCaseNodes::Q:
-    case SpecialCaseNodes::W:
-    case SpecialCaseNodes::E:
-      return 1;
-    default:
-      assert( false );
-    }
-  };
-};
 
 class GraphDecorator {
 public:
@@ -102,32 +41,7 @@ std::array< float, F >
 calculate_node(
   Node const & node,
   Game const & game
-) {
-  Board const & b = game.board();
-
-  std::array< float, F > data;
-  data.fill( 0 );
-
-  Occupant const occ = b.cell( node.position );
-  data[ int(occ) ] = 1.0;
-
-  constexpr unsigned int offset( NOccupantTypes );
-
-  if( occ == Occupant::HUMAN or occ == Occupant::OOB ){
-    ForecastResults const forecast = forecast_move( b, node.dx(), node.dy() );
-    if( forecast.legal ){
-      data[ offset ] = 1.0;
-      if( forecast.robots_killed == 0 ){
-	data[ offset+1 ] = -1;
-      } else {
-	data[ offset+1 ] = log( float(forecast.robots_killed) );
-      }
-      data[ offset+2 ] = game.n_safe_teleports_remaining();
-    }// if forecast.legal
-  }
-
-  return data;
-}
+);
   
 private:
 
@@ -207,6 +121,36 @@ GraphDecorator::edge_should_exist(
 
 }
 
+std::array< float, F >
+GraphDecorator::calculate_node(
+  Node const & node,
+  Game const & game
+) {
+  Board const & b = game.board();
+
+  std::array< float, F > data;
+  data.fill( 0 );
+
+  Occupant const occ = b.cell( node.position );
+  data[ int(occ) ] = 1.0;
+
+  constexpr unsigned int offset( NOccupantTypes );
+
+  if( occ == Occupant::HUMAN or occ == Occupant::OOB ){
+    ForecastResults const forecast = forecast_move( b, node.dx(), node.dy() );
+    if( forecast.legal ){
+      data[ offset ] = 1.0;
+      if( forecast.robots_killed == 0 ){
+	data[ offset+1 ] = -1;
+      } else {
+	data[ offset+1 ] = log( float(forecast.robots_killed) );
+      }
+      data[ offset+2 ] = game.n_safe_teleports_remaining();
+    }// if forecast.legal
+  }
+
+  return data;
+}
 
 }
 }
