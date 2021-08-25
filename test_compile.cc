@@ -5,6 +5,7 @@
 #include <robots_core/strategy/recursion.hh>
 #include <robots_core/strategy/stall.hh>
 #include <robots_core/graph/board_as_graph.hh>
+#include <robots_core/graph/dense.hh>
 
 #include <robots_core/asserts.hh>
 

@@ -6,11 +6,12 @@
 
 //#include <array>
 #include <cmath>  //log
+#include <vector>
 
 namespace robots_core{
 namespace graph{
 
-enum class SpecialCaseNodes {
+enum class SpecialCaseNodes : unsigned char {
   Q = 0,
   W,
   E,
@@ -72,6 +73,14 @@ struct Node {
     }
   };
 };
+
+/*std::vector< Node >
+determine_nodes_for_graph(
+  RobotsGame const & game,
+  unsigned int const max_nodes
+){
+  //TODO
+}*/
 
 }
 }

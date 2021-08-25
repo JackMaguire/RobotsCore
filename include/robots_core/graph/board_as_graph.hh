@@ -27,6 +27,8 @@ constexpr static unsigned char S = 4;
 //2: ln( long_leg_dist )-1  //  longer cathetus of right triangle
 //3: ratio of small_leg_dist / long_leg_dist
 
+constexpr static bool edges_are_symmetric = true;
+
 //Checks occupant type and distance to determine if we want to represent this pairing with an edge
 static
 bool
@@ -187,7 +189,6 @@ GraphDecorator::calculate_edge(
 
   return data;
 }
-
 
 }
 }
