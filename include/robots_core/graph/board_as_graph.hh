@@ -36,11 +36,20 @@ edge_should_exist(
   Board const & b
 );
 
+public: //Generating Data
+
 static
 std::array< float, F >
 calculate_node(
   Node const & node,
-  Game const & game
+  RobotsGame const & game
+);
+
+static
+std::array< float, S >
+calculate_edge(
+  Node const & i,
+  Node const & j
 );
   
 private:
@@ -121,10 +130,10 @@ GraphDecorator::edge_should_exist(
 
 }
 
-std::array< float, F >
+std::array< float, GraphDecorator::F >
 GraphDecorator::calculate_node(
   Node const & node,
-  Game const & game
+  RobotsGame const & game
 ) {
   Board const & b = game.board();
 
@@ -151,6 +160,34 @@ GraphDecorator::calculate_node(
 
   return data;
 }
+
+std::array< float, GraphDecorator::S >
+GraphDecorator::calculate_edge(
+  Node const & i,
+  Node const & j
+) {
+  std::array< float, S > data;
+  //data.fill( 0 );
+
+  float const distance = i.position.distance( j.position );
+  data[ 0 ] = log( distance ) - 1;
+
+  sm_int const x_dist = abs( i.position.x - j.position.x );
+  sm_int const y_dist = abs( i.position.y - j.position.y );
+
+  if( x_dist < y_dist ){
+    data[ 1 ] = log( x_dist ) - 1;
+    data[ 2 ] = log( y_dist ) - 1;
+    data[ 3 ] = float( x_dist ) / float( y_dist );
+  } else {
+    data[ 1 ] = log( y_dist ) - 1;
+    data[ 2 ] = log( x_dist ) - 1;
+    data[ 3 ] = float( y_dist ) / float( x_dist );
+  }
+
+  return data;
+}
+
 
 }
 }
