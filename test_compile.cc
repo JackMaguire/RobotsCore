@@ -6,6 +6,8 @@
 #include <robots_core/strategy/stall.hh>
 #include <robots_core/graph/board_as_graph.hh>
 
+#include <robots_core/asserts.hh>
+
 //Example: g++ test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17
 
 int main(){
