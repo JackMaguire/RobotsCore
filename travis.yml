@@ -1,0 +1,18 @@
+# https://gist.github.com/guioconnor/66a04a2c4292b8dcba22808fbc7fd68e
+
+# specify language
+language: c++
+
+# configure which branches to run
+branches:
+  # whitelist
+  only:
+    - main
+
+before_install:
+- sudo apt-get update -qq
+- sudo apt-get install g++
+
+install:
+  - g++ test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow
+
