@@ -3,6 +3,10 @@
 # specify language
 language: c++
 
+compiler:
+  - clang
+  - gcc
+
 os: linux
 
 # configure which branches to run
@@ -13,8 +17,7 @@ branches:
 
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install gcc-10
 
 install:
-  - gcc-10 test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow
+  - $CXX test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow
 
