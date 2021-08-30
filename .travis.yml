@@ -13,8 +13,8 @@ branches:
 
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install g++
+- sudo apt-get install g++-11
 
 install:
-  - g++ test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow
+  - g++-11 test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow
 
