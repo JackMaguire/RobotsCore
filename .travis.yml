@@ -3,6 +3,8 @@
 # specify language
 language: c++
 
+os: linux
+
 # configure which branches to run
 branches:
   # whitelist
