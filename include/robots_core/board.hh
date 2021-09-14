@@ -197,11 +197,11 @@ Board::cell_is_safe_for_teleport( Position const p ) const {
     if( x < 0 || x >= WIDTH) continue;
     for( sm_int y = p.y - 1; y <= p.y + 1; ++y ){
       if( y < 0 || y >= HEIGHT) continue;
-      if( cell( Position({ x, y }) ) != Occupant::EMPTY ) return false;
+      if( cell( Position({ x, y }) ) == Occupant::ROBOT ) return false;
     }
   }
 
-  return cell( p ) == Occupant::EMPTY;
+  return cell( p ) == Occupant::EMPTY or cell( p ) == Occupant::HUMAN;
 }
 
 MoveResult
