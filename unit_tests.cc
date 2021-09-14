@@ -3,5 +3,6 @@
 #include "tests/board.hh" 
 
 int main(){
-
+  using namespace robots_core::tests;
+  BoardTests::run();
 }
