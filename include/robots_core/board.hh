@@ -22,7 +22,15 @@ namespace robots_core {
 
 constexpr Position STARTING_POSITION({ 23, 15 });
 
+#ifdef RC_TESTS
+namespace tests { struct BoardTests; };
+#endif
+
 class Board {
+
+#ifdef RC_TESTS
+friend struct tests::BoardTests;
+#endif
 
 public: //constexpr and typing
 
