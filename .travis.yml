@@ -82,4 +82,4 @@ install:
 - ${CXX} --version
 
 script:
-  - $CXX unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std="$CPP" -Wshadow -D_GLIBCXX_DEBUG $SAN && ./unit_tests
+  - $CXX unit_tests.cc -o unit_tests -O3 -Wall -Wextra -pedantic -Werror -Iinclude -std="$CPP" -Wshadow -D_GLIBCXX_DEBUG $SAN && ./unit_tests
