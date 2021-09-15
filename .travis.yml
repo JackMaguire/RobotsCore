@@ -19,108 +19,37 @@ branches:
   only:
     - main
 
+# https://github.com/boostorg/hana/blob/master/.travis.yml
 matrix:
   include:
-    # works on Precise and Trusty
-    - os: linux
-      compiler:
-        - clang
+    ##########################################################################
+    # Build with the main configuration on all the supported compilers
+    #
+    # Note that we only use the memory checker on the main configuration to
+    # speed up Travis builds.
+    ##########################################################################
+    # Clang 7
+    - env: COMPILER=clang++-7
+      addons: { apt: { packages: ["clang-7", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-7"] } }
 
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-          packages:
-            - clang-3.6
-      env:
-        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
+    # Clang 8
+    - env: COMPILER=clang++-8
+      addons: &defaults { apt: { packages: ["clang-8", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-8"] } }
 
-    # works on Precise and Trusty
-    - os: linux
-      compiler:
-        - clang
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-          packages:
-            - clang-3.7
-      env:
-        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+    # GCC 8
+    - env: COMPILER=g++-8
+      addons: { apt: { packages: ["g++-8", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
 
-    # works on Precise and Trusty
-    - os: linux
-      compiler:
-        - clang
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
-          packages:
-            - clang-3.8
-      env:
-        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
-
-    # works on Trusty
-    - os: linux
-      compiler:
-        - clang
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-3.9
-          packages:
-            - clang-3.9
-      env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
-
-    # works on Trusty
-    - os: linux
-      compiler:
-        - clang
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-4.0
-          packages:
-            - clang-4.0
-      env:
-        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
-
-    # works on Trusty
-    - os: linux
-      compiler:
-        - clang
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
-          packages:
-            - clang-5.0
-      env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
-	
-    # GCC
-    - os: linux
-      compiler:
-        - gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - gcc-9.0
-      env:
-        - MATRIX_EVAL="CC=gcc-9.0 && CXX=g++-9.0"
 
 before_install:
     - sudo apt-get update -qq
     - eval "${MATRIX_EVAL}"
     #- sudo apt-get install $TRAVIS_COMPILER
     #- $TRAVIS_COMPILER --version
+
+install:
+- if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
+- ${CXX} --version
 
 script:
   - $CXX unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow && ./unit_tests
