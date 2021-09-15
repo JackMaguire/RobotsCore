@@ -124,7 +124,7 @@ RobotsGame::new_round(){
     latest_result_ = MoveResult::YOU_WIN_GAME;
   } else {
     board_.init( ++round_ );
-    if constexpr( sleepsize > 0 ) std::this_thread::sleep_for( std::chrono::milliseconds(sleepsize) );
+    if( sleepsize > 0 ) std::this_thread::sleep_for( std::chrono::milliseconds(sleepsize) );
   }
 }
 
@@ -137,7 +137,7 @@ RobotsGame::cascade( T & updater ){
   while( latest_result_ == MoveResult::CONTINUE ){
     latest_result_ = board_.move_robots_1_step();
     updater.render( *this );
-    if constexpr( sleepsize > 0 ) std::this_thread::sleep_for( std::chrono::milliseconds(sleepsize) );
+    if( sleepsize > 0 ) std::this_thread::sleep_for( std::chrono::milliseconds(sleepsize) );
   }
 
   if( latest_result_ == MoveResult::YOU_WIN_ROUND ){
