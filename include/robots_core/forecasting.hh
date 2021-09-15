@@ -22,6 +22,12 @@ struct ForecastResults {
   bool legal = false;
   bool cascade_safe = false;
   unsigned int robots_killed = 0;
+
+  bool operator==( ForecastResults const & other ) const {
+    return legal == other.legal
+      && cascade_safe == other.cascade_safe
+      && robots_killed == other.robots_killed;
+  }
 };
 
 ForecastResults

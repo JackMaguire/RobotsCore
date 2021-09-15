@@ -4,8 +4,10 @@
 #define RC_TESTS
 
 #include "tests/board.hh" 
+#include "tests/forecasting.hh" 
 
 int main(){
   using namespace robots_core::tests;
   BoardTests::run();
+  ForecastingTests::run();
 }
