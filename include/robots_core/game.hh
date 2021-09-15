@@ -33,16 +33,17 @@ public: //state management
   void reset();
 
 public: //game logic
+
+  template< typename Renderer, unsigned int sleepsize = 0 >
+  GameOverBool
+  cascade( Renderer & updater );
+
   template< unsigned int sleepsize = 0 >
   GameOverBool
   cascade(){  
     NullRenderer nr;
-    return cascade< sleepsize >( nr );
+    return cascade< NullRenderer, sleepsize >( nr );
   }
-
-  template< typename Renderer, unsigned int sleepsize = 0 >
-  GameOverBool
-  cascade( Renderer && updater );
 
   //true if game over
   GameOverBool
@@ -129,13 +130,13 @@ RobotsGame::new_round(){
 
 template< typename T, unsigned int sleepsize >
 GameOverBool
-RobotsGame::cascade( T && updater ){
+RobotsGame::cascade( T & updater ){
   int const n_robots_start = board_.n_robots();
 
   latest_result_ = MoveResult::CONTINUE;
   while( latest_result_ == MoveResult::CONTINUE ){
     latest_result_ = board_.move_robots_1_step();
-    updater( *this );
+    updater.render( *this );
     if constexpr( sleepsize > 0 ) std::this_thread::sleep_for( std::chrono::milliseconds(sleepsize) );
   }
 

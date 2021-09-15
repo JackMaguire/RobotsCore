@@ -5,9 +5,13 @@
 
 #include "tests/board.hh" 
 #include "tests/forecasting.hh" 
+#include "tests/game.hh" 
 
 int main(){
   using namespace robots_core::tests;
+
+  //Top-Level
   BoardTests::run();
   ForecastingTests::run();
+  GameTests::run();
 }
