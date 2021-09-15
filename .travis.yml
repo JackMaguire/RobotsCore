@@ -1,16 +1,6 @@
 # https://gist.github.com/guioconnor/66a04a2c4292b8dcba22808fbc7fd68e
 
-# specify language
 language: c++
-
-#compiler:
-#  - clang
-#  - clang-6
-#  - clang-7
-#  - gcc-6
-#  - gcc-7
-#  - gcc-8
-
 os: linux
 dist: bionic
 
@@ -23,58 +13,63 @@ branches:
 # https://github.com/boostorg/hana/blob/master/.travis.yml
 matrix:
   include:
-    ##########################################################################
-    # Build with the main configuration on all the supported compilers
-    #
-    # Note that we only use the memory checker on the main configuration to
-    # speed up Travis builds.
-    ##########################################################################
     # Clang 7
-    - env: COMPILER=clang++-7
+    - env: COMPILER=clang++-7  CPP="c++17"
       addons: { apt: { packages: ["clang-7",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-7"] } }
 
     # Clang 8
-    - env: COMPILER=clang++-8
+    - env: COMPILER=clang++-8  CPP="c++17"
       addons: &defaults { apt: { packages: ["clang-8",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-8"] } }
 
     # Clang 9
-    - env: COMPILER=clang++-9
+    - env: COMPILER=clang++-9  CPP="c++17"
       addons: &defaults { apt: { packages: ["clang-9",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic-9"] } }
 
     # Clang 10
-    - env: COMPILER=clang++-10
+    - env: COMPILER=clang++-10  CPP="c++17"
       addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
 
     # Clang 11
-    - env: COMPILER=clang++-11
-      addons: &defaults { apt: { packages: ["clang-11",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
+    #- env: COMPILER=clang++-11  CPP="c++17"
+    #  addons: &defaults { apt: { packages: ["clang-11",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
 
     # Clang 12
-    - env: COMPILER=clang++-12
-      addons: &defaults { apt: { packages: ["clang-12",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
+    #- env: COMPILER=clang++-12  CPP="c++17"
+    #  addons: &defaults { apt: { packages: ["clang-12",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
 
     # GCC 7
-    - env: COMPILER=g++-7
+    - env: COMPILER=g++-7  CPP="c++17"
       addons: { apt: { packages: ["g++-7",], sources: ["ubuntu-toolchain-r-test"] } }
 
     # GCC 8
-    - env: COMPILER=g++-8
+    - env: COMPILER=g++-8  CPP="c++17"
       addons: { apt: { packages: ["g++-8",], sources: ["ubuntu-toolchain-r-test"] } }
       
     # GCC 9
-    - env: COMPILER=g++-9
+    - env: COMPILER=g++-9  CPP="c++17"
       addons: { apt: { packages: ["g++-9",], sources: ["ubuntu-toolchain-r-test"] } }
       
     # GCC 10
-    - env: COMPILER=g++-10
+    - env: COMPILER=g++-10  CPP="c++17"
       addons: { apt: { packages: ["g++-10",], sources: ["ubuntu-toolchain-r-test"] } }
       
     # GCC 11
-    - env: COMPILER=g++-11
+    - env: COMPILER=g++-11  CPP="c++17"
       addons: { apt: { packages: ["g++-11",], sources: ["ubuntu-toolchain-r-test"] } }
       
 
+    # Other c++ versions
+    - env: COMPILER=clang++-10  CPP="c++14"
+      addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
+      
+    - env: COMPILER=clang++-10  CPP="c++2a"
+      addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
 
+    - env: COMPILER=g++-11  CPP="c++14"
+      addons: { apt: { packages: ["g++-11",], sources: ["ubuntu-toolchain-r-test"] } }
+
+    - env: COMPILER=g++-11  CPP="c++2a"
+      addons: { apt: { packages: ["g++-11",], sources: ["ubuntu-toolchain-r-test"] } }
 
 before_install:
     - sudo apt-get update -qq
@@ -87,4 +82,4 @@ install:
 - ${CXX} --version
 
 script:
-  - $CXX unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow && ./unit_tests
+  - $CXX unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std="$CPP" -Wshadow -D_GLIBCXX_DEBUG && ./unit_tests
