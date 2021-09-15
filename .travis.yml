@@ -30,15 +30,49 @@ matrix:
     ##########################################################################
     # Clang 7
     - env: COMPILER=clang++-7
-      addons: { apt: { packages: ["clang-7", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-7"] } }
+      addons: { apt: { packages: ["clang-7",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-7"] } }
 
     # Clang 8
     - env: COMPILER=clang++-8
-      addons: &defaults { apt: { packages: ["clang-8", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-8"] } }
+      addons: &defaults { apt: { packages: ["clang-8",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-8"] } }
+
+    # Clang 9
+    - env: COMPILER=clang++-9
+      addons: &defaults { apt: { packages: ["clang-9",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-9"] } }
+
+    # Clang 10
+    - env: COMPILER=clang++-10
+      addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-10"] } }
+
+    # Clang 11
+    - env: COMPILER=clang++-11
+      addons: &defaults { apt: { packages: ["clang-11",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-11"] } }
+
+    # Clang 12
+    - env: COMPILER=clang++-12
+      addons: &defaults { apt: { packages: ["clang-12",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-12"] } }
+
+    # GCC 7
+    - env: COMPILER=g++-7
+      addons: { apt: { packages: ["g++-7",], sources: ["ubuntu-toolchain-r-test"] } }
 
     # GCC 8
     - env: COMPILER=g++-8
-      addons: { apt: { packages: ["g++-8", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
+      addons: { apt: { packages: ["g++-8",], sources: ["ubuntu-toolchain-r-test"] } }
+      
+    # GCC 9
+    - env: COMPILER=g++-9
+      addons: { apt: { packages: ["g++-9",], sources: ["ubuntu-toolchain-r-test"] } }
+      
+    # GCC 10
+    - env: COMPILER=g++-10
+      addons: { apt: { packages: ["g++-10",], sources: ["ubuntu-toolchain-r-test"] } }
+      
+    # GCC 11
+    - env: COMPILER=g++-11
+      addons: { apt: { packages: ["g++-11",], sources: ["ubuntu-toolchain-r-test"] } }
+      
+
 
 
 before_install:
