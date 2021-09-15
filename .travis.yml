@@ -12,6 +12,7 @@ language: c++
 #  - gcc-8
 
 os: linux
+dist: bionic
 
 # configure which branches to run
 branches:
@@ -38,19 +39,19 @@ matrix:
 
     # Clang 9
     - env: COMPILER=clang++-9
-      addons: &defaults { apt: { packages: ["clang-9",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial"] } }
+      addons: &defaults { apt: { packages: ["clang-9",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic-9"] } }
 
     # Clang 10
     - env: COMPILER=clang++-10
-      addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial"] } }
+      addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
 
     # Clang 11
     - env: COMPILER=clang++-11
-      addons: &defaults { apt: { packages: ["clang-11",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial"] } }
+      addons: &defaults { apt: { packages: ["clang-11",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
 
     # Clang 12
     - env: COMPILER=clang++-12
-      addons: &defaults { apt: { packages: ["clang-12",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial"] } }
+      addons: &defaults { apt: { packages: ["clang-12",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
 
     # GCC 7
     - env: COMPILER=g++-7
@@ -65,8 +66,8 @@ matrix:
       addons: { apt: { packages: ["g++-9",], sources: ["ubuntu-toolchain-r-test"] } }
       
     # GCC 10
-    - env: COMPILER=gcc-10
-      addons: { apt: { packages: ["gcc-10",], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-10
+      addons: { apt: { packages: ["g++-10",], sources: ["ubuntu-toolchain-r-test"] } }
       
     # GCC 11
     - env: COMPILER=g++-11
