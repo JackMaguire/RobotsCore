@@ -21,6 +21,8 @@ branches:
 
 before_install:
     - sudo apt-get update -qq
+    - sudo apt-get install $TRAVIS_COMPILER
+    - $TRAVIS_COMPILER --version
 
 script:
-  - $CXX unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow && ./unit_tests
+  - $TRAVIS_COMPILER unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow && ./unit_tests
