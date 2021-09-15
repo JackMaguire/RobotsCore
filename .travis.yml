@@ -24,7 +24,7 @@ matrix:
     # works on Precise and Trusty
     - os: linux
       compiler:
-	- clang
+        - clang
 
       addons:
         apt:
@@ -39,7 +39,7 @@ matrix:
     # works on Precise and Trusty
     - os: linux
       compiler:
-	- clang
+        - clang
       addons:
         apt:
           sources:
@@ -53,7 +53,7 @@ matrix:
     # works on Precise and Trusty
     - os: linux
       compiler:
-	- clang
+        - clang
       addons:
         apt:
           sources:
@@ -67,7 +67,7 @@ matrix:
     # works on Trusty
     - os: linux
       compiler:
-	- clang
+        - clang
       addons:
         apt:
           sources:
@@ -80,7 +80,7 @@ matrix:
     # works on Trusty
     - os: linux
       compiler:
-	- clang
+        - clang
       addons:
         apt:
           sources:
@@ -93,7 +93,7 @@ matrix:
     # works on Trusty
     - os: linux
       compiler:
-	- clang
+        - clang
       addons:
         apt:
           sources:
@@ -102,6 +102,19 @@ matrix:
             - clang-5.0
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+	
+    # GCC
+    - os: linux
+      compiler:
+        - gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-9.0
+      env:
+        - MATRIX_EVAL="CC=gcc-9.0 && CXX=g++-9.0"
 
 before_install:
     - sudo apt-get update -qq
@@ -110,4 +123,4 @@ before_install:
     #- $TRAVIS_COMPILER --version
 
 script:
-  - $TRAVIS_COMPILER unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow && ./unit_tests
+  - $CXX unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow && ./unit_tests
