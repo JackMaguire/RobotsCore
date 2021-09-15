@@ -38,19 +38,19 @@ matrix:
 
     # Clang 9
     - env: COMPILER=clang++-9
-      addons: &defaults { apt: { packages: ["clang-9",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-9"] } }
+      addons: &defaults { apt: { packages: ["clang-9",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial"] } }
 
     # Clang 10
     - env: COMPILER=clang++-10
-      addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-10"] } }
+      addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial"] } }
 
     # Clang 11
     - env: COMPILER=clang++-11
-      addons: &defaults { apt: { packages: ["clang-11",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-11"] } }
+      addons: &defaults { apt: { packages: ["clang-11",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial"] } }
 
     # Clang 12
     - env: COMPILER=clang++-12
-      addons: &defaults { apt: { packages: ["clang-12",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial-12"] } }
+      addons: &defaults { apt: { packages: ["clang-12",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-xenial"] } }
 
     # GCC 7
     - env: COMPILER=g++-7
@@ -65,8 +65,8 @@ matrix:
       addons: { apt: { packages: ["g++-9",], sources: ["ubuntu-toolchain-r-test"] } }
       
     # GCC 10
-    - env: COMPILER=g++-10
-      addons: { apt: { packages: ["g++-10",], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=gcc-10
+      addons: { apt: { packages: ["gcc-10",], sources: ["ubuntu-toolchain-r-test"] } }
       
     # GCC 11
     - env: COMPILER=g++-11
