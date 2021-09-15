@@ -18,6 +18,8 @@ branches:
 before_install:
 - sudo apt-get update -qq
 
-install:
-  - $CXX test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow
+#install:
+#  - $CXX test_compile.cc -o test_compile -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow
 
+script:
+  - $CXX unit_tests.cc -o unit_tests -O3 -Wall -Wextra -Iinclude -std=c++17 -Wshadow && ./unit_tests
