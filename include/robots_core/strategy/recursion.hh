@@ -15,7 +15,9 @@ struct MoveLegacy {
 };
 
 //TODO maybe this is too small??
-class Move1 {
+// This class requires c++14 or greater
+
+/*class Move1 {
 private:
   char data = 0;
 
@@ -53,7 +55,7 @@ public:
     }
     return 0;
   }
-};
+};*/
 
 struct Move2 { //2 bytes
   signed char dx = -2;
