@@ -16,7 +16,8 @@ namespace graph{
 template< unsigned int N, typename Real = float >
 struct DenseGraph {
 
-  static_assert( N >= static_cast<unsigned int>(SpecialCaseNodes::count) );
+  static_assert( N >= static_cast<unsigned int>(SpecialCaseNodes::count),
+    "We need at least enough nodes to cover all of the special cases" );
   
   using X = std::array< std::array< Real, GraphDecorator::F >, N >;
   using A = std::array< std::array< Real, N >, N >;
@@ -62,7 +63,8 @@ struct DenseGraph {
 	  a[ i ][ j ] = a[ j ][ i ] = 1.0;
 	  e[ i ][ j ] = e[ j ][ i ] = GraphDecorator::calculate_edge( nodes[i], nodes[j] );
 
-	  static_assert( GraphDecorator::edges_are_symmetric );
+	  static_assert( GraphDecorator::edges_are_symmetric,
+	    "The code currently assumes edges_are_symmetric as written" );
 	  // Not a dealbreaker, just means we need to update the code above
 	}
       }
