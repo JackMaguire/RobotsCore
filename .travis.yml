@@ -59,11 +59,17 @@ matrix:
       
 
     # Other c++ versions
+    - env: COMPILER=clang++-10  CPP="c++11"
+      addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
+
     - env: COMPILER=clang++-10  CPP="c++14"
       addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
       
     - env: COMPILER=clang++-10  CPP="c++2a"
       addons: &defaults { apt: { packages: ["clang-10",], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-bionic"] } }
+
+    - env: COMPILER=g++-11  CPP="c++11"
+      addons: { apt: { packages: ["g++-11",], sources: ["ubuntu-toolchain-r-test"] } }
 
     - env: COMPILER=g++-11  CPP="c++14"
       addons: { apt: { packages: ["g++-11",], sources: ["ubuntu-toolchain-r-test"] } }
