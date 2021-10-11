@@ -40,7 +40,7 @@ public: //game logic
 
   template< unsigned int sleepsize = 0 >
   GameOverBool
-  cascade(){  
+  renderless_cascade(){  
     NullRenderer nr;
     return cascade< NullRenderer, sleepsize >( nr );
   }

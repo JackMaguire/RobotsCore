@@ -64,14 +64,30 @@ PYBIND11_MODULE(robots_core, m) {
     b.def( "get_stringified_representation", &Board::get_stringified_representation );
     b.def( "load_from_stringified_representation", &Board::load_from_stringified_representation );
     
-
     //Overloads
     b.def( "cell", static_cast< Occupant &( Board::* )( Position const & )>( &Board::cell ) );
     b.def( "cell", static_cast< Occupant &( Board::* )( int, int )>( &Board::cell ) );
     b.def( "move_is_cascade_safe", py::overload_cast< sm_int, sm_int >( &Board::move_is_cascade_safe, py::const_ ) );
 
 
-    
+    py::class_< RobotsGame > g( m, "RobotsGame" );
+    g.def( py::init<>() );
+    g.def( "load_from_stringified_representation", 
+      &RobotsGame::load_from_stringified_representation );
+    g.def( "reset", &RobotsGame::reset );
+    g.def( "cascade", &RobotsGame::renderless_cascade );
+    g.def( "move_human", &RobotsGame::move_human );
+    g.def( "teleport", &RobotsGame::teleport );
+    g.def( "board", &RobotsGame::board );
+    g.def( "n_safe_teleports_remaining", &RobotsGame::n_safe_teleports_remaining );
+    g.def( "round", &RobotsGame::round );
+    g.def( "latest_result", &RobotsGame::latest_result );
+
+    py::class_< ForecastResults > fr( m, "ForecastResults" );
+    fr.def_readonly( "legal", &ForecastResults::legal );
+    fr.def_readonly( "cascade_safe", &ForecastResults::cascade_safe );
+    fr.def_readonly( "robots_killed", &ForecastResults::robots_killed );
+
     //Strategy
     py::module m_strat = m.def_submodule( "strategy" );
 
