@@ -5,9 +5,9 @@
 
 namespace robots_core{
 
-template< typename Renderer = NullRenderer >
+template< typename Renderer >
 bool
-stall_for_time(
+stall_for_time_with_renderer(
   RobotsGame & game,
   Renderer & renderer
 ){
@@ -33,11 +33,11 @@ stall_for_time(
 	  renderer.render( game );
           break;
         }
-      }
+      }//for dy
       if( solution_found ) break;
-    }
+    }//for dx
 
-  }
+  }//while solution_found
 
   return any_solution_found;
 }
@@ -47,7 +47,7 @@ stall_for_time(
   RobotsGame & game
 ){
   NullRenderer r;
-  return stall_for_time( game, r );
+  return stall_for_time_with_renderer( game, r );
 }
 
 

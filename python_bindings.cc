@@ -86,4 +86,7 @@ PYBIND11_MODULE(robots_core, m) {
     m_strat.def( "run_recursive_seach_5", &run_recursive_seach<5> );
     m_strat.def( "run_recursive_seach_6", &run_recursive_seach<6> );
     m_strat.def( "run_recursive_seach_7", &run_recursive_seach<7> );
+
+    //m_strat.def( "stall_for_time", static_cast< bool( RobotsGame & game ) >( &stall_for_time ) )
+    m_strat.def( "stall_for_time", &stall_for_time );
 }
