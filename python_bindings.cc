@@ -88,6 +88,9 @@ PYBIND11_MODULE(robots_core, m) {
     fr.def_readonly( "cascade_safe", &ForecastResults::cascade_safe );
     fr.def_readonly( "robots_killed", &ForecastResults::robots_killed );
 
+    m.def( "forecast_move", &forecast_move );
+    m.def( "forecast_all_moves", &forecast_all_moves );
+
     //Strategy
     py::module m_strat = m.def_submodule( "strategy" );
 
