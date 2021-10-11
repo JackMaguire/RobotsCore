@@ -82,18 +82,18 @@ GraphDecorator::edge_should_exist(
     if( occ_j == Occupant::OOB ) return false;
 
     switch( i.special_case ){
-    case SpecialCaseNodes::LEFT_OOB:   distance = 1 +             j.position.x; break;
-    case SpecialCaseNodes::RIGHT_OOB:  distance = Board::WIDTH -  j.position.x; break;
-    case SpecialCaseNodes::BOTTOM_OOB: distance = 1 +             j.position.y; break;
-    case SpecialCaseNodes::TOP_OOB:    distance = Board::HEIGHT - j.position.y; break;
+    case SpecialCaseNode::LEFT_OOB:   distance = 1 +             j.position.x; break;
+    case SpecialCaseNode::RIGHT_OOB:  distance = Board::WIDTH -  j.position.x; break;
+    case SpecialCaseNode::BOTTOM_OOB: distance = 1 +             j.position.y; break;
+    case SpecialCaseNode::TOP_OOB:    distance = Board::HEIGHT - j.position.y; break;
     default: RC_DEBUG_ASSERT( false ); break;
     }
   } else if ( occ_j == Occupant::OOB ){
     switch( j.special_case ){
-    case SpecialCaseNodes::LEFT_OOB:   distance = 1 +             i.position.x; break;
-    case SpecialCaseNodes::RIGHT_OOB:  distance = Board::WIDTH  - i.position.x; break;
-    case SpecialCaseNodes::BOTTOM_OOB: distance = 1 +             i.position.y; break;
-    case SpecialCaseNodes::TOP_OOB:    distance = Board::HEIGHT - i.position.y; break;
+    case SpecialCaseNode::LEFT_OOB:   distance = 1 +             i.position.x; break;
+    case SpecialCaseNode::RIGHT_OOB:  distance = Board::WIDTH  - i.position.x; break;
+    case SpecialCaseNode::BOTTOM_OOB: distance = 1 +             i.position.y; break;
+    case SpecialCaseNode::TOP_OOB:    distance = Board::HEIGHT - i.position.y; break;
     default: RC_DEBUG_ASSERT( false ); break;
     }
   } else {

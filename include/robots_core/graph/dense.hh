@@ -16,7 +16,7 @@ namespace graph{
 template< unsigned int N, typename Real = float >
 struct DenseGraph {
 
-  static_assert( N >= static_cast<unsigned int>(SpecialCaseNodes::count),
+  static_assert( N >= static_cast<unsigned int>(SpecialCaseNode::count),
     "We need at least enough nodes to cover all of the special cases" );
   
   using X = std::array< std::array< Real, GraphDecorator::F >, N >;
