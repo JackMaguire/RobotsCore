@@ -10,6 +10,7 @@
 #include <robots_core/asserts.hh>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/operators.h>
 
 namespace py = pybind11;
 using namespace robots_core;
@@ -28,10 +29,47 @@ PYBIND11_MODULE(robots_core, m) {
       .value( "OOB", Occupant::OOB )
       ;
 
-    py::class_< Board > b (m, "Board");
+    py::enum_< MoveResult >( m, "MoveResult" )
+      .value( "CONTINUE", MoveResult::CONTINUE )
+      .value( "YOU_LOSE", MoveResult::YOU_LOSE )
+      .value( "YOU_WIN_ROUND", MoveResult::YOU_WIN_ROUND )
+      .value( "YOU_WIN_GAME", MoveResult::YOU_WIN_GAME )
+      ;
+
+    py::class_< Position > p( m, "Position" );
+    p.def( py::init<>() );
+    p.def( py::self + py::self );
+    p.def( py::self - py::self );
+    p.def( py::self == py::self );
+    p.def( py::self != py::self );
+    p.def( "distance", &Position::distance );
+
+    py::class_< Board > b( m, "Board" );
     b.def( py::init<>() );
     b.def( py::init< std::string const & >() );
+
+    //No-verloads
     b.def( "clear_board", &Board::clear_board );
     b.def( "init", &Board::init, py::arg("round") );
+    b.def( "n_robots", &Board::n_robots );
+    b.def( "human_position", &Board::human_position );
+    b.def( "robots", &Board::robots );
+
+    b.def( "cell_is_safe_for_teleport", &Board::cell_is_safe_for_teleport );
+    b.def( "teleport", &Board::teleport );
+    b.def( "move_robots_1_step", &Board::move_robots_1_step );
+    b.def( "move_human", &Board::move_human );
+    b.def( "move_is_safe", &Board::move_is_safe );
+
+    b.def( "get_stringified_representation", &Board::get_stringified_representation );
+    b.def( "load_from_stringified_representation", &Board::load_from_stringified_representation );
+    
+
+    //Overloads
+    b.def( "cell", static_cast< Occupant &( Board::* )( Position const & )>( &Board::cell ) );
+    b.def( "cell", static_cast< Occupant &( Board::* )( int, int )>( &Board::cell ) );
+    //b.def( "move_is_cascade_safe", static_cast< bool( Board::* )( sm_int, sm_int )>( &Board::move_is_cascade_safe ) );
+    //b.def( "move_is_cascade_safe", static_cast< bool( Board::* )( sm_int, sm_int, int & )>( &Board::move_is_cascade_safe ) );
+    b.def( "move_is_cascade_safe", py::overload_cast< sm_int, sm_int >( &Board::move_is_cascade_safe, py::const_ ) );
     
 }
