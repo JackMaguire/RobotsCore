@@ -68,8 +68,22 @@ PYBIND11_MODULE(robots_core, m) {
     //Overloads
     b.def( "cell", static_cast< Occupant &( Board::* )( Position const & )>( &Board::cell ) );
     b.def( "cell", static_cast< Occupant &( Board::* )( int, int )>( &Board::cell ) );
-    //b.def( "move_is_cascade_safe", static_cast< bool( Board::* )( sm_int, sm_int )>( &Board::move_is_cascade_safe ) );
-    //b.def( "move_is_cascade_safe", static_cast< bool( Board::* )( sm_int, sm_int, int & )>( &Board::move_is_cascade_safe ) );
     b.def( "move_is_cascade_safe", py::overload_cast< sm_int, sm_int >( &Board::move_is_cascade_safe, py::const_ ) );
+
+
     
+    //Strategy
+    py::module m_strat = m.def_submodule( "strategy" );
+
+    py::class_< Move > move( m_strat, "Move" );
+    move.def_readwrite( "dx", &Move::dx );
+    move.def_readwrite( "dy", &Move::dy );
+    move.def( "nullop", &Move::nullop );
+    move.def( "set_nullop", &Move::set_nullop );
+
+    m_strat.def( "run_recursive_seach_3", &run_recursive_seach<3> );
+    m_strat.def( "run_recursive_seach_4", &run_recursive_seach<4> );
+    m_strat.def( "run_recursive_seach_5", &run_recursive_seach<5> );
+    m_strat.def( "run_recursive_seach_6", &run_recursive_seach<6> );
+    m_strat.def( "run_recursive_seach_7", &run_recursive_seach<7> );
 }

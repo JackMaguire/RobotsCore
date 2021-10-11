@@ -232,7 +232,7 @@ recursive_search_for_cascade(
   );
 }
 
-template< unsigned int DEPTH, typename Renderer = NullRenderer >
+template< unsigned int DEPTH, typename Renderer >
 bool
 run_recursive_seach(
   RobotsGame & game,
@@ -265,5 +265,16 @@ run_recursive_seach(
 
   return true;
 }
+
+template< unsigned int DEPTH >
+bool
+run_recursive_seach(
+  RobotsGame & game,
+  int const n_tele_desired
+){
+  NullRenderer renderer;
+  return run_recursive_seach< DEPTH >( game, n_tele_desired, renderer );
+}
+
 
 }
