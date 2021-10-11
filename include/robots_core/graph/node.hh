@@ -11,7 +11,7 @@
 namespace robots_core{
 namespace graph{
 
-enum class SpecialCaseNodes : unsigned char {
+enum class SpecialCaseNode : unsigned char {
   Q = 0,
   W,
   E,
@@ -27,27 +27,27 @@ enum class SpecialCaseNodes : unsigned char {
   BOTTOM_OOB,
   
   count, //these should stay at the end
-  none = count //these should stay at the end
+  NONE = count //these should stay at the end
 };
 
 
 struct Node {
   Position position;
-  SpecialCaseNodes special_case = SpecialCaseNodes::none;
+  SpecialCaseNode special_case = SpecialCaseNode::NONE;
 
   int dx() const {
     switch( special_case ){
-    case SpecialCaseNodes::Q:
-    case SpecialCaseNodes::A:
-    case SpecialCaseNodes::Z:
+    case SpecialCaseNode::Q:
+    case SpecialCaseNode::A:
+    case SpecialCaseNode::Z:
       return -1;
-    case SpecialCaseNodes::W:
-    case SpecialCaseNodes::S:
-    case SpecialCaseNodes::X:
+    case SpecialCaseNode::W:
+    case SpecialCaseNode::S:
+    case SpecialCaseNode::X:
       return 0;
-    case SpecialCaseNodes::E:
-    case SpecialCaseNodes::D:
-    case SpecialCaseNodes::C:
+    case SpecialCaseNode::E:
+    case SpecialCaseNode::D:
+    case SpecialCaseNode::C:
       return 1;
     default:
       RC_DEBUG_ASSERT( false );
@@ -56,17 +56,17 @@ struct Node {
 
   int dy() const {
     switch( special_case ){
-    case SpecialCaseNodes::Z:
-    case SpecialCaseNodes::X:
-    case SpecialCaseNodes::C:
+    case SpecialCaseNode::Z:
+    case SpecialCaseNode::X:
+    case SpecialCaseNode::C:
       return -1;
-    case SpecialCaseNodes::A:
-    case SpecialCaseNodes::S:
-    case SpecialCaseNodes::D:
+    case SpecialCaseNode::A:
+    case SpecialCaseNode::S:
+    case SpecialCaseNode::D:
       return 0;
-    case SpecialCaseNodes::Q:
-    case SpecialCaseNodes::W:
-    case SpecialCaseNodes::E:
+    case SpecialCaseNode::Q:
+    case SpecialCaseNode::W:
+    case SpecialCaseNode::E:
       return 1;
     default:
       RC_DEBUG_ASSERT( false );

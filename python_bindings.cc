@@ -108,4 +108,37 @@ PYBIND11_MODULE(robots_core, m) {
 
     //m_strat.def( "stall_for_time", static_cast< bool( RobotsGame & game ) >( &stall_for_time ) )
     m_strat.def( "stall_for_time", &stall_for_time );
+
+
+    //Graph
+    py::module m_graph = m.def_submodule( "graph" );
+
+    py::enum_< graph::SpecialCaseNode >( m_graph, "SpecialCaseNode" )
+      .value( "Q", graph::SpecialCaseNode::Q )
+      .value( "W", graph::SpecialCaseNode::W )
+      .value( "E", graph::SpecialCaseNode::E )
+
+      .value( "A", graph::SpecialCaseNode::A )
+      .value( "S", graph::SpecialCaseNode::S )
+      .value( "D", graph::SpecialCaseNode::D )
+
+      .value( "Z", graph::SpecialCaseNode::Z )
+      .value( "X", graph::SpecialCaseNode::X )
+      .value( "C", graph::SpecialCaseNode::C )
+
+      .value( "LEFT_OOB", graph::SpecialCaseNode::LEFT_OOB )
+      .value( "TOP_OOB", graph::SpecialCaseNode::TOP_OOB )
+      .value( "RIGHT_OOB", graph::SpecialCaseNode::RIGHT_OOB )
+      .value( "BOTTOM_OOB", graph::SpecialCaseNode::BOTTOM_OOB )
+
+      .value( "NONE", graph::SpecialCaseNode::NONE );
+
+    py::class_< graph::Node > node( m_graph, "Node" );
+    node.def_readwrite( "position", &graph::Node::position );
+    node.def_readwrite( "special_case", &graph::Node::special_case );
+
+
+    //py::class_< GraphDecorator > gdec( m_graph, "GraphDecorator" );
+    //gdec.def( "calculate_node", &graph::GraphDecorator::calculate_node );
+    //gdec.def( "calculate_edge", &graph::GraphDecorator::calculate_edge );
 }
