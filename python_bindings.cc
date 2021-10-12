@@ -11,6 +11,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 using namespace robots_core;
@@ -43,6 +44,8 @@ PYBIND11_MODULE(robots_core, m) {
     p.def( py::self == py::self );
     p.def( py::self != py::self );
     p.def( "distance", &Position::distance );
+    p.def_readonly( "x", &Position::x );
+    p.def_readonly( "y", &Position::y );
 
     py::class_< Board > b( m, "Board" );
     b.def( py::init<>() );
