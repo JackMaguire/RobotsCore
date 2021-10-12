@@ -10,7 +10,7 @@ def close( stdscr ):
     curses.endwin()
 
 def draw_board( stdscr, board ):
-    
+
     for i in range( 0, 45 ):
         for j in range( 0, 30 ):
             height = 30 - j
@@ -29,8 +29,8 @@ def draw_board( stdscr, board ):
                 stdscr.addch( height, 2*i, 'R', x )
                 stdscr.addch( height, 2*i+1, 'b', x )
             elif c == Occupant.FIRE:
-                stdscr.addch( height, 2*i, 'E', x )
-                stdscr.addch( height, 2*i+1, 'x', x )
+                stdscr.addch( height, 2*i, 'E', curses.color_pair(2) )
+                stdscr.addch( height, 2*i+1, 'x', curses.color_pair(2) )
             elif c == Occupant.HUMAN:
                 stdscr.addch( height, 2*i, 'M', x | curses.A_BLINK )
                 stdscr.addch( height, 2*i+1, 'e', x | curses.A_BLINK )
@@ -38,7 +38,7 @@ def draw_board( stdscr, board ):
 
 def draw_info( stdscr, game ):
     info = "N Safe Tele: {}   Current round: {}   Score: {}".format( game.n_safe_teleports_remaining(), game.round(), game.score() )
-    stdscr.addstr( 31, 0, info )
+    stdscr.addstr( 31, 0, info, curses.color_pair(1) )
 
 def draw_game( stdscr, game ):
     stdscr.clear()
@@ -122,6 +122,10 @@ if __name__ == '__main__':
     curses.noecho()
     curses.cbreak()
     stdscr.keypad(True)
+
+    curses.start_color()
+    curses.init_pair( 1, curses.COLOR_BLACK, curses.COLOR_GREEN )
+    curses.init_pair( 2, curses.COLOR_BLACK, curses.COLOR_RED )
 
     wrapper(main)
 
