@@ -6,6 +6,7 @@
 #include <robots_core/strategy/stall.hh>
 #include <robots_core/graph/board_as_graph.hh>
 #include <robots_core/graph/dense.hh>
+#include <robots_core/pocket/pocket.hh>
 
 #include <robots_core/asserts.hh>
 
@@ -141,8 +142,37 @@ PYBIND11_MODULE(robots_core, m) {
     node.def_readwrite( "position", &graph::Node::position );
     node.def_readwrite( "special_case", &graph::Node::special_case );
 
+    //Pocket
+    using namespace rocots_core::pocket;
+    py::module m_pocket = m.def_submodule( "pocket" );
 
-    //py::class_< GraphDecorator > gdec( m_graph, "GraphDecorator" );
-    //gdec.def( "calculate_node", &graph::GraphDecorator::calculate_node );
-    //gdec.def( "calculate_edge", &graph::GraphDecorator::calculate_edge );
+    py::enum_< CardinalPost >( m_pocket, "CardinalPost" )
+      .value( "UP", CardinalPost::UP )
+      .value( "DOWN", CardinalPost::DOWN )
+      .value( "LEFT", CardinalPost::LEFT )
+      .value( "RIGHT", CardinalPost::RIGHT )
+      ;
+
+    py::enum_< TerminalType >( m_pocket, "TerminalType" )
+      .value( "OOB", DiagonalQuadrant::OOB )
+      .value( "ROBOT", DiagonalQuadrant::ROBOT )
+      ;
+
+    py::enum_< DiagonalQuadrant >(m_pocket, "DiagonalQuadrant")
+      .value( "UP_RIGHT", DiagonalQuadrant::UP_RIGHT )
+      .value( "UP_LEFT", DiagonalQuadrant::UP_LEFT )
+      .value( "DOWN_LEFT", DiagonalQuadrant::DOWN_LEFT )
+      .value( "DOWN_RIGHT", DiagonalQuadrant::DOWN_RIGHT )
+      ;
+
+    py::class_< Post > post( m_pocket, "Post" );
+    post.def_readonly( "center", &Post::center );
+    post.def_readonly( "cardinal_posts", &Move::cardinal_posts );
+    post.def_readonly( "diagonal_offsets", &Move::diagonal_offsets );
+    
+    m_pocket.def( "find_cardinal_posts", &find_cardinal_posts );
+    m_pocket.def( "calc_up_right_diagonal",
+      &calc_up_right_diagonal );
+    m_pocket.def( "create_pocket", &create_pocket );
+
 }
