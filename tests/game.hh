@@ -40,7 +40,7 @@ struct GameTests {
     assert( g.score() == 3 );
     assert( g.board().n_robots() == 4 );
 
-    GameOverBool const game_over = g.cascade<0>();
+    GameOverBool const game_over = g.cascade();
     assert( not game_over );
 
     assert( g.latest_result() == MoveResult::YOU_WIN_ROUND );

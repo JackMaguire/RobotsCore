@@ -38,11 +38,17 @@ public: //game logic
   GameOverBool
   cascade( Renderer & updater );
 
-  template< unsigned int sleepsize = 0 >
+  GameOverBool
+  cascade(){
+    NullRenderer nr;
+    return cascade< NullRenderer, 0 >( nr );
+  }
+
+  //unique name just to make python bindings easier
   GameOverBool
   renderless_cascade(){  
     NullRenderer nr;
-    return cascade< NullRenderer, sleepsize >( nr );
+    return cascade< NullRenderer, 0 >( nr );
   }
 
   //true if game over
