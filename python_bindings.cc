@@ -84,6 +84,7 @@ PYBIND11_MODULE(robots_core, m) {
     g.def( "board", &RobotsGame::board );
     g.def( "n_safe_teleports_remaining", &RobotsGame::n_safe_teleports_remaining );
     g.def( "round", &RobotsGame::round );
+    g.def( "score", &RobotsGame::score );
     g.def( "latest_result", &RobotsGame::latest_result );
 
     py::class_< ForecastResults > fr( m, "ForecastResults" );
