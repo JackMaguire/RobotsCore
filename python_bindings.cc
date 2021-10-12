@@ -143,7 +143,7 @@ PYBIND11_MODULE(robots_core, m) {
     node.def_readwrite( "special_case", &graph::Node::special_case );
 
     //Pocket
-    using namespace rocots_core::pocket;
+    using namespace robots_core::pocket;
     py::module m_pocket = m.def_submodule( "pocket" );
 
     py::enum_< CardinalPost >( m_pocket, "CardinalPost" )
@@ -154,8 +154,8 @@ PYBIND11_MODULE(robots_core, m) {
       ;
 
     py::enum_< TerminalType >( m_pocket, "TerminalType" )
-      .value( "OOB", DiagonalQuadrant::OOB )
-      .value( "ROBOT", DiagonalQuadrant::ROBOT )
+      .value( "OOB", TerminalType::OOB )
+      .value( "ROBOT", TerminalType::ROBOT )
       ;
 
     py::enum_< DiagonalQuadrant >(m_pocket, "DiagonalQuadrant")
@@ -166,9 +166,14 @@ PYBIND11_MODULE(robots_core, m) {
       ;
 
     py::class_< Post > post( m_pocket, "Post" );
-    post.def_readonly( "center", &Post::center );
-    post.def_readonly( "cardinal_posts", &Move::cardinal_posts );
-    post.def_readonly( "diagonal_offsets", &Move::diagonal_offsets );
+    post.def_readonly( "pos", &Post::pos );
+    post.def_readonly( "type", &Post::type );
+    post.def_readonly( "distance", &Post::distance );
+
+    py::class_< Pocket > pocket( m_pocket, "Pocket" );
+    pocket.def_readonly( "center", &Pocket::center );
+    pocket.def_readonly( "cardinal_posts", &Pocket::cardinal_posts );
+    pocket.def_readonly( "diagonal_offsets", &Pocket::diagonal_offsets );
     
     m_pocket.def( "find_cardinal_posts", &find_cardinal_posts );
     m_pocket.def( "calc_up_right_diagonal",
