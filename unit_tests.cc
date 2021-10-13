@@ -7,6 +7,7 @@
 #include "tests/board.hh" 
 #include "tests/forecasting.hh" 
 #include "tests/game.hh" 
+#include "tests/pocket.hh" 
 
 //Special Test(s):
 #include "tests/test_compile.hh"
@@ -18,4 +19,5 @@ int main(){
   BoardTests::run();
   ForecastingTests::run();
   GameTests::run();
+  PocketTests::run();
 }

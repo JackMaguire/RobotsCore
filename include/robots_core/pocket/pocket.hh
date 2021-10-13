@@ -53,6 +53,10 @@ struct Post {
   Position pos;
   TerminalType type;
   unsigned char distance;
+
+  std::string dist_str() const {
+    return std::to_string( (unsigned int)distance );
+  }
 };
 
 struct Pocket {
@@ -155,13 +159,13 @@ find_cardinal_posts( Board const & b ){
     post.distance = p.x - h.x;
   } //right
 
-  std::cout << "post distances are " << posts[ CardinalPost::UP|0 ].distance << ", " << posts[ CardinalPost::RIGHT|0 ].distance << ", " << posts[ CardinalPost::DOWN|0 ].distance << ", and " << posts[ CardinalPost::LEFT|0 ].distance << std::endl;
+  std::cout << "post distances are " << posts[ CardinalPost::UP|0 ].dist_str() << ", " << posts[ CardinalPost::RIGHT|0 ].dist_str() << ", " << posts[ CardinalPost::DOWN|0 ].dist_str() << ", and " << posts[ CardinalPost::LEFT|0 ].dist_str() << std::endl;
 
   return posts;
 }
 
 unsigned char
-calc_up_right_diagonal(
+calc_up_left_diagonal(
   Board const & b,
   Pocket const & pocket
 ){
@@ -178,21 +182,23 @@ calc_up_right_diagonal(
 	return p.x >= pocket.center.x or
 	  p.y <= pocket.center.y;
       }
-    )
+    ),
+    positions.end()
   );
-  std::cout << positions.size() << "robots in the NW" << std::endl;
+  std::cout << positions.size() << " robots in the NW" << std::endl;
 
   // remove robots that are farther than the posts
-  positions.erase(
+
+  auto rm_iter =
     std::remove_if(
       positions.begin(), 
       positions.end(),
       [&pocket]( Position const & p ){
 	return p.y >= pocket.cardinal_posts[ CardinalPost::UP|0 ].pos.y or p.x <= pocket.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x;
       }
-    )
-  );
-  std::cout << positions.size() << "robots in the NW box" << std::endl;
+    );
+  positions.erase( rm_iter, positions.end() );
+  std::cout << positions.size() << " robots in the NW box" << std::endl;
   
 
   if( positions.empty() ){
@@ -203,8 +209,8 @@ calc_up_right_diagonal(
   std::sort(
     positions.begin(),
     positions.end(),
-    [&pocket]( Position const & a, Position const & b ){
-      return a.distance( pocket.center ) < b.distance( pocket.center );
+    [&pocket]( Position const & a1, Position const & a2 ){
+      return a1.distance( pocket.center ) < a2.distance( pocket.center );
     }    
   );
   Position const closest_robot = * positions.begin();
@@ -213,7 +219,7 @@ calc_up_right_diagonal(
 
   unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y );
 
-  std::cout << "NW offset is " << offset << std::endl;
+  std::cout << "NW offset is " << (int)offset << std::endl;
 
   return offset;
 }
@@ -228,7 +234,7 @@ create_pocket( Board const & b ){
   p.cardinal_posts = find_cardinal_posts( b );
 
   //Step 2: find diagonals
-  
+  p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] = calc_up_left_diagonal( b, p );
 
   return p;
 }

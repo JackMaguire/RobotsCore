@@ -176,8 +176,6 @@ PYBIND11_MODULE(robots_core, m) {
     pocket.def_readonly( "diagonal_offsets", &Pocket::diagonal_offsets );
     
     m_pocket.def( "find_cardinal_posts", &find_cardinal_posts );
-    m_pocket.def( "calc_up_right_diagonal",
-      &calc_up_right_diagonal );
     m_pocket.def( "create_pocket", &create_pocket );
 
 }
