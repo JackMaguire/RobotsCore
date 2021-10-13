@@ -1,4 +1,5 @@
-from robots_core import Board, RobotsGame, Occupant
+from robots_core import Board, RobotsGame, Occupant, Position
+from robots_core.pocket import create_pocket
 
 import curses
 from curses import wrapper
@@ -39,11 +40,22 @@ def draw_board( stdscr, board ):
                 stdscr.addch( height, 2*i+1, 'e', curses.color_pair(84) )
             
 
+def draw_pocket( stdscr, board ):
+
+    pocket = create_pocket( board )
+
+    for i in range( 0, 45 ):
+        for j in range( 0, 30 ):
+            height = 30 - j
+            if pocket.position_is_in_pocket( Position.create( i, j ) ):
+                stdscr.addch( height, 2*i+1, 'P', curses.color_pair(99) )         
+
+
 def draw_info( stdscr, game ):
     info = "N Safe Tele: {}   Current round: {}   Score: {}".format( game.n_safe_teleports_remaining(), game.round(), game.score() )
     stdscr.addstr( 31, 0, info, curses.color_pair(84) )
 
-def draw_game( stdscr, game ):
+def draw_game( stdscr, game, show_pocket ):
     stdscr.clear()
     curses.start_color()
     #box1 = stdscr.subwin( 30, 45*2, 0, 0 )
@@ -52,18 +64,20 @@ def draw_game( stdscr, game ):
     draw_board( stdscr, game.board() )
     draw_info( stdscr, game )
 
+    if show_pocket:
+        draw_pocket( stdscr, game.board() )
+        pass
     
-    
-
 def main( stdscr ):
     # Clear screen
     stdscr.clear()
     stdscr.border(0)
 
     game = RobotsGame()
+    show_pocket = False
 
     # This raises ZeroDivisionError when i == 10.
-    draw_game( stdscr, game )
+    draw_game( stdscr, game, show_pocket )
 
     while True:
         stdscr.refresh()
@@ -72,47 +86,50 @@ def main( stdscr ):
         if k in ( 'Q', 'q' ):
             game_over = game.move_human( -1, 1 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'W', 'w' ):
             game_over = game.move_human( 0, 1 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'E', 'e' ):
             game_over = game.move_human( 1, 1 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'A', 'a' ):
             game_over = game.move_human( -1, 0 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'S', 's' ):
             game_over = game.move_human( 0, 0 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'D', 'd' ):
             game_over = game.move_human( 1, 0 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'Z', 'z' ):
             game_over = game.move_human( -1, -1 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'X', 'x' ):
             game_over = game.move_human( 0, -1 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'C', 'c' ):
             game_over = game.move_human( 1, -1 )
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( 'T', 't' ):
             game_over = game.teleport()
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
         elif k in ( ' ', ';' ):
             game_over = game.cascade()
             if( game_over ): return
-            draw_game( stdscr, game )
+            draw_game( stdscr, game, show_pocket )
+        elif k == '1':
+            show_pocket = not show_pocket
+            draw_game( stdscr, game, show_pocket )
         elif k in ( '~' ):
             return
         else:

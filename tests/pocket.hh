@@ -186,6 +186,11 @@ struct PocketTests {
     assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 17 );
     assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 1 );
 
+    assert( p.distance_from_pocket( p.center ) == 0 );
+
+    std::cout << "!!! " << (int) p.distance_from_pocket( p.center + Position({1,0}) ) << std::endl;
+    assert( p.distance_from_pocket( p.center + Position({1,0}) ) == 1 );
+
     return true;
   }
 

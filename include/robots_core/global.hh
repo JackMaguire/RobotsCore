@@ -70,6 +70,11 @@ struct Position {
     return sqrt( diff.x*diff.x + diff.y*diff.y );
   }
 
+  //For python:
+  static Position create( sm_int x_in, sm_int y_in ){
+    return Position({x_in, y_in});
+  }
+
 };
 
 } // namespace robots_core

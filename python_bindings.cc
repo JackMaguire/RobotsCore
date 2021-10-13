@@ -40,11 +40,13 @@ PYBIND11_MODULE(robots_core, m) {
 
     py::class_< Position > p( m, "Position" );
     p.def( py::init<>() );
+    p.def( py::init<>() );
     p.def( py::self + py::self );
     p.def( py::self - py::self );
     p.def( py::self == py::self );
     p.def( py::self != py::self );
     p.def( "distance", &Position::distance );
+    p.def( "create", &Position::create );
     p.def_readonly( "x", &Position::x );
     p.def_readonly( "y", &Position::y );
 
@@ -174,6 +176,8 @@ PYBIND11_MODULE(robots_core, m) {
     pocket.def_readonly( "center", &Pocket::center );
     pocket.def_readonly( "cardinal_posts", &Pocket::cardinal_posts );
     pocket.def_readonly( "diagonal_offsets", &Pocket::diagonal_offsets );
+    pocket.def( "distance_from_pocket", &Pocket::distance_from_pocket );
+    pocket.def( "position_is_in_pocket", &Pocket::position_is_in_pocket );
     
     m_pocket.def( "find_cardinal_posts", &find_cardinal_posts );
     m_pocket.def( "create_pocket", &create_pocket );

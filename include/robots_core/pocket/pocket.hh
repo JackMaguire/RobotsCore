@@ -60,14 +60,69 @@ struct Post {
 };
 
 struct Pocket {
-
   Position center;
-
   std::array< Post, 4 > cardinal_posts;
-
   std::array< unsigned char, 4 > diagonal_offsets;
 
+  unsigned char distance_from_pocket( Position const & p ) const;
+
+  bool position_is_in_pocket( Position const & p ) const {
+    return distance_from_pocket( p ) == 0;
+  }
 };
+
+unsigned char
+Pocket::distance_from_pocket( Position const & p ) const {
+  using Card = CardinalPost;
+  using Quad = DiagonalQuadrant;
+
+  if( p.x == center.x ){
+    if( p.y >= cardinal_posts[ Card::DOWN|0 ].pos.y and
+      p.y <= cardinal_posts[ Card::UP|0 ].pos.y ) {
+      return 0;
+    } else if( p.y < cardinal_posts[ Card::DOWN|0 ].pos.y ){
+      return std::abs( p.y - cardinal_posts[ Card::DOWN|0 ].pos.y );
+    } else {
+      return std::abs( p.y - cardinal_posts[ Card::UP|0 ].pos.y );
+    }
+  }
+
+  if( p.y == center.y ){
+    if( p.x >= cardinal_posts[ Card::LEFT|0 ].pos.x and
+      p.x <= cardinal_posts[ Card::RIGHT|0 ].pos.x ){
+      return 0;
+    } else if( p.x < cardinal_posts[ Card::LEFT|0 ].pos.x ){
+      return std::abs( p.x - cardinal_posts[ Card::LEFT|0 ].pos.x );
+    } else {
+      return std::abs( p.x - cardinal_posts[ Card::RIGHT|0 ].pos.x );
+    }
+  }
+
+  unsigned char const offset =
+    std::abs( p.x - center.x ) + std::abs( p.y - center.y );
+
+  auto && compare =
+    [offset]( unsigned char const a ) -> unsigned char {
+      if( a <= offset ) return 0;
+      else return a - offset;
+    };
+
+  if( p.x < center.x and p.y < center.y ){ //DOWN_LEFT
+    return compare( diagonal_offsets[ Quad::DOWN_LEFT|0 ] );
+  }
+
+  if( p.x > center.x and p.y < center.y ){ //DOWN_RIGHT
+    return compare( diagonal_offsets[ Quad::DOWN_RIGHT|0 ] );
+  }
+
+  if( p.x > center.x and p.y > center.y ){ //UP_RIGHT
+    return compare( diagonal_offsets[ Quad::UP_RIGHT|0 ] );
+  }
+
+  //if( p.x < center.x and p.y > center.y ){ //UP_LEFT
+  return compare( diagonal_offsets[ Quad::UP_LEFT|0 ] );
+  //}
+}
 
 std::array< Post, 4 >
 find_cardinal_posts( Board const & b ){
