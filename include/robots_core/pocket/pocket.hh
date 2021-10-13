@@ -212,7 +212,7 @@ calc_up_left_diagonal(
   );
   Position const closest_robot = * positions.begin();
 
-  unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y );
+  unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y ) - 1;
 
   return offset;
 }
