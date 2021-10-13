@@ -219,7 +219,7 @@ calc_up_left_diagonal(
 
 template< typename QC, typename BC >
 unsigned char
-calc_up_diagonal(
+calc_diagonal(
   Board const & b,
   Pocket const & pocket,
   QC && quadrant_check,
@@ -270,59 +270,62 @@ create_pocket( Board const & b ){
 
   //Step 1: find 4 cardinal posts
   pocket.cardinal_posts = find_cardinal_posts( b );
+  //For more readable code:
+  auto const & posts = pocket.cardinal_posts;
+  using CP = CardinalPost;
 
   //Step 2: find diagonals
   pocket.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] =
-    calc_up_diagonal(
+    calc_diagonal(
       b,
       pocket,
       [&pocket]( Position const & pos ){
 	return pos.x >= pocket.center.x or pos.y <= pocket.center.y;
       },
       [&pocket]( Position const & pos ){
-	return pos.y >= pocket.cardinal_posts[ CardinalPost::UP|0 ].pos.y or pos.x <= pocket.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x;
+	return pos.y >= posts[ CP::UP|0 ].pos.y or pos.x <= posts[ CP::LEFT|0 ].pos.x;
       },
-      pocket.cardinal_posts[ CardinalPost::UP|0 ].distance + pocket.cardinal_posts[ CardinalPost::LEFT|0 ].distance
+      posts[ CP::UP|0 ].distance + posts[ CP::LEFT|0 ].distance
     );
   //assert( pocket.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == calc_up_left_diagonal( b, p ) );
 
   pocket.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] =
-    calc_up_diagonal(
+    calc_diagonal(
       b,
       pocket,
       [&pocket]( Position const & pos ){
 	return pos.x <= pocket.center.x or pos.y <= pocket.center.y;
       },
       [&pocket]( Position const & pos ){
-	return pos.y >= pocket.cardinal_posts[ CardinalPost::UP|0 ].pos.y or pos.x >= pocket.cardinal_posts[ CardinalPost::RIGHT|0 ].pos.x;
+	return pos.y >= posts[ CP::UP|0 ].pos.y or pos.x >= posts[ CP::RIGHT|0 ].pos.x;
       },
-      pocket.cardinal_posts[ CardinalPost::UP|0 ].distance + pocket.cardinal_posts[ CardinalPost::RIGHT|0 ].distance
+      posts[ CP::UP|0 ].distance + posts[ CP::RIGHT|0 ].distance
     );
 
   pocket.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] =
-    calc_up_diagonal(
+    calc_diagonal(
       b,
       pocket,
       [&pocket]( Position const & pos ){
 	return pos.x <= pocket.center.x or pos.y >= pocket.center.y;
       },
       [&pocket]( Position const & pos ){
-	return pos.y <= pocket.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y or pos.x >= pocket.cardinal_posts[ CardinalPost::RIGHT|0 ].pos.x;
+	return pos.y <= posts[ CP::DOWN|0 ].pos.y or pos.x >= posts[ CP::RIGHT|0 ].pos.x;
       },
-      pocket.cardinal_posts[ CardinalPost::DOWN|0 ].distance + pocket.cardinal_posts[ CardinalPost::RIGHT|0 ].distance
+      posts[ CP::DOWN|0 ].distance + posts[ CP::RIGHT|0 ].distance
     );
 
   pocket.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] =
-    calc_up_diagonal(
+    calc_diagonal(
       b,
       pocket,
       [&pocket]( Position const & pos ){
 	return pos.x >= pocket.center.x or pos.y >= pocket.center.y;
       },
       [&pocket]( Position const & pos ){
-	return pos.y <= pocket.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y or pos.x <= pocket.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x;
+	return pos.y <= posts[ CP::DOWN|0 ].pos.y or pos.x <= posts[ CP::LEFT|0 ].pos.x;
       },
-      pocket.cardinal_posts[ CardinalPost::DOWN|0 ].distance + pocket.cardinal_posts[ CardinalPost::LEFT|0 ].distance
+      posts[ CP::DOWN|0 ].distance + posts[ CP::LEFT|0 ].distance
     );
 
   return pocket;
