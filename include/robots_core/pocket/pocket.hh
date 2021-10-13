@@ -8,6 +8,11 @@
 namespace robots_core {
 namespace pocket {
 
+unsigned char
+diff( unsigned char const a, unsigned char const b ){
+  return std::max( a, b ) - std::min( a, b );
+}
+
 enum class CardinalPost : unsigned char
   {
    UP,
@@ -90,9 +95,9 @@ Pocket::distance_from_pocket( Position const & p ) const {
     if( p.y >= DownY and p.y <= UpY ) {
       return 0;
     } else if( p.y < DownY ){
-      return std::abs( p.y - DownY );
+      return diff( p.y, DownY );
     } else {
-      return std::abs( p.y - UpY );
+      return diff( p.y, UpY );
     }
   }
 
@@ -100,19 +105,19 @@ Pocket::distance_from_pocket( Position const & p ) const {
     if( p.x >= LeftX and p.x <= RightX ){
       return 0;
     } else if( p.x < LeftX ){
-      return std::abs( p.x - LeftX );
+      return diff( p.x, LeftX );
     } else {
-      return std::abs( p.x - RightX );
+      return diff( p.x, RightX );
     }
   }
 
   unsigned char const offset =
-    std::abs( p.x - center.x ) + std::abs( p.y - center.y );
+    diff( p.x, center.x ) + diff( p.y, center.y );
 
   auto && compare =
     [offset]( unsigned char const a ) -> unsigned char {
       if( offset < a ) return 0;
-      else return offset - a;
+      else return offset - a + 1;
     };
 
   if( p.x < center.x and p.y < center.y ){ //DOWN_LEFT
