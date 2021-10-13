@@ -256,7 +256,7 @@ calc_diagonal(
   );
   Position const closest_robot = * positions.begin();
 
-  unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y );
+  unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y ) - 1;
 
   return offset;
 }
@@ -279,10 +279,10 @@ create_pocket( Board const & b ){
     calc_diagonal(
       b,
       pocket,
-      [&pocket]( Position const & pos ){
+      [&pocket,&posts]( Position const & pos ){
 	return pos.x >= pocket.center.x or pos.y <= pocket.center.y;
       },
-      [&pocket]( Position const & pos ){
+      [&pocket,&posts]( Position const & pos ){
 	return pos.y >= posts[ CP::UP|0 ].pos.y or pos.x <= posts[ CP::LEFT|0 ].pos.x;
       },
       posts[ CP::UP|0 ].distance + posts[ CP::LEFT|0 ].distance
@@ -293,10 +293,10 @@ create_pocket( Board const & b ){
     calc_diagonal(
       b,
       pocket,
-      [&pocket]( Position const & pos ){
+      [&pocket,&posts]( Position const & pos ){
 	return pos.x <= pocket.center.x or pos.y <= pocket.center.y;
       },
-      [&pocket]( Position const & pos ){
+      [&pocket,&posts]( Position const & pos ){
 	return pos.y >= posts[ CP::UP|0 ].pos.y or pos.x >= posts[ CP::RIGHT|0 ].pos.x;
       },
       posts[ CP::UP|0 ].distance + posts[ CP::RIGHT|0 ].distance
@@ -306,10 +306,10 @@ create_pocket( Board const & b ){
     calc_diagonal(
       b,
       pocket,
-      [&pocket]( Position const & pos ){
+      [&pocket,&posts]( Position const & pos ){
 	return pos.x <= pocket.center.x or pos.y >= pocket.center.y;
       },
-      [&pocket]( Position const & pos ){
+      [&pocket,&posts]( Position const & pos ){
 	return pos.y <= posts[ CP::DOWN|0 ].pos.y or pos.x >= posts[ CP::RIGHT|0 ].pos.x;
       },
       posts[ CP::DOWN|0 ].distance + posts[ CP::RIGHT|0 ].distance
@@ -319,10 +319,10 @@ create_pocket( Board const & b ){
     calc_diagonal(
       b,
       pocket,
-      [&pocket]( Position const & pos ){
+      [&pocket,&posts]( Position const & pos ){
 	return pos.x >= pocket.center.x or pos.y >= pocket.center.y;
       },
-      [&pocket]( Position const & pos ){
+      [&pocket,&posts]( Position const & pos ){
 	return pos.y <= posts[ CP::DOWN|0 ].pos.y or pos.x <= posts[ CP::LEFT|0 ].pos.x;
       },
       posts[ CP::DOWN|0 ].distance + posts[ CP::LEFT|0 ].distance
