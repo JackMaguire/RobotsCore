@@ -55,6 +55,9 @@ struct PocketTests {
     }
 
     assert( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 9 );
+    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 2 );
+    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 10 );
+    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 3 );
 
     return true;
   }
