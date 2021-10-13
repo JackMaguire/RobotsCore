@@ -81,7 +81,10 @@ Pocket::distance_from_pocket( Position const & p ) const {
   unsigned char const UpY = cardinal_posts[ Card::UP|0 ].pos.y;
   unsigned char const DownY = cardinal_posts[ Card::DOWN|0 ].pos.y;
 
-  //if( p.x >= RightX )
+  /*if( p.x >= RightX ) return p.x - RightX;
+  if( p.x <= LeftX ) return LeftX - p.x;
+  if( p.y >= UpY ) return p.y - UpY;
+  if( p.y <= DownY ) return DownY - p.y;*/
 
   if( p.x == center.x ){
     if( p.y >= DownY and p.y <= UpY ) {
