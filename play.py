@@ -130,6 +130,8 @@ def main( stdscr ):
         elif k == '1':
             show_pocket = not show_pocket
             draw_game( stdscr, game, show_pocket )
+        elif k == '2':
+            raise Exception( game.board().get_stringified_representation() )
         elif k in ( '~' ):
             return
         else:

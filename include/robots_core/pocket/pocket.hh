@@ -76,25 +76,30 @@ Pocket::distance_from_pocket( Position const & p ) const {
   using Card = CardinalPost;
   using Quad = DiagonalQuadrant;
 
+  unsigned char const RightX = cardinal_posts[ Card::RIGHT|0 ].pos.x;
+  unsigned char const LeftX = cardinal_posts[ Card::LEFT|0 ].pos.x;
+  unsigned char const UpY = cardinal_posts[ Card::UP|0 ].pos.y;
+  unsigned char const DownY = cardinal_posts[ Card::DOWN|0 ].pos.y;
+
+  //if( p.x >= RightX )
+
   if( p.x == center.x ){
-    if( p.y >= cardinal_posts[ Card::DOWN|0 ].pos.y and
-      p.y <= cardinal_posts[ Card::UP|0 ].pos.y ) {
+    if( p.y >= DownY and p.y <= UpY ) {
       return 0;
-    } else if( p.y < cardinal_posts[ Card::DOWN|0 ].pos.y ){
-      return std::abs( p.y - cardinal_posts[ Card::DOWN|0 ].pos.y );
+    } else if( p.y < DownY ){
+      return std::abs( p.y - DownY );
     } else {
-      return std::abs( p.y - cardinal_posts[ Card::UP|0 ].pos.y );
+      return std::abs( p.y - UpY );
     }
   }
 
   if( p.y == center.y ){
-    if( p.x >= cardinal_posts[ Card::LEFT|0 ].pos.x and
-      p.x <= cardinal_posts[ Card::RIGHT|0 ].pos.x ){
+    if( p.x >= LeftX and p.x <= RightX ){
       return 0;
-    } else if( p.x < cardinal_posts[ Card::LEFT|0 ].pos.x ){
-      return std::abs( p.x - cardinal_posts[ Card::LEFT|0 ].pos.x );
+    } else if( p.x < LeftX ){
+      return std::abs( p.x - LeftX );
     } else {
-      return std::abs( p.x - cardinal_posts[ Card::RIGHT|0 ].pos.x );
+      return std::abs( p.x - RightX );
     }
   }
 
@@ -103,8 +108,8 @@ Pocket::distance_from_pocket( Position const & p ) const {
 
   auto && compare =
     [offset]( unsigned char const a ) -> unsigned char {
-      if( a <= offset ) return 0;
-      else return a - offset;
+      if( offset < a ) return 0;
+      else return offset - a;
     };
 
   if( p.x < center.x and p.y < center.y ){ //DOWN_LEFT
