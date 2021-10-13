@@ -159,7 +159,7 @@ find_cardinal_posts( Board const & b ){
     post.distance = p.x - h.x;
   } //right
 
-  std::cout << "post distances are " << posts[ CardinalPost::UP|0 ].dist_str() << ", " << posts[ CardinalPost::RIGHT|0 ].dist_str() << ", " << posts[ CardinalPost::DOWN|0 ].dist_str() << ", and " << posts[ CardinalPost::LEFT|0 ].dist_str() << std::endl;
+  //std::cout << "post distances are " << posts[ CardinalPost::UP|0 ].dist_str() << ", " << posts[ CardinalPost::RIGHT|0 ].dist_str() << ", " << posts[ CardinalPost::DOWN|0 ].dist_str() << ", and " << posts[ CardinalPost::LEFT|0 ].dist_str() << std::endl;
 
   return posts;
 }
@@ -185,7 +185,6 @@ calc_up_left_diagonal(
     ),
     positions.end()
   );
-  std::cout << positions.size() << " robots in the NW" << std::endl;
 
   // remove robots that are farther than the posts
 
@@ -197,9 +196,7 @@ calc_up_left_diagonal(
 	return p.y >= pocket.cardinal_posts[ CardinalPost::UP|0 ].pos.y or p.x <= pocket.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x;
       }
     );
-  positions.erase( rm_iter, positions.end() );
-  std::cout << positions.size() << " robots in the NW box" << std::endl;
-  
+  positions.erase( rm_iter, positions.end() );  
 
   if( positions.empty() ){
     return pocket.cardinal_posts[ CardinalPost::UP|0 ].distance + pocket.cardinal_posts[ CardinalPost::LEFT|0 ].distance;
@@ -215,28 +212,120 @@ calc_up_left_diagonal(
   );
   Position const closest_robot = * positions.begin();
 
-  std::cout << "Closest robot in the NW is " << closest_robot.distance( pocket.center ) << " spaces away from the human" << std::endl;
-
   unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y );
-
-  std::cout << "NW offset is " << (int)offset << std::endl;
 
   return offset;
 }
 
+template< typename QC, typename BC >
+unsigned char
+calc_up_diagonal(
+  Board const & b,
+  Pocket const & pocket,
+  QC && quadrant_check,
+  BC && box_check,
+  unsigned char const max_dist
+){
+  // get_all_robots
+  Board::PositionVec positions = b.robots();
+
+  // erasing in rounds for the sake of sanity checking
+  // remove robots in incorrect quandrants
+  positions.erase(
+    std::remove_if( positions.begin(), positions.end(), quadrant_check ),
+    positions.end()
+  );
+
+  // remove robots that are farther than the posts
+  positions.erase(
+    std::remove_if( positions.begin(), positions.end(), box_check ),
+    positions.end()
+  );
+
+  if( positions.empty() ){
+    return max_dist;
+  }
+  
+  //get closest Robot
+  std::sort(
+    positions.begin(),
+    positions.end(),
+    [&pocket]( Position const & a1, Position const & a2 ){
+      return a1.distance( pocket.center ) < a2.distance( pocket.center );
+    }    
+  );
+  Position const closest_robot = * positions.begin();
+
+  unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y );
+
+  return offset;
+}
+
+
 Pocket
 create_pocket( Board const & b ){
 
-  Pocket p;
-  p.center = b.human_position();
+  Pocket pocket;
+  pocket.center = b.human_position();
 
   //Step 1: find 4 cardinal posts
-  p.cardinal_posts = find_cardinal_posts( b );
+  pocket.cardinal_posts = find_cardinal_posts( b );
 
   //Step 2: find diagonals
-  p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] = calc_up_left_diagonal( b, p );
+  pocket.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] =
+    calc_up_diagonal(
+      b,
+      pocket,
+      [&pocket]( Position const & pos ){
+	return pos.x >= pocket.center.x or pos.y <= pocket.center.y;
+      },
+      [&pocket]( Position const & pos ){
+	return pos.y >= pocket.cardinal_posts[ CardinalPost::UP|0 ].pos.y or pos.x <= pocket.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x;
+      },
+      pocket.cardinal_posts[ CardinalPost::UP|0 ].distance + pocket.cardinal_posts[ CardinalPost::LEFT|0 ].distance
+    );
+  //assert( pocket.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == calc_up_left_diagonal( b, p ) );
 
-  return p;
+  pocket.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] =
+    calc_up_diagonal(
+      b,
+      pocket,
+      [&pocket]( Position const & pos ){
+	return pos.x <= pocket.center.x or pos.y <= pocket.center.y;
+      },
+      [&pocket]( Position const & pos ){
+	return pos.y >= pocket.cardinal_posts[ CardinalPost::UP|0 ].pos.y or pos.x >= pocket.cardinal_posts[ CardinalPost::RIGHT|0 ].pos.x;
+      },
+      pocket.cardinal_posts[ CardinalPost::UP|0 ].distance + pocket.cardinal_posts[ CardinalPost::RIGHT|0 ].distance
+    );
+
+  pocket.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] =
+    calc_up_diagonal(
+      b,
+      pocket,
+      [&pocket]( Position const & pos ){
+	return pos.x <= pocket.center.x or pos.y >= pocket.center.y;
+      },
+      [&pocket]( Position const & pos ){
+	return pos.y <= pocket.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y or pos.x >= pocket.cardinal_posts[ CardinalPost::RIGHT|0 ].pos.x;
+      },
+      pocket.cardinal_posts[ CardinalPost::DOWN|0 ].distance + pocket.cardinal_posts[ CardinalPost::RIGHT|0 ].distance
+    );
+
+  pocket.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] =
+    calc_up_diagonal(
+      b,
+      pocket,
+      [&pocket]( Position const & pos ){
+	return pos.x >= pocket.center.x or pos.y >= pocket.center.y;
+      },
+      [&pocket]( Position const & pos ){
+	return pos.y <= pocket.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y or pos.x <= pocket.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x;
+      },
+      pocket.cardinal_posts[ CardinalPost::DOWN|0 ].distance + pocket.cardinal_posts[ CardinalPost::LEFT|0 ].distance
+    );
+
+  return pocket;
 }
 
 } //namespace pocket
