@@ -171,6 +171,7 @@ PYBIND11_MODULE(robots_core, m) {
     pocket.def_readonly( "cardinal_posts", &Pocket::cardinal_posts );
     pocket.def_readonly( "diagonal_offsets", &Pocket::diagonal_offsets );
     pocket.def( "contains_position", &Pocket::contains_position );
+    pocket.def( "contains_position_within_window", &Pocket::contains_position_within_window );
     
     m_pocket.def( "find_cardinal_posts", &find_cardinal_posts );
     m_pocket.def( "create_pocket", &create_pocket );

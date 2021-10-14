@@ -113,6 +113,8 @@ struct Pocket {
   }
 
   bool contains_position( Position const & pos ) const;
+
+  bool contains_position_within_window( Position const & pos, uint8_t const window ) const;
 };
 
 bool
@@ -149,6 +151,50 @@ Pocket::contains_position( Position const & pos ) const{
 
   return true;
 }
+
+bool
+Pocket::contains_position_within_window(
+  Position const & pos,
+  uint8_t const window
+) const{
+
+  if( pos.x > right().pos.x + window ) return false;
+  if( pos.x <  left().pos.x - window ) return false;
+  if( pos.y >    up().pos.y + window ) return false;
+  if( pos.y <  down().pos.y - window ) return false;
+
+  if( pos.x >= center.x-window and pos.x <= center.x+window ){
+    return pos.y <=    up().pos.y + window
+      and  pos.y >=  down().pos.y - window;
+  }
+  if( pos.y >= center.y-window and pos.y <= center.y+window ){
+    return pos.x <=  right().pos.x + window
+      and  pos.x >=   left().pos.x - window;
+  }
+
+  uint8_t const offset =
+    diff( pos.x, center.x ) + diff( pos.y, center.y );
+
+
+  if( pos.x < center.x and pos.y < center.y ){
+    return offset <= SW_offset() + window;
+  }
+
+  if( pos.x < center.x and pos.y > center.y ){
+    return offset <= NW_offset() + window;
+  }
+
+  if( pos.x > center.x and pos.y < center.y ){
+    return offset <= SE_offset() + window;
+  }
+
+  if( pos.x > center.x and pos.y > center.y ){
+    return offset <= NE_offset() + window;
+  }
+
+  return true;
+}
+
 
 std::array< Post, 4 >
 find_cardinal_posts( Board const & b ){
@@ -291,61 +337,58 @@ create_pocket( Board const & b ){
 
   //Step 1: find 4 cardinal posts
   pocket.cardinal_posts = find_cardinal_posts( b );
-  //For more readable code:
-  auto const & posts = pocket.cardinal_posts;
-  using CP = CardinalPost;
 
   //Step 2: find diagonals
   pocket.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] =
     calc_diagonal(
       b,
       pocket,
-      [&pocket,&posts]( Position const & pos ){
+      [&pocket]( Position const & pos ){
 	return pos.x >= pocket.center.x or pos.y <= pocket.center.y;
       },
-      [&pocket,&posts]( Position const & pos ){
-	return pos.y > posts[ CP::UP|0 ].pos.y or pos.x < posts[ CP::LEFT|0 ].pos.x;
+      [&pocket]( Position const & pos ){
+	return pos.y > pocket.up().pos.y or pos.x < pocket.left().pos.x;
       },
-      posts[ CP::UP|0 ].distance + posts[ CP::LEFT|0 ].distance
+      pocket.up().distance + pocket.left().distance
     );
 
   pocket.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] =
     calc_diagonal(
       b,
       pocket,
-      [&pocket,&posts]( Position const & pos ){
+      [&pocket]( Position const & pos ){
 	return pos.x <= pocket.center.x or pos.y <= pocket.center.y;
       },
-      [&pocket,&posts]( Position const & pos ){
-	return pos.y > posts[ CP::UP|0 ].pos.y or pos.x > posts[ CP::RIGHT|0 ].pos.x;
+      [&pocket]( Position const & pos ){
+	return pos.y > pocket.up().pos.y or pos.x > pocket.right().pos.x;
       },
-      posts[ CP::UP|0 ].distance + posts[ CP::RIGHT|0 ].distance
+      pocket.up().distance + pocket.right().distance
     );
 
   pocket.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] =
     calc_diagonal(
       b,
       pocket,
-      [&pocket,&posts]( Position const & pos ){
+      [&pocket]( Position const & pos ){
 	return pos.x <= pocket.center.x or pos.y >= pocket.center.y;
       },
-      [&pocket,&posts]( Position const & pos ){
-	return pos.y < posts[ CP::DOWN|0 ].pos.y or pos.x > posts[ CP::RIGHT|0 ].pos.x;
+      [&pocket]( Position const & pos ){
+	return pos.y < pocket.down().pos.y or pos.x > pocket.right().pos.x;
       },
-      posts[ CP::DOWN|0 ].distance + posts[ CP::RIGHT|0 ].distance
+      pocket.down().distance + pocket.right().distance
     );
 
   pocket.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] =
     calc_diagonal(
       b,
       pocket,
-      [&pocket,&posts]( Position const & pos ){
+      [&pocket]( Position const & pos ){
 	return pos.x >= pocket.center.x or pos.y >= pocket.center.y;
       },
-      [&pocket,&posts]( Position const & pos ){
-	return pos.y < posts[ CP::DOWN|0 ].pos.y or pos.x < posts[ CP::LEFT|0 ].pos.x;
+      [&pocket]( Position const & pos ){
+	return pos.y < pocket.down().pos.y or pos.x < pocket.left().pos.x;
       },
-      posts[ CP::DOWN|0 ].distance + posts[ CP::LEFT|0 ].distance
+      pocket.down().distance + pocket.left().distance
     );
 
   //Resize Posts

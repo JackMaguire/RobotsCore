@@ -76,8 +76,9 @@ def draw_pocket( stdscr, board ):
             height = 30 - j
             p = Position.create(i,j)
             if pocket.contains_position( p ):
-            #if distances[i][j] == 0:
-                stdscr.addch( height, 2*i+1, 'P', curses.color_pair(99) )         
+                stdscr.addch( height, 2*i+1, 'P', curses.color_pair(99) )
+            elif pocket.contains_position_within_window(p, 3):
+                stdscr.addch( height, 2*i+1, 'P', curses.color_pair(150) )
 
 def draw_posts( stdscr, board ):
     pocket = create_pocket( board )
