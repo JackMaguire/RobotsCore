@@ -547,21 +547,47 @@ create_pocket( Board const & b ){
     );
 
   //Resize Posts
-  pocket.up().distance =
-    std::max( pocket.NW_offset(), pocket.NE_offset() );
-  pocket.up().pos.y = pocket.center.y + pocket.up().distance;
+  //pocket.up().distance = std::max({ pocket.NW_offset(), pocket.NE_offset(), pocket.up().distance });
+  { //UP
+    auto candidate = std::max( pocket.NW_offset(), pocket.NE_offset() );
+    if( pocket.up().distance > candidate ){
+      pocket.up().distance = candidate;
+      pocket.up().pos.y = pocket.center.y + candidate;
+    }
+  }
 
-  pocket.down().distance =
-    std::max( pocket.SW_offset(), pocket.SE_offset() );
-  pocket.down().pos.y = pocket.center.y - pocket.down().distance;
+  { //DOWN
+    auto candidate = std::max( pocket.SW_offset(), pocket.SE_offset() );
+    if( pocket.down().distance > candidate ){
+      pocket.down().distance = candidate;
+      pocket.down().pos.y = pocket.center.y - candidate;
+    }
+  }
 
-  pocket.left().distance =
-    std::max( pocket.SW_offset(), pocket.NW_offset() );
-  pocket.left().pos.x = pocket.center.x - pocket.left().distance;
+  { //LEFT
+    auto candidate = std::max( pocket.SW_offset(), pocket.NW_offset() );
+    if( pocket.left().distance > candidate ){
+      pocket.left().distance = candidate;
+      pocket.left().pos.x = pocket.center.x - candidate;
+    }
+  }
 
-  pocket.right().distance =
-    std::max( pocket.SE_offset(), pocket.NE_offset() );
-  pocket.right().pos.x = pocket.center.x + pocket.right().distance;
+  { //RIGHT
+    auto candidate = std::max( pocket.SE_offset(), pocket.NE_offset() );
+    if( pocket.right().distance > candidate ){
+      pocket.right().distance = candidate;
+      pocket.right().pos.x = pocket.center.x + candidate;
+    }
+  }
+
+  //pocket.down().distance = std::max({ pocket.SW_offset(), pocket.SE_offset(), pocket.down().distance });
+  //pocket.down().pos.y = pocket.center.y - pocket.down().distance;
+
+  //pocket.left().distance = std::max({ pocket.SW_offset(), pocket.NW_offset(), pocket.left().distance });
+  //pocket.left().pos.x = pocket.center.x - pocket.left().distance;
+
+  //pocket.right().distance = std::max({ pocket.SE_offset(), pocket.NE_offset(), pocket.right().distance });
+  //pocket.right().pos.x = pocket.center.x + pocket.right().distance;
 
   return pocket;
 }
