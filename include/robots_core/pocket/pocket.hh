@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <iostream>
+//#include <ranges>
 
 namespace robots_core {
 namespace pocket {
@@ -358,6 +359,55 @@ calc_diagonal(
   return offset;
 }
 
+/*std::array< uint8_t, 4 >
+calc_all_diagonal_offsets(
+  Board const & b,
+  Pocket const & pocket
+){
+  using Card = CardinalPost;
+
+  std::array< uint8_t, 4 > diags; 
+
+  Board::PositionVec const & all_positions = b.robots();
+
+  auto && sort =
+    [&pocket]( Board::PositionVec & positions ){
+      std::sort(
+	positions.begin(),
+	positions.end(),
+	[&pocket]( Position const & a1, Position const & a2 ){
+	  return a1.distance( pocket.center ) < a2.distance( pocket.center );
+	}    
+      );
+    }
+
+  auto && is_in_NW =
+    [&pocket]( Position const & p ){
+      return p.x >= pocket.cardinal_posts[ Card::LEFT|0 ].pos.x
+	&& p.x <= pocket.center.x
+	&& p.y <= pocket.cardinal_posts[ Card::UP|0 ].pos.y
+	&& p.y >= pocket.center.y;
+    };
+
+  {
+    Board::PositionVec NW = positions;
+    std::copy_if( all_positions.begin(), all_positions.end(),
+      std::back_inserter( positions ), is_in_NW );
+
+    if( positions.empty() ){
+      diags[ DiagonalQuadrant::UP_LEFT|0 ] =
+	pocket.cardinal_posts[ Card::UP|0 ].distance +
+	pocket.cardinal_posts[ Card::LEFT|0 ].distance;
+    } else {
+      Position const closest_robot = * positions.begin();
+      uint8_t const offset = diff( closest_robot.x, pocket.center.x ) + diff( closest_robot.y, pocket.center.y ) - 1;
+    }
+
+    sort( positions );
+    
+  }
+  return diags;
+}*/
 
 Pocket
 create_pocket( Board const & b ){
