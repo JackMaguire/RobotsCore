@@ -203,26 +203,6 @@ struct PocketTests {
     return true;
   }
 
-  /*static bool test_past_problem1(){
-    Board const b("");
-
-    Position const h = b.human_position();
-    Pocket const p = create_pocket( b );
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x == h.x - 5 );
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.y == h.y );
-
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::RIGHT|0 ].pos.x == h.x + 4 );
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::RIGHT|0 ].pos.y == h.y );
-
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::UP|0 ].pos.x == h.x );
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::UP|0 ].pos.y == h.y + 6 );
-
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.x == h.x );
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y == h.y - 14 );
-
-    return true;
-  }*/
-
   static bool test_past_problem1(){
     Board const b("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000010000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200100000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000");
 
@@ -231,19 +211,16 @@ struct PocketTests {
 
     std::cout << "..." << std::endl;
     Pocket const p = create_pocket( b );
+
+    RC_ASSERT_EQUALS( p.cardinal_posts[ CardinalPost::UP|0 ].pos.x, h.x );
+    RC_ASSERT_EQUALS( p.cardinal_posts[ CardinalPost::UP|0 ].pos.y, h.y + 2 );
+
+    RC_ASSERT_EQUALS( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.x, h.x );
+    RC_ASSERT_EQUALS( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y, h.y - 15 );
+
+    RC_ASSERT_EQUALS( p.SE_offset(), 15 );
+
     RC_ASSERT( no_robots_in_pocket( p, b ) );
-
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::UP|0 ].pos.x == h.x );
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::UP|0 ].pos.y == h.y + 2 );
-
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.x == h.x );
-    RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y == h.y - 15 );
-
-
-    std::cout << (int)p.NW_offset() << std::endl;
-    std::cout << p.cardinal_posts[ CardinalPost::UP|0 ].pos.x << ' ' << p.cardinal_posts[ CardinalPost::UP|0 ].pos.y << std::endl;
-    std::cout << p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x << ' ' << p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.y << std::endl;
-    RC_ASSERT( p.NW_offset() == 7 );
 
     return true;
   }

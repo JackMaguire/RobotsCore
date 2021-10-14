@@ -320,7 +320,8 @@ calc_diagonal(
     positions.begin(),
     positions.end(),
     [&pocket]( Position const & a1, Position const & a2 ){
-      return a1.distance( pocket.center ) < a2.distance( pocket.center );
+      return a1.manhattan_distance( pocket.center ) 
+	< a2.manhattan_distance( pocket.center );
     }    
   );
   Position const closest_robot = * positions.begin();
