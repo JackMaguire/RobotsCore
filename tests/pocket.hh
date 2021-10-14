@@ -16,9 +16,8 @@ bool no_robots_in_pocket(
   Pocket const p,
   Board const b
 ){
-  auto distances = p.calculate_distances();
   for( Position const & r : b.robots() ){
-    if( distances[r.x][r.y] == 0 ) return false;
+    if( p.contains_position( r ) ) return false;
   }
   return true;
 }
@@ -44,36 +43,35 @@ struct PocketTests {
     
     RC_ASSERT( p.center == b.human_position() );
 
-    using Card = CardinalPost;
 
     { //UP Post
-      Post const & post = p.cardinal_posts[Card::UP|0];
+      Post const & post = p.up();
       RC_ASSERT( post.pos == p.center + Position({0, 1}) );
       RC_ASSERT( post.distance == 1 );
     }
 
     { //DOWN Post
-      Post const & post = p.cardinal_posts[Card::DOWN|0];
+      Post const & post = p.down();
       RC_ASSERT( post.pos == p.center - Position({0, 2}) );
       RC_ASSERT( post.distance == 2 );
     }
 
     { //RIGHT Post
-      Post const & post = p.cardinal_posts[Card::RIGHT|0];
+      Post const & post = p.right();
       RC_ASSERT( post.pos == p.center + Position({1, 0}) );
       RC_ASSERT( post.distance == 1 );
     }
 
     { //LEFT Post
-      Post const & post = p.cardinal_posts[Card::LEFT|0];
+      Post const & post = p.left();
       RC_ASSERT( post.pos == p.center - Position({8, 0}) );
       RC_ASSERT( post.distance == 8 );
     }
 
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 9 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 2 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 10 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 3 );
+    RC_ASSERT( p.NW_offset() == 9 );
+    RC_ASSERT( p.NE_offset() == 2 );
+    RC_ASSERT( p.SW_offset() == 10 );
+    RC_ASSERT( p.SE_offset() == 3 );
 
     RC_ASSERT( no_robots_in_pocket( p, b ) );
 
@@ -88,38 +86,37 @@ struct PocketTests {
     
     RC_ASSERT( p.center == b.human_position() );
 
-    using Card = CardinalPost;
 
     { //UP Post
-      Post const & post = p.cardinal_posts[Card::UP|0];
+      Post const & post = p.up();
       RC_ASSERT( post.pos == p.center + Position({0, 22}) );
       RC_ASSERT( post.distance == 22 );
     }
 
     { //DOWN Post
-      Post const & post = p.cardinal_posts[Card::DOWN|0];
+      Post const & post = p.down();
       RC_ASSERT( post.pos == p.center - Position({0, 7}) );
       RC_ASSERT( post.distance == 7 );
     }
 
     { //RIGHT Post
-      Post const & post = p.cardinal_posts[Card::RIGHT|0];
+      Post const & post = p.right();
       RC_ASSERT( post.pos == p.center + Position({7, 0}) );
       RC_ASSERT( post.distance == 7 );
     }
 
     { //LEFT Post
-      Post const & post = p.cardinal_posts[Card::LEFT|0];
+      Post const & post = p.left();
       RC_ASSERT( post.pos == p.center );
       RC_ASSERT( post.distance == 0 );
     }
 
-    std::cout << "Diagonal Offsets: " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] << std::endl;
+    std::cout << "Diagonal Offsets: " << (int)p.NW_offset() << " " << (int)p.NE_offset() << " " << (int)p.SW_offset() << " " << (int)p.SE_offset() << std::endl;
 
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 22 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 29 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 7 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 14 );
+    RC_ASSERT( p.NW_offset() == 22 );
+    RC_ASSERT( p.NE_offset() == 29 );
+    RC_ASSERT( p.SW_offset() == 7 );
+    RC_ASSERT( p.SE_offset() == 14 );
 
     return true;
   }
@@ -132,38 +129,37 @@ struct PocketTests {
 
     RC_ASSERT( p.center == b.human_position() );
 
-    using Card = CardinalPost;
 
     { //UP Post
-      Post const & post = p.cardinal_posts[Card::UP|0];
+      Post const & post = p.up();
       RC_ASSERT( post.pos == p.center + Position({0, 2}) );
       RC_ASSERT( post.distance == 2 );
     }
 
     { //DOWN Post
-      Post const & post = p.cardinal_posts[Card::DOWN|0];
+      Post const & post = p.down();
       RC_ASSERT( post.pos == p.center - Position({0, 3}) );
       RC_ASSERT( post.distance == 3 );
     }
 
     { //RIGHT Post
-      Post const & post = p.cardinal_posts[Card::RIGHT|0];
+      Post const & post = p.right();
       RC_ASSERT( post.pos == p.center + Position({5, 0}) );
       RC_ASSERT( post.distance == 5 );
     }
 
     { //LEFT Post
-      Post const & post = p.cardinal_posts[Card::LEFT|0];
+      Post const & post = p.left();
       RC_ASSERT( post.pos == p.center - Position({39, 0}) );
       RC_ASSERT( post.distance == 39 );
     }
 
-    std::cout << "Diagonal Offsets: " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] << std::endl;
+    std::cout << "Diagonal Offsets: " << (int)p.NW_offset() << " " << (int)p.NE_offset() << " " << (int)p.SW_offset() << " " << (int)p.SE_offset() << std::endl;
 
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 41 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 7 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 42 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 8 );
+    RC_ASSERT( p.NW_offset() == 41 );
+    RC_ASSERT( p.NE_offset() == 7 );
+    RC_ASSERT( p.SW_offset() == 42 );
+    RC_ASSERT( p.SE_offset() == 8 );
 
     return true;
   }
@@ -176,34 +172,33 @@ struct PocketTests {
 
     RC_ASSERT( p.center == b.human_position() );
 
-    using Card = CardinalPost;
 
     { //UP Post
-      Post const & post = p.cardinal_posts[Card::UP|0];
+      Post const & post = p.up();
       RC_ASSERT( post.distance == 14 );
     }
 
     { //DOWN Post
-      Post const & post = p.cardinal_posts[Card::DOWN|0];
+      Post const & post = p.down();
       RC_ASSERT( post.distance == 6 );
     }
 
     { //RIGHT Post
-      Post const & post = p.cardinal_posts[Card::RIGHT|0];
+      Post const & post = p.right();
       RC_ASSERT( post.distance == 21 );
     }
 
     { //LEFT Post
-      Post const & post = p.cardinal_posts[Card::LEFT|0];
+      Post const & post = p.left();
       RC_ASSERT( post.distance == 19 );
     }
 
-    std::cout << "Diagonal Offsets: " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] << std::endl;
+    std::cout << "Diagonal Offsets: " << (int)p.NW_offset() << " " << (int)p.NE_offset() << " " << (int)p.SW_offset() << " " << (int)p.SE_offset() << std::endl;
 
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 5 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 2 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 17 );
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 1 );
+    RC_ASSERT( p.NW_offset() == 5 );
+    RC_ASSERT( p.NE_offset() == 2 );
+    RC_ASSERT( p.SW_offset() == 17 );
+    RC_ASSERT( p.SE_offset() == 1 );
 
     return true;
   }
@@ -245,13 +240,10 @@ struct PocketTests {
     RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y == h.y - 15 );
 
 
-    std::cout << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] << std::endl;
+    std::cout << (int)p.NW_offset() << std::endl;
     std::cout << p.cardinal_posts[ CardinalPost::UP|0 ].pos.x << ' ' << p.cardinal_posts[ CardinalPost::UP|0 ].pos.y << std::endl;
     std::cout << p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x << ' ' << p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.y << std::endl;
-    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 7 );
-
-    auto distances = p.calculate_distances();
-    RC_ASSERT( distances[0][Board::HEIGHT-1] > 0 );
+    RC_ASSERT( p.NW_offset() == 7 );
 
     return true;
   }
