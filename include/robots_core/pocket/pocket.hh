@@ -60,9 +60,6 @@ struct Post {
 
 struct Pocket {
 
-  using BoardType = std::array< std::array< unsigned int, Board::HEIGHT >, Board::WIDTH >;
-
-
   Position center;
   std::array< Post, 4 > cardinal_posts;
   std::array< uint8_t, 4 > diagonal_offsets;
@@ -115,9 +112,6 @@ struct Pocket {
     return diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ];
   }
 
-  // TODO RM
-  BoardType calculate_distances() const;
-
   bool contains_position( Position const & pos ) const;
 };
 
@@ -155,147 +149,6 @@ Pocket::contains_position( Position const & pos ) const{
 
   return true;
 }
-
-Pocket::BoardType
-Pocket::calculate_distances() const {
-  using Card = CardinalPost;
-  using Quad = DiagonalQuadrant;
-
-  uint8_t const RightX = cardinal_posts[ Card::RIGHT|0 ].pos.x;
-  uint8_t const LeftX = cardinal_posts[ Card::LEFT|0 ].pos.x;
-  uint8_t const UpY = cardinal_posts[ Card::UP|0 ].pos.y;
-  uint8_t const DownY = cardinal_posts[ Card::DOWN|0 ].pos.y;
-
-  auto && min =
-    []( uint8_t const a, uint8_t const b ){
-      return std::min( a, b );
-    };
-
-  Pocket::BoardType distances;
-
-  //zero out
-  for( auto & a : distances ) a.fill( 0 );
-
-  //Work your way around the octogon:
-  
-  //These are written in a way where the order can be switched
-
-  //Top:
-  /*for( uint8_t y = Board::HEIGHT-1; y > UpY; --y ){
-    for( uint8_t x = 0; x < Board::WIDTH; ++x ){
-      auto & val = distances[x][y];
-      uint8_t const candidate_val = y - UpY;
-      if( val == 0 ) val = candidate_val;
-      else val = min( val, candidate_val );
-    }
-  }
-
-  //Bottom:
-  for( uint8_t y = 0; y < DownY; ++y ){
-    for( uint8_t x = 0; x < Board::WIDTH; ++x ){
-      auto & val = distances[x][y];
-      uint8_t const candidate_val = DownY - y;
-      if( val == 0 ) val = candidate_val;
-      else val = min( val, candidate_val );
-    }
-  }
-
-  //Left:
-  for( uint8_t x = 0; x < LeftX; ++x ){
-    for( uint8_t y = 0; y < Board::HEIGHT; ++y ){
-      auto & val = distances[x][y];
-      uint8_t const candidate_val = LeftX - x;
-      if( val == 0 ) val = candidate_val;
-      else val = min( val, candidate_val );      
-    }
-  }
-
-  //Right:
-  for( uint8_t x = Board::WIDTH-1; x > RightX; --x ){
-    for( uint8_t y = 0; y < Board::HEIGHT; ++y ){
-      auto & val = distances[x][y];
-      uint8_t const candidate_val = x - RightX;
-      if( val == 0 ) val = candidate_val;
-      else val = min( val, candidate_val );      
-    }
-  }*/
-
-  //Bottom-Left:
-  {
-    uint8_t const n_iter = center.x + center.y - diagonal_offsets[Quad::DOWN_LEFT|0];
-    uint8_t const starting_x = center.x - diagonal_offsets[Quad::DOWN_LEFT|0];
-    for( uint8_t i = 1; i <= n_iter; ++i ){
-      Position p({ sm_int(starting_x - i + 1), sm_int(center.y-1) });
-      while( true ){
-	if( Board::position_is_in_bounds( p ) ){
-	  distances[p.x][p.y] = i;
-	}
-	if( p.y == 0 or p.x == center.x-1 ) break;
-
-	p.x += 1;
-	p.y -= 1;
-      }
-    }//i
-  }
-
-
-  //Bottom-Right:
-  {
-    uint8_t const n_iter = (Board::WIDTH-1-center.x) + center.y - diagonal_offsets[Quad::DOWN_RIGHT|0];
-    uint8_t const starting_x = center.x + diagonal_offsets[Quad::DOWN_RIGHT|0];
-    for( uint8_t i = 1; i <= n_iter; ++i ){
-      Position p({ sm_int(starting_x + i-1), sm_int(center.y-1) });
-      while( true ){
-	if( Board::position_is_in_bounds( p ) ){
-	  distances[p.x][p.y] = i;
-	}
-	if( p.y == 0 or p.x == center.x+1 ) break;
-
-	p.x -= 1;
-	p.y -= 1;
-      }
-    }//i
-  }
-
-  //top-Right:
-  {
-    uint8_t const n_iter = (Board::WIDTH-1-center.x) + (Board::HEIGHT-1-center.y) - diagonal_offsets[Quad::UP_RIGHT|0];
-    uint8_t const starting_x = center.x + diagonal_offsets[Quad::UP_RIGHT|0];
-    for( uint8_t i = 1; i <= n_iter; ++i ){
-      Position p({ sm_int(starting_x + i-1), sm_int(center.y+1) });
-      while( true ){
-	if( Board::position_is_in_bounds( p ) ){
-	  distances[p.x][p.y] = i;
-	}
-	if( p.y == Board::HEIGHT-1 or p.x == center.x+1 ) break;
-
-	p.x -= 1;
-	p.y += 1;
-      }
-    }//i
-  }
-
-  //top-Left:
-  {
-    uint8_t const n_iter = center.x + (Board::HEIGHT-1-center.y) - diagonal_offsets[Quad::UP_LEFT|0];
-    uint8_t const starting_x = center.x - diagonal_offsets[Quad::UP_LEFT|0];
-    for( uint8_t i = 1; i <= n_iter; ++i ){
-      Position p({ sm_int(starting_x-i+1), sm_int(center.y+1) });
-      while( true ){
-	if( Board::position_is_in_bounds( p ) ){
-	  distances[p.x][p.y] = i;
-	}
-	if( p.y == Board::HEIGHT-1 or p.x == center.x-1 ) break;
-
-	p.x += 1;
-	p.y += 1;
-      }
-    }//i
-  }
-
-  return distances;
-}
-
 
 std::array< Post, 4 >
 find_cardinal_posts( Board const & b ){
@@ -430,56 +283,6 @@ calc_diagonal(
   return offset;
 }
 
-/*std::array< uint8_t, 4 >
-calc_all_diagonal_offsets(
-  Board const & b,
-  Pocket const & pocket
-){
-  using Card = CardinalPost;
-
-  std::array< uint8_t, 4 > diags; 
-
-  Board::PositionVec const & all_positions = b.robots();
-
-  auto && sort =
-    [&pocket]( Board::PositionVec & positions ){
-      std::sort(
-	positions.begin(),
-	positions.end(),
-	[&pocket]( Position const & a1, Position const & a2 ){
-	  return a1.distance( pocket.center ) < a2.distance( pocket.center );
-	}    
-      );
-    }
-
-  auto && is_in_NW =
-    [&pocket]( Position const & p ){
-      return p.x >= pocket.cardinal_posts[ Card::LEFT|0 ].pos.x
-	&& p.x <= pocket.center.x
-	&& p.y <= pocket.cardinal_posts[ Card::UP|0 ].pos.y
-	&& p.y >= pocket.center.y;
-    };
-
-  {
-    Board::PositionVec NW = positions;
-    std::copy_if( all_positions.begin(), all_positions.end(),
-      std::back_inserter( positions ), is_in_NW );
-
-    if( positions.empty() ){
-      diags[ DiagonalQuadrant::UP_LEFT|0 ] =
-	pocket.cardinal_posts[ Card::UP|0 ].distance +
-	pocket.cardinal_posts[ Card::LEFT|0 ].distance;
-    } else {
-      Position const closest_robot = * positions.begin();
-      uint8_t const offset = diff( closest_robot.x, pocket.center.x ) + diff( closest_robot.y, pocket.center.y ) - 1;
-    }
-
-    sort( positions );
-    
-  }
-  return diags;
-}*/
-
 Pocket
 create_pocket( Board const & b ){
 
@@ -505,7 +308,6 @@ create_pocket( Board const & b ){
       },
       posts[ CP::UP|0 ].distance + posts[ CP::LEFT|0 ].distance
     );
-  //assert( pocket.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == calc_up_left_diagonal( b, p ) );
 
   pocket.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] =
     calc_diagonal(
@@ -547,7 +349,6 @@ create_pocket( Board const & b ){
     );
 
   //Resize Posts
-  //pocket.up().distance = std::max({ pocket.NW_offset(), pocket.NE_offset(), pocket.up().distance });
   { //UP
     auto candidate = std::max( pocket.NW_offset(), pocket.NE_offset() );
     if( pocket.up().distance > candidate ){
@@ -579,15 +380,6 @@ create_pocket( Board const & b ){
       pocket.right().pos.x = pocket.center.x + candidate;
     }
   }
-
-  //pocket.down().distance = std::max({ pocket.SW_offset(), pocket.SE_offset(), pocket.down().distance });
-  //pocket.down().pos.y = pocket.center.y - pocket.down().distance;
-
-  //pocket.left().distance = std::max({ pocket.SW_offset(), pocket.NW_offset(), pocket.left().distance });
-  //pocket.left().pos.x = pocket.center.x - pocket.left().distance;
-
-  //pocket.right().distance = std::max({ pocket.SE_offset(), pocket.NE_offset(), pocket.right().distance });
-  //pocket.right().pos.x = pocket.center.x + pocket.right().distance;
 
   return pocket;
 }
