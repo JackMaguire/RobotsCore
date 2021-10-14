@@ -65,77 +65,84 @@ struct Post {
 };
 
 struct Pocket {
+
+  using BoardType = std::array< std::array< unsigned int, Board::HEIGHT >, Board::WIDTH >;
+
+
   Position center;
   std::array< Post, 4 > cardinal_posts;
   std::array< unsigned char, 4 > diagonal_offsets;
 
-  unsigned char distance_from_pocket( Position const & p ) const;
-
-  bool position_is_in_pocket( Position const & p ) const {
-    return distance_from_pocket( p ) == 0;
-  }
+  BoardType calculate_distances() const;
 };
 
-unsigned char
-Pocket::distance_from_pocket( Position const & p ) const {
+Pocket::BoardType
+Pocket::calculate_distances() const {
   using Card = CardinalPost;
-  using Quad = DiagonalQuadrant;
+  //using Quad = DiagonalQuadrant;
 
   unsigned char const RightX = cardinal_posts[ Card::RIGHT|0 ].pos.x;
   unsigned char const LeftX = cardinal_posts[ Card::LEFT|0 ].pos.x;
   unsigned char const UpY = cardinal_posts[ Card::UP|0 ].pos.y;
   unsigned char const DownY = cardinal_posts[ Card::DOWN|0 ].pos.y;
 
-  /*if( p.x >= RightX ) return p.x - RightX;
-  if( p.x <= LeftX ) return LeftX - p.x;
-  if( p.y >= UpY ) return p.y - UpY;
-  if( p.y <= DownY ) return DownY - p.y;*/
-
-  if( p.x == center.x ){
-    if( p.y >= DownY and p.y <= UpY ) {
-      return 0;
-    } else if( p.y < DownY ){
-      return diff( p.y, DownY );
-    } else {
-      return diff( p.y, UpY );
-    }
-  }
-
-  if( p.y == center.y ){
-    if( p.x >= LeftX and p.x <= RightX ){
-      return 0;
-    } else if( p.x < LeftX ){
-      return diff( p.x, LeftX );
-    } else {
-      return diff( p.x, RightX );
-    }
-  }
-
-  unsigned char const offset =
-    diff( p.x, center.x ) + diff( p.y, center.y );
-
-  auto && compare =
-    [offset]( unsigned char const a ) -> unsigned char {
-      if( offset < a ) return 0;
-      else return offset - a + 1;
+  auto && min =
+    []( unsigned char const a, unsigned char const b ){
+      return std::min( a, b );
     };
 
-  if( p.x < center.x and p.y < center.y ){ //DOWN_LEFT
-    return compare( diagonal_offsets[ Quad::DOWN_LEFT|0 ] );
+  Pocket::BoardType distances;
+
+  //zero out
+  for( auto & a : distances ) a.fill( 0 );
+
+  //Work your way around the octogon:
+  
+  //These are written in a way where the order can be switched
+
+  //Top:
+  for( unsigned char y = Board::HEIGHT-1; y > UpY; --y ){
+    for( unsigned char x = 0; x < Board::WIDTH; ++x ){
+      auto & val = distances[x][y];
+      unsigned char const candidate_val = y - UpY;
+      if( val == 0 ) val = candidate_val;
+      else val = min( val, candidate_val );
+    }
   }
 
-  if( p.x > center.x and p.y < center.y ){ //DOWN_RIGHT
-    return compare( diagonal_offsets[ Quad::DOWN_RIGHT|0 ] );
+  //Bottom:
+  for( unsigned char y = 0; y < DownY; ++y ){
+    for( unsigned char x = 0; x < Board::WIDTH; ++x ){
+      auto & val = distances[x][y];
+      unsigned char const candidate_val = DownY - y;
+      if( val == 0 ) val = candidate_val;
+      else val = min( val, candidate_val );
+    }
   }
 
-  if( p.x > center.x and p.y > center.y ){ //UP_RIGHT
-    return compare( diagonal_offsets[ Quad::UP_RIGHT|0 ] );
+  //Left:
+  for( unsigned char x = 0; x < LeftX; ++x ){
+    for( unsigned char y = 0; y < Board::HEIGHT; ++y ){
+      auto & val = distances[x][y];
+      unsigned char const candidate_val = LeftX - x;
+      if( val == 0 ) val = candidate_val;
+      else val = min( val, candidate_val );      
+    }
   }
 
-  //if( p.x < center.x and p.y > center.y ){ //UP_LEFT
-  return compare( diagonal_offsets[ Quad::UP_LEFT|0 ] );
-  //}
+  //Right:
+  for( unsigned char x = Board::WIDTH-1; x > RightX; --x ){
+    for( unsigned char y = 0; y < Board::HEIGHT; ++y ){
+      auto & val = distances[x][y];
+      unsigned char const candidate_val = x - RightX;
+      if( val == 0 ) val = candidate_val;
+      else val = min( val, candidate_val );      
+    }
+  }
+
+  return distances;
 }
+
 
 std::array< Post, 4 >
 find_cardinal_posts( Board const & b ){
