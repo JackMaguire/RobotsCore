@@ -43,11 +43,12 @@ def draw_board( stdscr, board ):
 def draw_pocket( stdscr, board ):
 
     pocket = create_pocket( board )
+    distances = pocket.calculate_distances()
 
     for i in range( 0, 45 ):
         for j in range( 0, 30 ):
             height = 30 - j
-            if pocket.position_is_in_pocket( Position.create( i, j ) ):
+            if distances[i][j] == 0:
                 stdscr.addch( height, 2*i+1, 'P', curses.color_pair(99) )         
 
 

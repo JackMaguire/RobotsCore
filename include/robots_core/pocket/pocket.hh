@@ -79,7 +79,7 @@ struct Pocket {
 Pocket::BoardType
 Pocket::calculate_distances() const {
   using Card = CardinalPost;
-  //using Quad = DiagonalQuadrant;
+  using Quad = DiagonalQuadrant;
 
   unsigned char const RightX = cardinal_posts[ Card::RIGHT|0 ].pos.x;
   unsigned char const LeftX = cardinal_posts[ Card::LEFT|0 ].pos.x;
@@ -138,6 +138,79 @@ Pocket::calculate_distances() const {
       if( val == 0 ) val = candidate_val;
       else val = min( val, candidate_val );      
     }
+  }
+
+  //Bottom-Left:
+  {
+    unsigned char const n_iter = center.x + center.y - diagonal_offsets[Quad::DOWN_LEFT|0];
+    unsigned char const starting_x = center.x - diagonal_offsets[Quad::DOWN_LEFT|0];
+    for( unsigned char i = 1; i <= n_iter; ++i ){
+      Position p({ sm_int(starting_x - i + 1), sm_int(center.y-1) });
+      while( true ){
+	if( Board::position_is_in_bounds( p ) ){
+	  distances[p.x][p.y] = i;
+	}
+	if( p.y == 0 or p.x == center.x-1 ) break;
+
+	p.x += 1;
+	p.y -= 1;
+      }
+    }//i
+  }
+
+
+  //Bottom-Right:
+  {
+    unsigned char const n_iter = (Board::WIDTH-1-center.x) + center.y - diagonal_offsets[Quad::DOWN_RIGHT|0];
+    unsigned char const starting_x = center.x + diagonal_offsets[Quad::DOWN_RIGHT|0];
+    for( unsigned char i = 1; i <= n_iter; ++i ){
+      Position p({ sm_int(starting_x + i-1), sm_int(center.y-1) });
+      while( true ){
+	if( Board::position_is_in_bounds( p ) ){
+	  distances[p.x][p.y] = i;
+	}
+	if( p.y == 0 or p.x == center.x+1 ) break;
+
+	p.x -= 1;
+	p.y -= 1;
+      }
+    }//i
+  }
+
+  //top-Right:
+  {
+    unsigned char const n_iter = (Board::WIDTH-1-center.x) + (Board::HEIGHT-1-center.y) - diagonal_offsets[Quad::UP_RIGHT|0];
+    unsigned char const starting_x = center.x + diagonal_offsets[Quad::UP_RIGHT|0];
+    for( unsigned char i = 1; i <= n_iter; ++i ){
+      Position p({ sm_int(starting_x + i-1), sm_int(center.y+1) });
+      while( true ){
+	if( Board::position_is_in_bounds( p ) ){
+	  distances[p.x][p.y] = i;
+	}
+	if( p.y == Board::HEIGHT-1 or p.x == center.x+1 ) break;
+
+	p.x -= 1;
+	p.y += 1;
+      }
+    }//i
+  }
+
+  //top-Left:
+  {
+    unsigned char const n_iter = center.x + (Board::HEIGHT-1-center.y) - diagonal_offsets[Quad::UP_LEFT|0];
+    unsigned char const starting_x = center.x - diagonal_offsets[Quad::UP_LEFT|0];
+    for( unsigned char i = 1; i <= n_iter; ++i ){
+      Position p({ sm_int(starting_x-i+1), sm_int(center.y+1) });
+      while( true ){
+	if( Board::position_is_in_bounds( p ) ){
+	  distances[p.x][p.y] = i;
+	}
+	if( p.y == Board::HEIGHT-1 or p.x == center.x-1 ) break;
+
+	p.x += 1;
+	p.y += 1;
+      }
+    }//i
   }
 
   return distances;
@@ -358,7 +431,7 @@ create_pocket( Board const & b ){
 	return pos.x >= pocket.center.x or pos.y <= pocket.center.y;
       },
       [&pocket,&posts]( Position const & pos ){
-	return pos.y >= posts[ CP::UP|0 ].pos.y or pos.x <= posts[ CP::LEFT|0 ].pos.x;
+	return pos.y > posts[ CP::UP|0 ].pos.y or pos.x < posts[ CP::LEFT|0 ].pos.x;
       },
       posts[ CP::UP|0 ].distance + posts[ CP::LEFT|0 ].distance
     );
@@ -372,7 +445,7 @@ create_pocket( Board const & b ){
 	return pos.x <= pocket.center.x or pos.y <= pocket.center.y;
       },
       [&pocket,&posts]( Position const & pos ){
-	return pos.y >= posts[ CP::UP|0 ].pos.y or pos.x >= posts[ CP::RIGHT|0 ].pos.x;
+	return pos.y > posts[ CP::UP|0 ].pos.y or pos.x > posts[ CP::RIGHT|0 ].pos.x;
       },
       posts[ CP::UP|0 ].distance + posts[ CP::RIGHT|0 ].distance
     );
@@ -385,7 +458,7 @@ create_pocket( Board const & b ){
 	return pos.x <= pocket.center.x or pos.y >= pocket.center.y;
       },
       [&pocket,&posts]( Position const & pos ){
-	return pos.y <= posts[ CP::DOWN|0 ].pos.y or pos.x >= posts[ CP::RIGHT|0 ].pos.x;
+	return pos.y < posts[ CP::DOWN|0 ].pos.y or pos.x > posts[ CP::RIGHT|0 ].pos.x;
       },
       posts[ CP::DOWN|0 ].distance + posts[ CP::RIGHT|0 ].distance
     );
@@ -398,7 +471,7 @@ create_pocket( Board const & b ){
 	return pos.x >= pocket.center.x or pos.y >= pocket.center.y;
       },
       [&pocket,&posts]( Position const & pos ){
-	return pos.y <= posts[ CP::DOWN|0 ].pos.y or pos.x <= posts[ CP::LEFT|0 ].pos.x;
+	return pos.y < posts[ CP::DOWN|0 ].pos.y or pos.x < posts[ CP::LEFT|0 ].pos.x;
       },
       posts[ CP::DOWN|0 ].distance + posts[ CP::LEFT|0 ].distance
     );
