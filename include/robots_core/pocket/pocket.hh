@@ -114,7 +114,7 @@ struct Pocket {
 
   bool contains_position( Position const & pos ) const;
 
-  bool contains_position_within_window( Position const & pos, uint8_t const window ) const;
+  bool contains_position_within_window( Position const & pos, uint8_t const window, uint8_t const diag_window ) const;
 };
 
 bool
@@ -155,7 +155,8 @@ Pocket::contains_position( Position const & pos ) const{
 bool
 Pocket::contains_position_within_window(
   Position const & pos,
-  uint8_t const window
+  uint8_t const window,
+  uint8_t const diag_window
 ) const{
 
   if( pos.x > right().pos.x + window ) return false;
@@ -177,19 +178,19 @@ Pocket::contains_position_within_window(
 
 
   if( pos.x < center.x and pos.y < center.y ){
-    return offset <= SW_offset() + window;
+    return offset <= SW_offset() + diag_window;
   }
 
   if( pos.x < center.x and pos.y > center.y ){
-    return offset <= NW_offset() + window;
+    return offset <= NW_offset() + diag_window;
   }
 
   if( pos.x > center.x and pos.y < center.y ){
-    return offset <= SE_offset() + window;
+    return offset <= SE_offset() + diag_window;
   }
 
   if( pos.x > center.x and pos.y > center.y ){
-    return offset <= NE_offset() + window;
+    return offset <= NE_offset() + diag_window;
   }
 
   return true;
