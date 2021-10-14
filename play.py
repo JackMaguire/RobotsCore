@@ -4,6 +4,8 @@ from robots_core.pocket import create_pocket
 import curses
 from curses import wrapper
 
+import sys
+
 def close( stdscr ):
     curses.nocbreak()
     stdscr.keypad(False)
@@ -78,7 +80,7 @@ def draw_pocket( stdscr, board ):
 def draw_posts( stdscr, board ):
     pocket = create_pocket( board )
     for p in pocket.cardinal_posts:
-        stdscr.addch( p.pos.y, 2*p.pos.x+1, 'P', curses.color_pair(99) )
+        stdscr.addch( 30-p.pos.y, 2*p.pos.x+1, 'P', curses.color_pair(99) )
 
 
 def draw_info( stdscr, game ):
@@ -95,9 +97,9 @@ def draw_game( stdscr, game, show_pocket ):
     draw_info( stdscr, game )
 
     if show_pocket:
-        #draw_pocket( stdscr, game.board() )
+        draw_pocket( stdscr, game.board() )
         #draw_pocket2( stdscr, game.board() )
-        draw_posts( stdscr, game.board() )
+        #draw_posts( stdscr, game.board() )
         pass
     
 def main( stdscr ):
@@ -107,6 +109,9 @@ def main( stdscr ):
 
     game = RobotsGame()
     show_pocket = False
+
+    if len(sys.argv) > 1:
+        game.load_from_stringified_representation( sys.argv[1], 1, 0, 0 )
 
     # This raises ZeroDivisionError when i == 10.
     draw_game( stdscr, game, show_pocket )

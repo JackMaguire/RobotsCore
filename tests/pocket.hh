@@ -1,14 +1,27 @@
 #include <robots_core/board.hh>
 #include <robots_core/pocket/pocket.hh>
+#include <robots_core/asserts.hh>
 
 #include <iostream>
 #include <cassert>
 #include <algorithm>
+#include <stdexcept>
 
 namespace robots_core {
 namespace tests {
 
 using namespace robots_core::pocket;
+
+bool no_robots_in_pocket(
+  Pocket const p,
+  Board const b
+){
+  auto distances = p.calculate_distances();
+  for( Position const & r : b.robots() ){
+    if( distances[r.x][r.y] == 0 ) return false;
+  }
+  return true;
+}
 
 struct PocketTests {
 
@@ -29,38 +42,40 @@ struct PocketTests {
 
     Pocket const p = create_pocket( b );
     
-    assert( p.center == b.human_position() );
+    RC_ASSERT( p.center == b.human_position() );
 
     using Card = CardinalPost;
 
     { //UP Post
       Post const & post = p.cardinal_posts[Card::UP|0];
-      assert( post.pos == p.center + Position({0, 1}) );
-      assert( post.distance == 1 );
+      RC_ASSERT( post.pos == p.center + Position({0, 1}) );
+      RC_ASSERT( post.distance == 1 );
     }
 
     { //DOWN Post
       Post const & post = p.cardinal_posts[Card::DOWN|0];
-      assert( post.pos == p.center - Position({0, 2}) );
-      assert( post.distance == 2 );
+      RC_ASSERT( post.pos == p.center - Position({0, 2}) );
+      RC_ASSERT( post.distance == 2 );
     }
 
     { //RIGHT Post
       Post const & post = p.cardinal_posts[Card::RIGHT|0];
-      assert( post.pos == p.center + Position({1, 0}) );
-      assert( post.distance == 1 );
+      RC_ASSERT( post.pos == p.center + Position({1, 0}) );
+      RC_ASSERT( post.distance == 1 );
     }
 
     { //LEFT Post
       Post const & post = p.cardinal_posts[Card::LEFT|0];
-      assert( post.pos == p.center - Position({8, 0}) );
-      assert( post.distance == 8 );
+      RC_ASSERT( post.pos == p.center - Position({8, 0}) );
+      RC_ASSERT( post.distance == 8 );
     }
 
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 9 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 2 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 10 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 3 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 9 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 2 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 10 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 3 );
+
+    RC_ASSERT( no_robots_in_pocket( p, b ) );
 
     return true;
   }
@@ -69,41 +84,42 @@ struct PocketTests {
     Board const b("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000010000000000000000000000011001000000001000000000000030000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000010000000000000000000000000000101000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000100000000000000000010000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 
     Pocket const p = create_pocket( b );
+    RC_ASSERT( no_robots_in_pocket( p, b ) );
     
-    assert( p.center == b.human_position() );
+    RC_ASSERT( p.center == b.human_position() );
 
     using Card = CardinalPost;
 
     { //UP Post
       Post const & post = p.cardinal_posts[Card::UP|0];
-      assert( post.pos == p.center + Position({0, 22}) );
-      assert( post.distance == 22 );
+      RC_ASSERT( post.pos == p.center + Position({0, 22}) );
+      RC_ASSERT( post.distance == 22 );
     }
 
     { //DOWN Post
       Post const & post = p.cardinal_posts[Card::DOWN|0];
-      assert( post.pos == p.center - Position({0, 7}) );
-      assert( post.distance == 7 );
+      RC_ASSERT( post.pos == p.center - Position({0, 7}) );
+      RC_ASSERT( post.distance == 7 );
     }
 
     { //RIGHT Post
       Post const & post = p.cardinal_posts[Card::RIGHT|0];
-      assert( post.pos == p.center + Position({7, 0}) );
-      assert( post.distance == 7 );
+      RC_ASSERT( post.pos == p.center + Position({7, 0}) );
+      RC_ASSERT( post.distance == 7 );
     }
 
     { //LEFT Post
       Post const & post = p.cardinal_posts[Card::LEFT|0];
-      assert( post.pos == p.center );
-      assert( post.distance == 0 );
+      RC_ASSERT( post.pos == p.center );
+      RC_ASSERT( post.distance == 0 );
     }
 
     std::cout << "Diagonal Offsets: " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] << std::endl;
 
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 22 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 29 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 7 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 14 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 22 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 29 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 7 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 14 );
 
     return true;
   }
@@ -112,41 +128,42 @@ struct PocketTests {
     Board const b("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000000000010000000000000000300000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000003000000000000000000000000000000003003001000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 
     Pocket const p = create_pocket( b );
+    RC_ASSERT( no_robots_in_pocket( p, b ) );
 
-    assert( p.center == b.human_position() );
+    RC_ASSERT( p.center == b.human_position() );
 
     using Card = CardinalPost;
 
     { //UP Post
       Post const & post = p.cardinal_posts[Card::UP|0];
-      assert( post.pos == p.center + Position({0, 2}) );
-      assert( post.distance == 2 );
+      RC_ASSERT( post.pos == p.center + Position({0, 2}) );
+      RC_ASSERT( post.distance == 2 );
     }
 
     { //DOWN Post
       Post const & post = p.cardinal_posts[Card::DOWN|0];
-      assert( post.pos == p.center - Position({0, 3}) );
-      assert( post.distance == 3 );
+      RC_ASSERT( post.pos == p.center - Position({0, 3}) );
+      RC_ASSERT( post.distance == 3 );
     }
 
     { //RIGHT Post
       Post const & post = p.cardinal_posts[Card::RIGHT|0];
-      assert( post.pos == p.center + Position({5, 0}) );
-      assert( post.distance == 5 );
+      RC_ASSERT( post.pos == p.center + Position({5, 0}) );
+      RC_ASSERT( post.distance == 5 );
     }
 
     { //LEFT Post
       Post const & post = p.cardinal_posts[Card::LEFT|0];
-      assert( post.pos == p.center - Position({39, 0}) );
-      assert( post.distance == 39 );
+      RC_ASSERT( post.pos == p.center - Position({39, 0}) );
+      RC_ASSERT( post.distance == 39 );
     }
 
     std::cout << "Diagonal Offsets: " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] << std::endl;
 
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 41 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 7 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 42 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 8 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 41 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 7 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 42 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 8 );
 
     return true;
   }
@@ -155,55 +172,86 @@ struct PocketTests {
     Board const b("000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000100000000000000000100000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000001000001000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000010100000000000000100000000000000000000000000000000000000000010000000000000001001000001000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000001000000000000000001000000200000000000000000000000000001001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000010000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 
     Pocket const p = create_pocket( b );
-    
-    assert( p.center == b.human_position() );
+    RC_ASSERT( no_robots_in_pocket( p, b ) );
+
+    RC_ASSERT( p.center == b.human_position() );
 
     using Card = CardinalPost;
 
     { //UP Post
       Post const & post = p.cardinal_posts[Card::UP|0];
-      assert( post.distance == 14 );
+      RC_ASSERT( post.distance == 14 );
     }
 
     { //DOWN Post
       Post const & post = p.cardinal_posts[Card::DOWN|0];
-      assert( post.distance == 6 );
+      RC_ASSERT( post.distance == 6 );
     }
 
     { //RIGHT Post
       Post const & post = p.cardinal_posts[Card::RIGHT|0];
-      assert( post.distance == 21 );
+      RC_ASSERT( post.distance == 21 );
     }
 
     { //LEFT Post
       Post const & post = p.cardinal_posts[Card::LEFT|0];
-      assert( post.distance == 19 );
+      RC_ASSERT( post.distance == 19 );
     }
 
     std::cout << "Diagonal Offsets: " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] << " " << (int)p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] << std::endl;
 
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 5 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 2 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 17 );
-    assert( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 1 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 5 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ] == 2 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ] == 17 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ] == 1 );
 
     return true;
   }
 
+  /*static bool test_past_problem1(){
+    Board const b("");
+
+    Position const h = b.human_position();
+    Pocket const p = create_pocket( b );
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x == h.x - 5 );
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.y == h.y );
+
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::RIGHT|0 ].pos.x == h.x + 4 );
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::RIGHT|0 ].pos.y == h.y );
+
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::UP|0 ].pos.x == h.x );
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::UP|0 ].pos.y == h.y + 6 );
+
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.x == h.x );
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y == h.y - 14 );
+
+    return true;
+  }*/
+
   static bool test_past_problem1(){
     Board const b("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000010000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200100000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000");
 
-    assert( b.human_position() == STARTING_POSITION );
+    Position const h = b.human_position();
+    RC_ASSERT( h == STARTING_POSITION );
 
     std::cout << "..." << std::endl;
     Pocket const p = create_pocket( b );
+    RC_ASSERT( no_robots_in_pocket( p, b ) );
+
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::UP|0 ].pos.x == h.x );
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::UP|0 ].pos.y == h.y + 2 );
+
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.x == h.x );
+    RC_ASSERT( p.cardinal_posts[ CardinalPost::DOWN|0 ].pos.y == h.y - 15 );
+
+
     std::cout << (int)p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] << std::endl;
     std::cout << p.cardinal_posts[ CardinalPost::UP|0 ].pos.x << ' ' << p.cardinal_posts[ CardinalPost::UP|0 ].pos.y << std::endl;
     std::cout << p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x << ' ' << p.cardinal_posts[ CardinalPost::LEFT|0 ].pos.y << std::endl;
-    assert( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 7 );
+    RC_ASSERT( p.diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ] == 7 );
 
     auto distances = p.calculate_distances();
-    assert( distances[0][Board::HEIGHT-1] > 0 );
+    RC_ASSERT( distances[0][Board::HEIGHT-1] > 0 );
 
     return true;
   }
