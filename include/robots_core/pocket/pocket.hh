@@ -74,8 +74,78 @@ struct Pocket {
   std::array< Post, 4 > cardinal_posts;
   std::array< uint8_t, 4 > diagonal_offsets;
 
+  Post const & up() const {
+    return cardinal_posts[ CardinalPost::UP|0 ];
+  }
+
+  Post const & down() const {
+    return cardinal_posts[ CardinalPost::DOWN|0 ];
+  }
+
+  Post const & left() const {
+    return cardinal_posts[ CardinalPost::LEFT|0 ];
+  }
+
+  Post const & right() const {
+    return cardinal_posts[ CardinalPost::RIGHT|0 ];
+  }
+
+  uint8_t NW_offset() const {
+    return diagonal_offsets[ DiagonalQuadrant::UP_LEFT|0 ];
+  }
+
+  uint8_t NE_offset() const {
+    return diagonal_offsets[ DiagonalQuadrant::UP_RIGHT|0 ];
+  }
+
+  uint8_t SW_offset() const {
+    return diagonal_offsets[ DiagonalQuadrant::DOWN_LEFT|0 ];
+  }
+
+  uint8_t SE_offset() const {
+    return diagonal_offsets[ DiagonalQuadrant::DOWN_RIGHT|0 ];
+  }
+
+  // TODO RM
   BoardType calculate_distances() const;
+
+  bool contains_position( Position const & pos ) const;
 };
+
+bool
+Pocket::contains_position( Position const & pos ) const{
+  if( pos.x > right().pos.x ) return false;
+  if( pos.x < left().pos.x ) return false;
+  if( pos.y > up().pos.y ) return false;
+  if( pos.y < down().pos.y ) return false;
+
+  if( pos.x == center.x ) return pos.y <=    up().pos.y
+			    and  pos.y >=  down().pos.y;
+  if( pos.y == center.y ) return pos.x <= right().pos.x
+			    and  pos.x >=  left().pos.x;
+
+  uint8_t const offset =
+    diff( pos.x, center.x ) + diff( pos.y, center.y );
+
+
+  if( pos.x < center.x and pos.y < center.y ){
+    return offset <= SW_offset();
+  }
+
+  if( pos.x < center.x and pos.y > center.y ){
+    return offset <= NW_offset();
+  }
+
+  if( pos.x > center.x and pos.y < center.y ){
+    return offset <= SE_offset();
+  }
+
+  if( pos.x > center.x and pos.y > center.y ){
+    return offset <= NE_offset();
+  }
+
+  return true;
+}
 
 Pocket::BoardType
 Pocket::calculate_distances() const {
@@ -474,6 +544,9 @@ create_pocket( Board const & b ){
       },
       posts[ CP::DOWN|0 ].distance + posts[ CP::LEFT|0 ].distance
     );
+
+  //Resize Posts
+  
 
   return pocket;
 }
