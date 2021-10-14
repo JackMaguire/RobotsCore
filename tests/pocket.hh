@@ -47,25 +47,25 @@ struct PocketTests {
     { //UP Post
       Post const & post = p.up();
       RC_ASSERT( post.pos == p.center + Position({0, 1}) );
-      RC_ASSERT( post.distance == 1 );
+      RC_ASSERT_EQUALS( post.distance, 1 );
     }
 
     { //DOWN Post
       Post const & post = p.down();
       RC_ASSERT( post.pos == p.center - Position({0, 2}) );
-      RC_ASSERT( post.distance == 2 );
+      RC_ASSERT_EQUALS( post.distance, 2 );
     }
 
     { //RIGHT Post
       Post const & post = p.right();
       RC_ASSERT( post.pos == p.center + Position({1, 0}) );
-      RC_ASSERT( post.distance == 1 );
+      RC_ASSERT_EQUALS( post.distance, 1 );
     }
 
     { //LEFT Post
       Post const & post = p.left();
       RC_ASSERT( post.pos == p.center - Position({8, 0}) );
-      RC_ASSERT( post.distance == 8 );
+      RC_ASSERT_EQUALS( post.distance, 8 );
     }
 
     RC_ASSERT( p.NW_offset() == 9 );
@@ -90,25 +90,25 @@ struct PocketTests {
     { //UP Post
       Post const & post = p.up();
       RC_ASSERT( post.pos == p.center + Position({0, 22}) );
-      RC_ASSERT( post.distance == 22 );
+      RC_ASSERT_EQUALS( post.distance, 22 );
     }
 
     { //DOWN Post
       Post const & post = p.down();
       RC_ASSERT( post.pos == p.center - Position({0, 7}) );
-      RC_ASSERT( post.distance == 7 );
+      RC_ASSERT_EQUALS( post.distance, 7 );
     }
 
     { //RIGHT Post
       Post const & post = p.right();
       RC_ASSERT( post.pos == p.center + Position({7, 0}) );
-      RC_ASSERT( post.distance == 7 );
+      RC_ASSERT_EQUALS( post.distance, 7 );
     }
 
     { //LEFT Post
       Post const & post = p.left();
       RC_ASSERT( post.pos == p.center );
-      RC_ASSERT( post.distance == 0 );
+      RC_ASSERT_EQUALS( post.distance, 0 );
     }
 
     std::cout << "Diagonal Offsets: " << (int)p.NW_offset() << " " << (int)p.NE_offset() << " " << (int)p.SW_offset() << " " << (int)p.SE_offset() << std::endl;
@@ -133,25 +133,25 @@ struct PocketTests {
     { //UP Post
       Post const & post = p.up();
       RC_ASSERT( post.pos == p.center + Position({0, 2}) );
-      RC_ASSERT( post.distance == 2 );
+      RC_ASSERT_EQUALS( post.distance, 2 );
     }
 
     { //DOWN Post
       Post const & post = p.down();
       RC_ASSERT( post.pos == p.center - Position({0, 3}) );
-      RC_ASSERT( post.distance == 3 );
+      RC_ASSERT_EQUALS( post.distance, 3 );
     }
 
     { //RIGHT Post
       Post const & post = p.right();
       RC_ASSERT( post.pos == p.center + Position({5, 0}) );
-      RC_ASSERT( post.distance == 5 );
+      RC_ASSERT_EQUALS( post.distance, 5 );
     }
 
     { //LEFT Post
       Post const & post = p.left();
       RC_ASSERT( post.pos == p.center - Position({39, 0}) );
-      RC_ASSERT( post.distance == 39 );
+      RC_ASSERT_EQUALS( post.distance, 39 );
     }
 
     std::cout << "Diagonal Offsets: " << (int)p.NW_offset() << " " << (int)p.NE_offset() << " " << (int)p.SW_offset() << " " << (int)p.SE_offset() << std::endl;
@@ -175,22 +175,22 @@ struct PocketTests {
 
     { //UP Post
       Post const & post = p.up();
-      RC_ASSERT( post.distance == 14 );
+      RC_ASSERT_EQUALS( post.distance, 5 );
     }
 
     { //DOWN Post
       Post const & post = p.down();
-      RC_ASSERT( post.distance == 6 );
+      RC_ASSERT_EQUALS( post.distance, 6 );
     }
 
     { //RIGHT Post
       Post const & post = p.right();
-      RC_ASSERT( post.distance == 21 );
+      RC_ASSERT_EQUALS( post.distance, 2 );
     }
 
     { //LEFT Post
       Post const & post = p.left();
-      RC_ASSERT( post.distance == 19 );
+      RC_ASSERT_EQUALS( post.distance, 17 );
     }
 
     std::cout << "Diagonal Offsets: " << (int)p.NW_offset() << " " << (int)p.NE_offset() << " " << (int)p.SW_offset() << " " << (int)p.SE_offset() << std::endl;
