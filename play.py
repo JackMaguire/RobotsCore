@@ -39,6 +39,30 @@ def draw_board( stdscr, board ):
                 stdscr.addch( height, 2*i, 'M', curses.color_pair(84) )
                 stdscr.addch( height, 2*i+1, 'e', curses.color_pair(84) )
             
+def draw_pocket2( stdscr, board ):
+
+    pocket = create_pocket( board )
+    distances = pocket.calculate_distances()
+
+    for i in range( 0, 45 ):
+        for j in range( 0, 30 ):
+            height = 30 - j
+            c = board.cell( i, j )
+
+            if c == Occupant.EMPTY:
+                if (i+j)%2 == 0:
+                    stdscr.addstr( height, 2*i, str(distances[i][j]), curses.color_pair(246) )
+                else:
+                    stdscr.addstr( height, 2*i, str(distances[i][j]), curses.color_pair(250) )
+            elif c == Occupant.ROBOT:
+                stdscr.addch( height, 2*i, 'R', curses.color_pair(40) )
+                stdscr.addch( height, 2*i+1, 'b', curses.color_pair(40) )
+            elif c == Occupant.FIRE:
+                stdscr.addch( height, 2*i, 'E', curses.color_pair(161) )
+                stdscr.addch( height, 2*i+1, 'x', curses.color_pair(161) )
+            elif c == Occupant.HUMAN:
+                stdscr.addch( height, 2*i, 'M', curses.color_pair(84) )
+                stdscr.addch( height, 2*i+1, 'e', curses.color_pair(84) )
 
 def draw_pocket( stdscr, board ):
 
@@ -66,7 +90,8 @@ def draw_game( stdscr, game, show_pocket ):
     draw_info( stdscr, game )
 
     if show_pocket:
-        draw_pocket( stdscr, game.board() )
+        #draw_pocket( stdscr, game.board() )
+        draw_pocket2( stdscr, game.board() )
         pass
     
 def main( stdscr ):

@@ -101,7 +101,7 @@ Pocket::calculate_distances() const {
   //These are written in a way where the order can be switched
 
   //Top:
-  for( unsigned char y = Board::HEIGHT-1; y > UpY; --y ){
+  /*for( unsigned char y = Board::HEIGHT-1; y > UpY; --y ){
     for( unsigned char x = 0; x < Board::WIDTH; ++x ){
       auto & val = distances[x][y];
       unsigned char const candidate_val = y - UpY;
@@ -138,7 +138,7 @@ Pocket::calculate_distances() const {
       if( val == 0 ) val = candidate_val;
       else val = min( val, candidate_val );      
     }
-  }
+  }*/
 
   //Bottom-Left:
   {
@@ -312,59 +312,6 @@ find_cardinal_posts( Board const & b ){
   return posts;
 }
 
-unsigned char
-calc_up_left_diagonal(
-  Board const & b,
-  Pocket const & pocket
-){
-  // get_all_robots
-  Board::PositionVec positions = b.robots();
-
-  // erasing in rounds for the sake of sanity checking
-  // remove robots in incorrect quandrants
-  positions.erase(
-    std::remove_if(
-      positions.begin(), 
-      positions.end(),
-      [&pocket]( Position const & p ){
-	return p.x >= pocket.center.x or
-	  p.y <= pocket.center.y;
-      }
-    ),
-    positions.end()
-  );
-
-  // remove robots that are farther than the posts
-
-  auto rm_iter =
-    std::remove_if(
-      positions.begin(), 
-      positions.end(),
-      [&pocket]( Position const & p ){
-	return p.y >= pocket.cardinal_posts[ CardinalPost::UP|0 ].pos.y or p.x <= pocket.cardinal_posts[ CardinalPost::LEFT|0 ].pos.x;
-      }
-    );
-  positions.erase( rm_iter, positions.end() );  
-
-  if( positions.empty() ){
-    return pocket.cardinal_posts[ CardinalPost::UP|0 ].distance + pocket.cardinal_posts[ CardinalPost::LEFT|0 ].distance;
-  }
-  
-  //get closest Robot
-  std::sort(
-    positions.begin(),
-    positions.end(),
-    [&pocket]( Position const & a1, Position const & a2 ){
-      return a1.distance( pocket.center ) < a2.distance( pocket.center );
-    }    
-  );
-  Position const closest_robot = * positions.begin();
-
-  unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y ) - 1;
-
-  return offset;
-}
-
 template< typename QC, typename BC >
 unsigned char
 calc_diagonal(
@@ -389,6 +336,8 @@ calc_diagonal(
     std::remove_if( positions.begin(), positions.end(), box_check ),
     positions.end()
   );
+
+  std::cout << positions.size() << " " << (int)max_dist << " " << std::endl;
 
   if( positions.empty() ){
     return max_dist;
