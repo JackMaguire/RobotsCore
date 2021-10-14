@@ -31,12 +31,6 @@ uint8_t operator|(
   return (uint8_t)(a) | b;
 }
 
-enum class TerminalType : uint8_t
-  {
-   OOB,
-   ROBOT
-  };
-
 enum class DiagonalQuadrant : uint8_t
   {
    UP_RIGHT,
@@ -57,7 +51,6 @@ uint8_t operator|(
 
 struct Post {
   Position pos;
-  TerminalType type;
   uint8_t distance;
 
   std::string dist_str() const {
@@ -73,6 +66,22 @@ struct Pocket {
   Position center;
   std::array< Post, 4 > cardinal_posts;
   std::array< uint8_t, 4 > diagonal_offsets;
+
+  Post & up() {
+    return cardinal_posts[ CardinalPost::UP|0 ];
+  }
+
+  Post & down() {
+    return cardinal_posts[ CardinalPost::DOWN|0 ];
+  }
+
+  Post & left() {
+    return cardinal_posts[ CardinalPost::LEFT|0 ];
+  }
+
+  Post & right() {
+    return cardinal_posts[ CardinalPost::RIGHT|0 ];
+  }
 
   Post const & up() const {
     return cardinal_posts[ CardinalPost::UP|0 ];
@@ -303,11 +312,9 @@ find_cardinal_posts( Board const & b ){
       p.y += 1;
       if( not Board::position_is_in_bounds( p ) ){
 	p.y -= 1;
-	post.type = TerminalType::OOB;
 	break;
       } else if( b.cell(p) == Occupant::ROBOT ){
 	p.y -= 1;
-	post.type = TerminalType::ROBOT;
 	break;
       }
     }
@@ -324,11 +331,9 @@ find_cardinal_posts( Board const & b ){
       p.y -= 1;
       if( not Board::position_is_in_bounds( p ) ){
 	p.y += 1;
-	post.type = TerminalType::OOB;
 	break;
       } else if( b.cell(p) == Occupant::ROBOT ){
 	p.y += 1;
-	post.type = TerminalType::ROBOT;
 	break;
       }
     }
@@ -345,11 +350,9 @@ find_cardinal_posts( Board const & b ){
       p.x -= 1;
       if( not Board::position_is_in_bounds( p ) ){
 	p.x += 1;
-	post.type = TerminalType::OOB;
 	break;
       } else if( b.cell(p) == Occupant::ROBOT ){
 	p.x += 1;
-	post.type = TerminalType::ROBOT;
 	break;
       }
     }
@@ -366,11 +369,9 @@ find_cardinal_posts( Board const & b ){
       p.x += 1;
       if( not Board::position_is_in_bounds( p ) ){
 	p.x -= 1;
-	post.type = TerminalType::OOB;
 	break;
       } else if( b.cell(p) == Occupant::ROBOT ){
 	p.x -= 1;
-	post.type = TerminalType::ROBOT;
 	break;
       }
     }
@@ -546,7 +547,21 @@ create_pocket( Board const & b ){
     );
 
   //Resize Posts
-  
+  pocket.up().distance =
+    std::max( pocket.NW_offset(), pocket.NE_offset() );
+  pocket.up().pos.y = pocket.center.y + pocket.up().distance;
+
+  pocket.down().distance =
+    std::max( pocket.SW_offset(), pocket.SE_offset() );
+  pocket.down().pos.y = pocket.center.y - pocket.down().distance;
+
+  pocket.left().distance =
+    std::max( pocket.SW_offset(), pocket.NW_offset() );
+  pocket.left().pos.x = pocket.center.x - pocket.left().distance;
+
+  pocket.right().distance =
+    std::max( pocket.SE_offset(), pocket.NE_offset() );
+  pocket.right().pos.x = pocket.center.x + pocket.right().distance;
 
   return pocket;
 }

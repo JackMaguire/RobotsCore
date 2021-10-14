@@ -155,11 +155,6 @@ PYBIND11_MODULE(robots_core, m) {
       .value( "RIGHT", CardinalPost::RIGHT )
       ;
 
-    py::enum_< TerminalType >( m_pocket, "TerminalType" )
-      .value( "OOB", TerminalType::OOB )
-      .value( "ROBOT", TerminalType::ROBOT )
-      ;
-
     py::enum_< DiagonalQuadrant >(m_pocket, "DiagonalQuadrant")
       .value( "UP_RIGHT", DiagonalQuadrant::UP_RIGHT )
       .value( "UP_LEFT", DiagonalQuadrant::UP_LEFT )
@@ -169,7 +164,6 @@ PYBIND11_MODULE(robots_core, m) {
 
     py::class_< Post > post( m_pocket, "Post" );
     post.def_readonly( "pos", &Post::pos );
-    post.def_readonly( "type", &Post::type );
     post.def_readonly( "distance", &Post::distance );
 
     py::class_< Pocket > pocket( m_pocket, "Pocket" );
