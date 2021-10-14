@@ -8,12 +8,12 @@
 namespace robots_core {
 namespace pocket {
 
-unsigned char
-diff( unsigned char const a, unsigned char const b ){
+uint8_t
+diff( uint8_t const a, uint8_t const b ){
   return std::max( a, b ) - std::min( a, b );
 }
 
-enum class CardinalPost : unsigned char
+enum class CardinalPost : uint8_t
   {
    UP,
    DOWN,
@@ -23,20 +23,20 @@ enum class CardinalPost : unsigned char
 
 //for easy indexing
 // |0 gets optimized out
-unsigned char operator|(
+uint8_t operator|(
   CardinalPost const a,
-  unsigned char const b
+  uint8_t const b
 ){
-  return (unsigned char)(a) | b;
+  return (uint8_t)(a) | b;
 }
 
-enum class TerminalType : unsigned char
+enum class TerminalType : uint8_t
   {
    OOB,
    ROBOT
   };
 
-enum class DiagonalQuadrant : unsigned char
+enum class DiagonalQuadrant : uint8_t
   {
    UP_RIGHT,
    UP_LEFT,
@@ -46,18 +46,18 @@ enum class DiagonalQuadrant : unsigned char
 
 //for easy indexing
 // |0 gets optimized out
-unsigned char operator|(
+uint8_t operator|(
   DiagonalQuadrant const a,
-  unsigned char const b
+  uint8_t const b
 ){
-  return (unsigned char)(a) | b;
+  return (uint8_t)(a) | b;
 }
 
 
 struct Post {
   Position pos;
   TerminalType type;
-  unsigned char distance;
+  uint8_t distance;
 
   std::string dist_str() const {
     return std::to_string( (unsigned int)distance );
@@ -71,7 +71,7 @@ struct Pocket {
 
   Position center;
   std::array< Post, 4 > cardinal_posts;
-  std::array< unsigned char, 4 > diagonal_offsets;
+  std::array< uint8_t, 4 > diagonal_offsets;
 
   BoardType calculate_distances() const;
 };
@@ -81,13 +81,13 @@ Pocket::calculate_distances() const {
   using Card = CardinalPost;
   using Quad = DiagonalQuadrant;
 
-  unsigned char const RightX = cardinal_posts[ Card::RIGHT|0 ].pos.x;
-  unsigned char const LeftX = cardinal_posts[ Card::LEFT|0 ].pos.x;
-  unsigned char const UpY = cardinal_posts[ Card::UP|0 ].pos.y;
-  unsigned char const DownY = cardinal_posts[ Card::DOWN|0 ].pos.y;
+  uint8_t const RightX = cardinal_posts[ Card::RIGHT|0 ].pos.x;
+  uint8_t const LeftX = cardinal_posts[ Card::LEFT|0 ].pos.x;
+  uint8_t const UpY = cardinal_posts[ Card::UP|0 ].pos.y;
+  uint8_t const DownY = cardinal_posts[ Card::DOWN|0 ].pos.y;
 
   auto && min =
-    []( unsigned char const a, unsigned char const b ){
+    []( uint8_t const a, uint8_t const b ){
       return std::min( a, b );
     };
 
@@ -101,40 +101,40 @@ Pocket::calculate_distances() const {
   //These are written in a way where the order can be switched
 
   //Top:
-  /*for( unsigned char y = Board::HEIGHT-1; y > UpY; --y ){
-    for( unsigned char x = 0; x < Board::WIDTH; ++x ){
+  /*for( uint8_t y = Board::HEIGHT-1; y > UpY; --y ){
+    for( uint8_t x = 0; x < Board::WIDTH; ++x ){
       auto & val = distances[x][y];
-      unsigned char const candidate_val = y - UpY;
+      uint8_t const candidate_val = y - UpY;
       if( val == 0 ) val = candidate_val;
       else val = min( val, candidate_val );
     }
   }
 
   //Bottom:
-  for( unsigned char y = 0; y < DownY; ++y ){
-    for( unsigned char x = 0; x < Board::WIDTH; ++x ){
+  for( uint8_t y = 0; y < DownY; ++y ){
+    for( uint8_t x = 0; x < Board::WIDTH; ++x ){
       auto & val = distances[x][y];
-      unsigned char const candidate_val = DownY - y;
+      uint8_t const candidate_val = DownY - y;
       if( val == 0 ) val = candidate_val;
       else val = min( val, candidate_val );
     }
   }
 
   //Left:
-  for( unsigned char x = 0; x < LeftX; ++x ){
-    for( unsigned char y = 0; y < Board::HEIGHT; ++y ){
+  for( uint8_t x = 0; x < LeftX; ++x ){
+    for( uint8_t y = 0; y < Board::HEIGHT; ++y ){
       auto & val = distances[x][y];
-      unsigned char const candidate_val = LeftX - x;
+      uint8_t const candidate_val = LeftX - x;
       if( val == 0 ) val = candidate_val;
       else val = min( val, candidate_val );      
     }
   }
 
   //Right:
-  for( unsigned char x = Board::WIDTH-1; x > RightX; --x ){
-    for( unsigned char y = 0; y < Board::HEIGHT; ++y ){
+  for( uint8_t x = Board::WIDTH-1; x > RightX; --x ){
+    for( uint8_t y = 0; y < Board::HEIGHT; ++y ){
       auto & val = distances[x][y];
-      unsigned char const candidate_val = x - RightX;
+      uint8_t const candidate_val = x - RightX;
       if( val == 0 ) val = candidate_val;
       else val = min( val, candidate_val );      
     }
@@ -142,9 +142,9 @@ Pocket::calculate_distances() const {
 
   //Bottom-Left:
   {
-    unsigned char const n_iter = center.x + center.y - diagonal_offsets[Quad::DOWN_LEFT|0];
-    unsigned char const starting_x = center.x - diagonal_offsets[Quad::DOWN_LEFT|0];
-    for( unsigned char i = 1; i <= n_iter; ++i ){
+    uint8_t const n_iter = center.x + center.y - diagonal_offsets[Quad::DOWN_LEFT|0];
+    uint8_t const starting_x = center.x - diagonal_offsets[Quad::DOWN_LEFT|0];
+    for( uint8_t i = 1; i <= n_iter; ++i ){
       Position p({ sm_int(starting_x - i + 1), sm_int(center.y-1) });
       while( true ){
 	if( Board::position_is_in_bounds( p ) ){
@@ -161,9 +161,9 @@ Pocket::calculate_distances() const {
 
   //Bottom-Right:
   {
-    unsigned char const n_iter = (Board::WIDTH-1-center.x) + center.y - diagonal_offsets[Quad::DOWN_RIGHT|0];
-    unsigned char const starting_x = center.x + diagonal_offsets[Quad::DOWN_RIGHT|0];
-    for( unsigned char i = 1; i <= n_iter; ++i ){
+    uint8_t const n_iter = (Board::WIDTH-1-center.x) + center.y - diagonal_offsets[Quad::DOWN_RIGHT|0];
+    uint8_t const starting_x = center.x + diagonal_offsets[Quad::DOWN_RIGHT|0];
+    for( uint8_t i = 1; i <= n_iter; ++i ){
       Position p({ sm_int(starting_x + i-1), sm_int(center.y-1) });
       while( true ){
 	if( Board::position_is_in_bounds( p ) ){
@@ -179,9 +179,9 @@ Pocket::calculate_distances() const {
 
   //top-Right:
   {
-    unsigned char const n_iter = (Board::WIDTH-1-center.x) + (Board::HEIGHT-1-center.y) - diagonal_offsets[Quad::UP_RIGHT|0];
-    unsigned char const starting_x = center.x + diagonal_offsets[Quad::UP_RIGHT|0];
-    for( unsigned char i = 1; i <= n_iter; ++i ){
+    uint8_t const n_iter = (Board::WIDTH-1-center.x) + (Board::HEIGHT-1-center.y) - diagonal_offsets[Quad::UP_RIGHT|0];
+    uint8_t const starting_x = center.x + diagonal_offsets[Quad::UP_RIGHT|0];
+    for( uint8_t i = 1; i <= n_iter; ++i ){
       Position p({ sm_int(starting_x + i-1), sm_int(center.y+1) });
       while( true ){
 	if( Board::position_is_in_bounds( p ) ){
@@ -197,9 +197,9 @@ Pocket::calculate_distances() const {
 
   //top-Left:
   {
-    unsigned char const n_iter = center.x + (Board::HEIGHT-1-center.y) - diagonal_offsets[Quad::UP_LEFT|0];
-    unsigned char const starting_x = center.x - diagonal_offsets[Quad::UP_LEFT|0];
-    for( unsigned char i = 1; i <= n_iter; ++i ){
+    uint8_t const n_iter = center.x + (Board::HEIGHT-1-center.y) - diagonal_offsets[Quad::UP_LEFT|0];
+    uint8_t const starting_x = center.x - diagonal_offsets[Quad::UP_LEFT|0];
+    for( uint8_t i = 1; i <= n_iter; ++i ){
       Position p({ sm_int(starting_x-i+1), sm_int(center.y+1) });
       while( true ){
 	if( Board::position_is_in_bounds( p ) ){
@@ -225,7 +225,7 @@ find_cardinal_posts( Board const & b ){
 
   //UP
   {
-    Post & post = posts[ (unsigned char) CardinalPost::UP ];
+    Post & post = posts[ (uint8_t) CardinalPost::UP ];
 
     Position p = h;
     while( true ){
@@ -246,7 +246,7 @@ find_cardinal_posts( Board const & b ){
 
   //DOWN
   {
-    Post & post = posts[ (unsigned char) CardinalPost::DOWN ];
+    Post & post = posts[ (uint8_t) CardinalPost::DOWN ];
 
     Position p = h;
     while( true ){
@@ -267,7 +267,7 @@ find_cardinal_posts( Board const & b ){
 
   //LEFT
   {
-    Post & post = posts[ (unsigned char) CardinalPost::LEFT ];
+    Post & post = posts[ (uint8_t) CardinalPost::LEFT ];
 
     Position p = h;
     while( true ){
@@ -288,7 +288,7 @@ find_cardinal_posts( Board const & b ){
 
   //RIGHT
   {
-    Post & post = posts[ (unsigned char) CardinalPost::RIGHT ];
+    Post & post = posts[ (uint8_t) CardinalPost::RIGHT ];
 
     Position p = h;
     while( true ){
@@ -313,13 +313,13 @@ find_cardinal_posts( Board const & b ){
 }
 
 template< typename QC, typename BC >
-unsigned char
+uint8_t
 calc_diagonal(
   Board const & b,
   Pocket const & pocket,
   QC && quadrant_check,
   BC && box_check,
-  unsigned char const max_dist
+  uint8_t const max_dist
 ){
   // get_all_robots
   Board::PositionVec positions = b.robots();
@@ -353,7 +353,7 @@ calc_diagonal(
   );
   Position const closest_robot = * positions.begin();
 
-  unsigned char const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y ) - 1;
+  uint8_t const offset = std::abs( closest_robot.x - pocket.center.x ) + std::abs( closest_robot.y - pocket.center.y ) - 1;
 
   return offset;
 }

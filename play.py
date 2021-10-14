@@ -75,6 +75,11 @@ def draw_pocket( stdscr, board ):
             if distances[i][j] == 0:
                 stdscr.addch( height, 2*i+1, 'P', curses.color_pair(99) )         
 
+def draw_posts( stdscr, board ):
+    pocket = create_pocket( board )
+    for p in pocket.cardinal_posts:
+        stdscr.addch( p.pos.y, 2*p.pos.x+1, 'P', curses.color_pair(99) )
+
 
 def draw_info( stdscr, game ):
     info = "N Safe Tele: {}   Current round: {}   Score: {}".format( game.n_safe_teleports_remaining(), game.round(), game.score() )
@@ -91,7 +96,8 @@ def draw_game( stdscr, game, show_pocket ):
 
     if show_pocket:
         #draw_pocket( stdscr, game.board() )
-        draw_pocket2( stdscr, game.board() )
+        #draw_pocket2( stdscr, game.board() )
+        draw_posts( stdscr, game.board() )
         pass
     
 def main( stdscr ):
