@@ -37,31 +37,14 @@ struct GraphTests {
       };
 
     //0 degrees
-    test_delta( P{1,0}, 0 ); //0 degrees
-    RC_ASSERT( calc_angle({0,0}, {1,0}) == 0 );
-    RC_ASSERT_DELTA( determine_orientation( b, h-P{1,0} ), 0, 0.001 );
-
-    //45 degrees
-    RC_ASSERT_DELTA( calc_angle({0,0}, {1,1}), pi/4, 0.001 );
-    RC_ASSERT_DELTA( determine_orientation( b, h-P{1,1} ), pi/4, 0.001 );
-
-    //90 degrees
-    RC_ASSERT_DELTA( calc_angle({0,0}, {0,1}), pi/2, 0.001 );
-
-    //135 degrees
-    RC_ASSERT_DELTA( calc_angle({0,0}, {-1,1}), 3*pi/4, 0.001 );
-
-    //180 degrees
-    RC_ASSERT_DELTA( calc_angle({0,0}, {-1,0}), pi, 0.001 );
-
-    //-45 degrees
-    RC_ASSERT_DELTA( calc_angle({0,0}, {1,-1}), -pi/4, 0.001 );
-
-    //-90 degrees
-    RC_ASSERT_DELTA( calc_angle({0,0}, {0,-1}), -pi/2, 0.001 );
-
-    //-135 degrees
-    RC_ASSERT_DELTA( calc_angle({0,0}, {-1,-1}), -3*pi/4, 0.001 );
+    test_delta( P{ 1, 0}, 0       ); //0 degrees
+    test_delta( P{ 1, 1}, pi/4    ); //45 degrees
+    test_delta( P{ 0, 1}, pi/2    ); //90 degrees
+    test_delta( P{-1, 1}, 3*pi/4  ); //135 degrees
+    test_delta( P{-1, 0}, pi      ); //180 degrees
+    test_delta( P{ 1,-1}, -pi/4   ); //-45 degrees
+    test_delta( P{ 0,-1}, -pi/2   ); //-90 degrees
+    test_delta( P{-1,-1}, -3*pi/4 ); //-135 degrees
 
     return true;
   }
