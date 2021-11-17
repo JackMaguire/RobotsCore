@@ -48,18 +48,27 @@ double determine_orientation(
   Board const & b,
   Position const p
 ){
-  if( b.position_is_in_bounds(p) and b.cell(p) == Occupant::HUMAN ){
-    //Destination position is { 22, 14.5 }
-    //but we need these as integers.
-    //let's change units by doubling all numbers
-    //Source is p*2, destination is {44, 29}
+  if( b.position_is_in_bounds(p) ){
+    if( b.cell(p) == Occupant::HUMAN ){
+      //Destination position is { 22, 14.5 }
+      //but we need these as integers.
+      //let's change units by doubling all numbers
+      //Source is p*2, destination is {44, 29}
 
-    Position const source = p*2;
-    return calc_angle( source, Position({44, 29}) );
-  } else {
-    //This cell is looking directly at the human
-    return calc_angle( p, b.human_position() );
+      Position const source = p*2;
+      return calc_angle( source, Position({44, 29}) );
+    }
   }
+
+  //This cell is looking directly at the human
+  return calc_angle( p, b.human_position() );
+
+}
+
+Occupant
+cell_or_oob( Board const & b, Position const p ){
+  if( b.position_is_in_bounds(p) ) return b.cell(p);
+  else return Occupant::OOB;
 }
 
 struct Node {
@@ -73,7 +82,7 @@ struct Node {
     Position const p,
     SpecialCaseNode spcase = SpecialCaseNode::NONE
   ):
-    occupant( b.cell( p ) ),
+    occupant( cell_or_oob( b, p ) ),
     position( p ),
     special_case( spcase ),
     orientation( determine_orientation( b, p ) )
