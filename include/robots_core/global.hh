@@ -99,6 +99,11 @@ struct Position {
     return sqrt( diff.x*diff.x + diff.y*diff.y );
   }
 
+  float distance_sqaured( Position const & o ) const {
+    Position const diff = (*this) - o;
+    return diff.x*diff.x + diff.y*diff.y;
+  }
+
   sm_int
   manhattan_distance( Position const & o ) const {
     return abs( x - o.x ) + abs( y - o.y );

@@ -126,5 +126,62 @@ determine_nodes_for_graph(
   //TODO
 }*/
 
+SpecialCaseNode
+get_direction(
+  Position const h,
+  Position const p
+){
+  if( p.x == h.x-1 ){
+    if( p.y == h.y-1 ) return SpecialCaseNode::Z;
+    else if( p.y == h.y ) return SpecialCaseNode::A;
+    else if( p.y == h.y+1 ) return SpecialCaseNode::Q;
+    else return SpecialCaseNode::NONE;
+  }
+
+  if( p.x == h.x ){
+    if( p.y == h.y-1 ) return SpecialCaseNode::X;
+    else if( p.y == h.y ) return SpecialCaseNode::S;
+    else if( p.y == h.y+1 ) return SpecialCaseNode::W;
+    else return SpecialCaseNode::NONE;
+  }
+
+  if( p.x == h.x+1 ){
+    if( p.y == h.y-1 ) return SpecialCaseNode::C;
+    else if( p.y == h.y ) return SpecialCaseNode::D;
+    else if( p.y == h.y+1 ) return SpecialCaseNode::E;
+    else return SpecialCaseNode::NONE;
+  }
+
+  return SpecialCaseNode::NONE;
+}
+
+std::vector< Node >
+get_all_nodes(
+  Board const & b
+){
+  std::vector< Node > nodes;
+  nodes.reserve( MAX_N_ROBOTS + 9 + 4 );
+
+  Position const h = b.human_position();
+  using P = Position;
+
+  nodes.emplace_back( b, P{ h.x, Board::HEIGHT }, SpecialCaseNode::TOP_OOB );
+  nodes.emplace_back( b, P{ h.x, -1 }, SpecialCaseNode::BOTTOM_OOB );
+  nodes.emplace_back( b, P{ -1, h.y }, SpecialCaseNode::LEFT_OOB );
+  nodes.emplace_back( b, P{ Board::WIDTH, h.y }, SpecialCaseNode::RIGHT_OOB );
+
+  for( sm_int x = 0; x < Board::WIDTH; ++x ){
+    for( sm_int y = 0; y < Board::HEIGHT; ++y ){
+      Position const p{ x, y };
+
+      if( p.distance_sqaured( h ) < 4 ){
+	nodes.emplace_back( b, p, get_direction( h, p ) );
+      }
+    }
+  }
+
+  return nodes;
+}
+
 }
 }
