@@ -26,10 +26,24 @@ struct GraphTests {
   }
 
   static bool test_angle_calc(){
+    Board const b;
+    Position const h = b.human_position();
+    using P = Position;
+
+    auto && test_delta =
+      [&]( P const delta, double const expected ){
+	RC_ASSERT_DELTA( calc_angle({0,0}, delta), expected, 0.001 );
+	RC_ASSERT_DELTA( determine_orientation( b, h-delta ), expected, 0.001 );
+      };
+
+    //0 degrees
+    test_delta( P{1,0}, 0 ); //0 degrees
     RC_ASSERT( calc_angle({0,0}, {1,0}) == 0 );
+    RC_ASSERT_DELTA( determine_orientation( b, h-P{1,0} ), 0, 0.001 );
 
     //45 degrees
     RC_ASSERT_DELTA( calc_angle({0,0}, {1,1}), pi/4, 0.001 );
+    RC_ASSERT_DELTA( determine_orientation( b, h-P{1,1} ), pi/4, 0.001 );
 
     //90 degrees
     RC_ASSERT_DELTA( calc_angle({0,0}, {0,1}), pi/2, 0.001 );
