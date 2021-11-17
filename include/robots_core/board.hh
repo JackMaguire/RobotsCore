@@ -20,7 +20,7 @@
 
 namespace robots_core {
 
-constexpr Position STARTING_POSITION({ 23, 15 });
+constexpr Position STARTING_POSITION({ 22, 15 });
 
 #ifdef RC_TESTS
 namespace tests { struct BoardTests; }

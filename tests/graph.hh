@@ -46,6 +46,8 @@ struct GraphTests {
     test_delta( P{ 0,-1}, -pi/2   ); //-90 degrees
     test_delta( P{-1,-1}, -3*pi/4 ); //-135 degrees
 
+    RC_ASSERT_DELTA( determine_orientation( b, h ), -pi/2, 0.001 );
+    
     return true;
   }
 };
