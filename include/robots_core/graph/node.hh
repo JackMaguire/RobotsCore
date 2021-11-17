@@ -5,7 +5,7 @@
 #include <robots_core/asserts.hh>
 
 //#include <array>
-#include <cmath>  //log
+#include <cmath>  //log, atan2
 #include <vector>
 
 namespace robots_core{
@@ -30,10 +30,54 @@ enum class SpecialCaseNode : unsigned char {
   NONE = count //these should stay at the end
 };
 
+double calc_angle(
+  Position const & p1,
+  Position const & p2
+){
+  Position const p3 = p1 + Position({10,0});
+
+  //https://stackoverflow.com/questions/1211212/how-to-calculate-an-angle-from-three-points
+  double const result =
+    atan2(p3.y - p1.y, p3.x - p1.x) -
+    atan2(p2.y - p1.y, p2.x - p1.x);
+
+  return result;
+}
+
+double determine_orientation(
+  Board const & b,
+  Position const p
+){
+  if( b.position_is_in_bounds(p) and b.cell(p) == Occupant::HUMAN ){
+    //Destination position is { 22, 14.5 }
+    //but we need these as integers.
+    //let's change units by doubling all numbers
+    //Source is p*2, destination is {44, 29}
+
+    Position const source = p*2;
+    return calc_angle( source, Position({44, 29}) );
+  } else {
+    //This cell is looking directly at the human
+    return calc_angle( p, b.human_position() );
+  }
+}
 
 struct Node {
+  Occupant occupant;
   Position position;
   SpecialCaseNode special_case = SpecialCaseNode::NONE;
+  double orientation;
+  
+  Node(
+    Board const & b,
+    Position const p,
+    SpecialCaseNode spcase = SpecialCaseNode::NONE
+  ):
+    occupant( b.cell( p ) ),
+    position( p ),
+    special_case( spcase ),
+    orientation( determine_orientation( b, p ) )
+  {}
 
   int dx() const {
     switch( special_case ){

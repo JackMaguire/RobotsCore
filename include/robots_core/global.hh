@@ -3,6 +3,7 @@
 //#include <cstdlib> //rand()
 //#include <algorithm>
 #include <math.h> //sqrt
+#include <type_traits>
 
 namespace robots_core {
 
@@ -39,7 +40,7 @@ enum class MoveResult : unsigned char
 
 
 struct Position {
-  
+
   bool operator==( Position const & o ) const {
     return x == o.x && y == o.y;
   }
@@ -62,6 +63,34 @@ struct Position {
     Position p;
     p.x = x - o.x;
     p.y = y - o.y;
+    return p;
+  }
+
+  Position operator+( sm_int const val ) const {
+    Position p;
+    p.x = x + val;
+    p.y = y + val;
+    return p;
+  }
+
+  Position operator-( sm_int const val ) const {
+    Position p;
+    p.x = x - val;
+    p.y = y - val;
+    return p;
+  }
+
+  Position operator*( sm_int const val ) const {
+    Position p;
+    p.x = x * val;
+    p.y = y * val;
+    return p;
+  }
+
+  Position operator/( sm_int const val ) const {
+    Position p;
+    p.x = x / val;
+    p.y = y / val;
     return p;
   }
 
