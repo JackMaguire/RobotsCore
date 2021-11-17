@@ -176,6 +176,8 @@ get_all_nodes(
 
       if( p.distance_sqaured( h ) < 4 ){
 	nodes.emplace_back( b, p, get_direction( h, p ) );
+      } else if( b.cell(p) != Occupant::EMPTY ){
+	nodes.emplace_back( b, p );
       }
     }
   }

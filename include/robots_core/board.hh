@@ -78,6 +78,10 @@ public: //inlined getters
     return robot_positions_.size();
   }
 
+  unsigned int n_robots_uint() const {
+    return robot_positions_.size();
+  }
+
   Position const & human_position() const {
     return human_position_;
   }
