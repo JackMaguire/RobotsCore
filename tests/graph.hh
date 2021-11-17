@@ -10,6 +10,10 @@
 namespace robots_core {
 namespace tests {
 
+using namespace robots_core::graph;
+
+constexpr double pi = 3.14159265358979323846;
+
 struct GraphTests {
 
   static void run(){
@@ -23,6 +27,29 @@ struct GraphTests {
 
   static bool test_angle_calc(){
     RC_ASSERT( calc_angle({0,0}, {1,0}) == 0 );
+
+    //45 degrees
+    RC_ASSERT_DELTA( calc_angle({0,0}, {1,1}), pi/4, 0.001 );
+
+    //90 degrees
+    RC_ASSERT_DELTA( calc_angle({0,0}, {0,1}), pi/2, 0.001 );
+
+    //135 degrees
+    RC_ASSERT_DELTA( calc_angle({0,0}, {-1,1}), 3*pi/4, 0.001 );
+
+    //180 degrees
+    RC_ASSERT_DELTA( calc_angle({0,0}, {-1,0}), pi, 0.001 );
+
+    //-45 degrees
+    RC_ASSERT_DELTA( calc_angle({0,0}, {1,-1}), -pi/4, 0.001 );
+
+    //-90 degrees
+    RC_ASSERT_DELTA( calc_angle({0,0}, {0,-1}), -pi/2, 0.001 );
+
+    //-135 degrees
+    RC_ASSERT_DELTA( calc_angle({0,0}, {-1,-1}), -3*pi/4, 0.001 );
+
+    return true;
   }
 };
 

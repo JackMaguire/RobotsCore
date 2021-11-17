@@ -24,7 +24,7 @@ struct RobotsCoreException : public std::exception {
 
 #define RC_ASSERT_EQUALS(x,y) if (!(x == y)) { throw RobotsCoreException( std::to_string(x) + " == " + std::to_string(y) + " failed on line " + std::to_string( __LINE__ ) + " in " + __FILE__ ); }
 
-
+#define RC_ASSERT_DELTA( x , y, d ) if ( std::abs( x - y ) > d ) { throw RobotsCoreException( std::to_string(x) + " is within " + std::to_string(d) + " of " + std::to_string(y) + " failed on line " + std::to_string( __LINE__ ) + " in " + __FILE__ ); }
 
 #ifdef NDEBUG
 #define RC_DEBUG_ASSERT(condition) ((void)0)

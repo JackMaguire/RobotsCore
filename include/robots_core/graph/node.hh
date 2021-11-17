@@ -32,9 +32,9 @@ enum class SpecialCaseNode : unsigned char {
 
 double calc_angle(
   Position const & p1,
-  Position const & p2
+  Position const & p3
 ){
-  Position const p3 = p1 + Position({10,0});
+  Position const p2 = p1 + Position({10,0});
 
   //https://stackoverflow.com/questions/1211212/how-to-calculate-an-angle-from-three-points
   double const result =
