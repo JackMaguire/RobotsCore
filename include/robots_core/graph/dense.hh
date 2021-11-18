@@ -29,6 +29,12 @@ struct DenseGraph {
   DenseGraph(){}
 
   DenseGraph(
+    RobotsGame const & game
+  ){
+    construct( game );
+  }
+
+  DenseGraph(
     RobotsGame const & game,
     std::vector< Node > const & nodes
   ){
@@ -61,6 +67,14 @@ struct DenseGraph {
 
   void
   construct(
+    RobotsGame const & game
+  ){
+    std::vector< Node > const nodes = get_all_nodes( game.board() );
+    construct( game, nodes );
+  }
+
+  void
+  construct(
     RobotsGame const & game,
     std::vector< Node > const & nodes
   ){
@@ -79,6 +93,10 @@ struct DenseGraph {
       }
     }
   }
+
+  X copyX() const{ return x; }
+  A copyA() const{ return a; }
+  E copyE() const{ return e; }
 };
 
 }

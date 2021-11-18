@@ -40,7 +40,7 @@ PYBIND11_MODULE(robots_core, m) {
 
     py::class_< Position > p( m, "Position" );
     p.def( py::init<>() );
-    p.def( py::init<>() );
+    //p.def( py::init<>() );
     p.def( py::self + py::self );
     p.def( py::self - py::self );
     p.def( py::self == py::self );
@@ -138,11 +138,22 @@ PYBIND11_MODULE(robots_core, m) {
       .value( "RIGHT_OOB", graph::SpecialCaseNode::RIGHT_OOB )
       .value( "BOTTOM_OOB", graph::SpecialCaseNode::BOTTOM_OOB )
 
-      .value( "NONE", graph::SpecialCaseNode::NONE );
+      .value( "NONE", graph::SpecialCaseNode::NONE )
+      .value( "count", graph::SpecialCaseNode::count );
 
     py::class_< graph::Node > node( m_graph, "Node" );
-    node.def_readwrite( "position", &graph::Node::position );
-    node.def_readwrite( "special_case", &graph::Node::special_case );
+    node.def_readonly( "occupant", &graph::Node::occupant );
+    node.def_readonly( "position", &graph::Node::position );
+    node.def_readonly( "special_case", &graph::Node::special_case );
+    node.def_readonly( "orientation", &graph::Node::orientation );
+
+    using robots_core::graph::DenseGraph;
+    py::class_< DenseGraph > dg( m_graph, "DenseGraph" );
+    dg.def( py::init<>() );
+    dg.def( py::init< RobotsGame const & >() );
+    dg.def( "copyX", &DenseGraph::copyX );
+    dg.def( "copyA", &DenseGraph::copyA );
+    dg.def( "copyE", &DenseGraph::copyE );
 
     //Pocket
     using namespace robots_core::pocket;
@@ -176,4 +187,6 @@ PYBIND11_MODULE(robots_core, m) {
     m_pocket.def( "find_cardinal_posts", &find_cardinal_posts );
     m_pocket.def( "create_pocket", &create_pocket );
 
+#ifndef RC_EXPAND_PYMODULE
 }
+#endif //RC_EXPAND_PYMODULE
