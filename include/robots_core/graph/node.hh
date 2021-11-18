@@ -164,6 +164,13 @@ get_direction(
   return SpecialCaseNode::NONE;
 }
 
+bool
+is_adjacent9( Position const & p1, Position const & p2 ) {
+  return std::abs( p1.x - p2.x ) <= 1
+    and  std::abs( p1.y - p2.y ) <= 1;
+}
+
+
 std::vector< Node >
 get_all_nodes(
   Board const & b
@@ -183,7 +190,7 @@ get_all_nodes(
     for( sm_int y = 0; y < Board::HEIGHT; ++y ){
       Position const p{ x, y };
 
-      if( p.distance_sqaured( h ) < 4 ){
+      if( is_adjacent9( h, p ) ){
 	nodes.emplace_back( b, p, get_direction( h, p ) );
       } else if( b.cell(p) != Occupant::EMPTY ){
 	nodes.emplace_back( b, p );

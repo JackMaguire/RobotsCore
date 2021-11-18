@@ -21,13 +21,15 @@ constexpr static unsigned char F = NOccupantTypes + 3;
 //+1: if legal move, ln( n_robots_killed ), -1 if n_robots_killed=0
 //+2: number of safe teleports left
 
-constexpr static unsigned char S = 4;
+constexpr static unsigned char S = 6;
 //0: ln( distance )-1
 //1: ln( small_leg_dist )-1 // smaller cathetus of right triangle
 //2: ln( long_leg_dist )-1  //  longer cathetus of right triangle
 //3: ratio of small_leg_dist / long_leg_dist
+//4: sin( angle )
+//5: cos( angle )
 
-constexpr static bool edges_are_symmetric = true;
+constexpr static bool edges_are_symmetric = false;
 
 //Checks occupant type and distance to determine if we want to represent this pairing with an edge
 static
@@ -54,17 +56,6 @@ calculate_edge(
   Node const & j
 );
   
-private:
-
-//This override is private because distances are calculated in special ways for OOB Nodes
-static
-bool
-edge_should_exist(
-  Occupant const occA,
-  Occupant const occB,
-  float const distance
-);
-
 }; // class GraphDecorator
 
 bool
@@ -73,64 +64,27 @@ GraphDecorator::edge_should_exist(
   Node const & j,
   Board const & b
 ){
+  //1. SPECIAL CASES
+  if( i.special_case != SpecialCaseNode::NONE
+    or j.special_case != SpecialCaseNode::NONE ){
+    //Edges for all things if they are special
+    return true;
+  }
+
+  //2. TWO ROBOTS THAT CAN COLLIDE
   Occupant const occ_i = b.cell( i.position );
   Occupant const occ_j = b.cell( j.position );
-
-  float distance = 0.0;
-
-  if( occ_i == Occupant::OOB ){
-    if( occ_j == Occupant::OOB ) return false;
-
-    switch( i.special_case ){
-    case SpecialCaseNode::LEFT_OOB:   distance = 1 +             j.position.x; break;
-    case SpecialCaseNode::RIGHT_OOB:  distance = Board::WIDTH -  j.position.x; break;
-    case SpecialCaseNode::BOTTOM_OOB: distance = 1 +             j.position.y; break;
-    case SpecialCaseNode::TOP_OOB:    distance = Board::HEIGHT - j.position.y; break;
-    default: RC_DEBUG_ASSERT( false ); break;
+  if( occ_i == Occupant::ROBOT and occ_j == Occupant::ROBOT ){
+    if( i.position.x == j.position.x or i.position.y == j.position.y ){
+      return true;
     }
-  } else if ( occ_j == Occupant::OOB ){
-    switch( j.special_case ){
-    case SpecialCaseNode::LEFT_OOB:   distance = 1 +             i.position.x; break;
-    case SpecialCaseNode::RIGHT_OOB:  distance = Board::WIDTH  - i.position.x; break;
-    case SpecialCaseNode::BOTTOM_OOB: distance = 1 +             i.position.y; break;
-    case SpecialCaseNode::TOP_OOB:    distance = Board::HEIGHT - i.position.y; break;
-    default: RC_DEBUG_ASSERT( false ); break;
-    }
-  } else {
-    distance = i.position.distance( j.position );
   }
 
-  return edge_should_exist( occ_i, occ_j, distance );
+  //3. TWO ROBOTS/EXPLOSIONS NOT IN LINE
+  return i.position.distance( j.position ) < 10; //relatively arbitrary
 }
 
 
-bool
-GraphDecorator::edge_should_exist(
-  Occupant const occA,
-  Occupant const occB,
-  float const distance
-){
-  switch( occA ){
-  case Occupant::HUMAN:
-  case Occupant::EMPTY:
-    return true;
-  case Occupant::OOB:
-    if( occB == Occupant::OOB) return false;
-  default:
-    break;
-  }
-
-  switch( occB ){
-  case Occupant::HUMAN:
-  case Occupant::EMPTY:
-    return true;
-  default:
-    break;
-  }
-
-  return distance < 10;
-
-}
 
 std::array< float, GraphDecorator::F >
 GraphDecorator::calculate_node(
