@@ -82,17 +82,25 @@ struct DenseGraph {
     //reset to all zeros
     reset( nodes.size() );
 
+    int n_edges = 0;
+
     for( uint i = 0; i < nodes.size(); ++i ){
       x[ i ] = GraphDecorator::calculate_node( nodes[i], game );
 
       for( uint j = i+1; j < nodes.size(); ++j ){
+	RC_ASSERT( a[ i ][ j ] == 0 );
+	RC_ASSERT( a[ j ][ i ] == 0 );
 	if( GraphDecorator::edge_should_exist( nodes[i], nodes[j], game.board() ) ){
 	  a[ i ][ j ] = a[ j ][ i ] = 1.0;
 	  e[ i ][ j ] = GraphDecorator::calculate_edge( nodes[i], nodes[j] );
 	  e[ j ][ i ] = GraphDecorator::calculate_edge( nodes[j], nodes[i] );
+
+	  n_edges += 2;
 	}
       }
     }
+
+    std::cout << "n_edges: " << n_edges << std::endl;
 
     cached_nodes = nodes; //maybe std::move someday
   }
