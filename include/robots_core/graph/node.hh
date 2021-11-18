@@ -30,6 +30,22 @@ enum class SpecialCaseNode : unsigned char {
   NONE = count //these should stay at the end
 };
 
+bool
+special_case_is_move(
+  SpecialCaseNode const n
+){
+  static_assert( SpecialCaseNode::Q < 9 );
+  static_assert( SpecialCaseNode::W < 9 );
+  static_assert( SpecialCaseNode::E < 9 );
+  static_assert( SpecialCaseNode::A < 9 );
+  static_assert( SpecialCaseNode::S < 9 );
+  static_assert( SpecialCaseNode::D < 9 );
+  static_assert( SpecialCaseNode::Z < 9 );
+  static_assert( SpecialCaseNode::X < 9 );
+  static_assert( SpecialCaseNode::C < 9 );
+  return int(n) <= 9;
+}
+
 double calc_angle(
   Position const & p1,
   Position const & p3
@@ -126,14 +142,6 @@ struct Node {
     }
   };
 };
-
-/*std::vector< Node >
-determine_nodes_for_graph(
-  RobotsGame const & game,
-  unsigned int const max_nodes
-){
-  //TODO
-}*/
 
 SpecialCaseNode
 get_direction(

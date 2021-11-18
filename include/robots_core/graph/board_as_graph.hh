@@ -7,7 +7,7 @@
 #include <robots_core/graph/node.hh>
 
 //#include <array>
-#include <cmath>  //log
+#include <cmath>  //log, sin, cos
 
 namespace robots_core{
 namespace graph{
@@ -17,17 +17,17 @@ public:
 
 constexpr static unsigned char F = NOccupantTypes + 3;
 //Extra 3 elements are for possible moves
-//+0: 1 if legal move, 0 otherwise
-//+1: if legal move, ln( n_robots_killed ), -1 if n_robots_killed=0
-//+2: number of safe teleports left
+//+0: if legal move, ln( n_robots_killed ), -1 if n_robots_killed=0
+//+1: number of safe teleports left
+//+2: 1 if legal move, 0 otherwise
 
 constexpr static unsigned char S = 6;
 //0: ln( distance )-1
 //1: ln( small_leg_dist )-1 // smaller cathetus of right triangle
 //2: ln( long_leg_dist )-1  //  longer cathetus of right triangle
 //3: ratio of small_leg_dist / long_leg_dist
-//4: sin( angle )
-//5: cos( angle )
+//4: sin( d angle )
+//5: cos( d angle )
 
 constexpr static bool edges_are_symmetric = false;
 
@@ -101,16 +101,17 @@ GraphDecorator::calculate_node(
 
   constexpr unsigned int offset( NOccupantTypes );
 
-  if( occ == Occupant::HUMAN or occ == Occupant::OOB ){
+  if( special_case_is_move( node.special_case ) ){
     ForecastResults const forecast = forecast_move( b, node.dx(), node.dy() );
     if( forecast.legal ){
-      data[ offset ] = 1.0;
       if( forecast.robots_killed == 0 ){
-	data[ offset+1 ] = -1;
+	data[ offset ] = -1;
       } else {
-	data[ offset+1 ] = log( float(forecast.robots_killed) );
+	data[ offset ] = log( float(forecast.robots_killed) );
       }
-      data[ offset+2 ] = game.n_safe_teleports_remaining();
+      data[ offset+1 ] = game.n_safe_teleports_remaining();
+
+      data[ offset+2 ] = 1.0;
     }// if forecast.legal
   }
 
@@ -140,6 +141,10 @@ GraphDecorator::calculate_edge(
     data[ 2 ] = log( x_dist ) - 1;
     data[ 3 ] = float( y_dist ) / float( x_dist );
   }
+
+  double const angle_from_i_to_j_rad = j.orientation - i.orientation;
+  data[ 4 ] = sin( angle_from_i_to_j_rad );
+  data[ 5 ] = cos( angle_from_i_to_j_rad );
 
   return data;
 }
