@@ -34,15 +34,15 @@ bool
 special_case_is_move(
   SpecialCaseNode const n
 ){
-  static_assert( int(SpecialCaseNode::Q) < 9 );
-  static_assert( int(SpecialCaseNode::W) < 9 );
-  static_assert( int(SpecialCaseNode::E) < 9 );
-  static_assert( int(SpecialCaseNode::A) < 9 );
-  static_assert( int(SpecialCaseNode::S) < 9 );
-  static_assert( int(SpecialCaseNode::D) < 9 );
-  static_assert( int(SpecialCaseNode::Z) < 9 );
-  static_assert( int(SpecialCaseNode::X) < 9 );
-  static_assert( int(SpecialCaseNode::C) < 9 );
+  static_assert( int(SpecialCaseNode::Q) < 9, "SpecialCaseNode order" );
+  static_assert( int(SpecialCaseNode::W) < 9, "SpecialCaseNode order" );
+  static_assert( int(SpecialCaseNode::E) < 9, "SpecialCaseNode order" );
+  static_assert( int(SpecialCaseNode::A) < 9, "SpecialCaseNode order" );
+  static_assert( int(SpecialCaseNode::S) < 9, "SpecialCaseNode order" );
+  static_assert( int(SpecialCaseNode::D) < 9, "SpecialCaseNode order" );
+  static_assert( int(SpecialCaseNode::Z) < 9, "SpecialCaseNode order" );
+  static_assert( int(SpecialCaseNode::X) < 9, "SpecialCaseNode order" );
+  static_assert( int(SpecialCaseNode::C) < 9, "SpecialCaseNode order" );
   return int(n) <= 9;
 }
 
