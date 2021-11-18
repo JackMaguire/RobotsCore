@@ -10,26 +10,23 @@
 //#include <array>
 #include <cmath>  //log
 
+#include <vector>
+#include <array>
+
 namespace robots_core{
 namespace graph{
 
-template< unsigned int N, typename Real = float >
 struct DenseGraph {
-
-  static_assert( N >= static_cast<unsigned int>(SpecialCaseNode::count),
-    "We need at least enough nodes to cover all of the special cases" );
   
-  using X = std::array< std::array< Real, GraphDecorator::F >, N >;
-  using A = std::array< std::array< Real, N >, N >;
-  using E = std::array< std::array< std::array< Real, GraphDecorator::S >, N >, N >;
+  using X = std::vector< std::array< float, GraphDecorator::F > >;
+  using A = std::vector< std::vector< unsigned short int > >;
+  using E = std::vector< std::vector< std::array< float, GraphDecorator::S > > >;
 
   X x;
   A a;
   E e;
 
-  DenseGraph(){
-    clear();
-  }
+  DenseGraph(){}
 
   DenseGraph(
     RobotsGame const & game,
@@ -39,10 +36,27 @@ struct DenseGraph {
   }
 
   void
-  clear(){ //zero initialize
+  reset( unsigned int const n_nodes ){ //zero initialize
+
+    // X
+    x.resize( n_nodes );
     for( auto & vec : x ) vec.fill( 0.0 );
-    for( auto & vec : a ) vec.fill( 0.0 );
-    for( auto & vec : e ) for( auto & vec2: vec ) vec.fill( 0.0 );
+
+    // A
+    a.resize( n_nodes );
+    for( auto & vec : a ){
+      vec.resize( n_nodes, 0 );
+    }
+
+    // E
+    e.resize( n_nodes );
+    for( auto & vec : e ){
+      vec.resize( n_nodes );
+      for( auto & vec2: vec ){
+	vec2.fill( 0.0 );
+      }
+    }
+	
   }
 
   void
@@ -50,10 +64,8 @@ struct DenseGraph {
     RobotsGame const & game,
     std::vector< Node > const & nodes
   ){
-    RC_ASSERT( nodes.size() <= N );
-
     //reset to all zeros
-    clear();
+    reset( nodes.size() );
 
     for( uint i = 0; i < nodes.size(); ++i ){
       x[ i ] = GraphDecorator::calculate_node( nodes[i], game );
@@ -61,11 +73,8 @@ struct DenseGraph {
       for( uint j = i+1; j < nodes.size(); ++j ){
 	if( GraphDecorator::edge_should_exist( nodes[i], nodes[j], game.board() ) ){
 	  a[ i ][ j ] = a[ j ][ i ] = 1.0;
-	  e[ i ][ j ] = e[ j ][ i ] = GraphDecorator::calculate_edge( nodes[i], nodes[j] );
-
-	  static_assert( GraphDecorator::edges_are_symmetric,
-	    "The code currently assumes edges_are_symmetric as written" );
-	  // Not a dealbreaker, just means we need to update the code above
+	  e[ i ][ j ] = GraphDecorator::calculate_edge( nodes[i], nodes[j] );
+	  e[ j ][ i ] = GraphDecorator::calculate_edge( nodes[j], nodes[i] );
 	}
       }
     }
