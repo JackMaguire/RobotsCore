@@ -151,9 +151,10 @@ PYBIND11_MODULE(robots_core, m) {
     py::class_< DenseGraph > dg( m_graph, "DenseGraph" );
     dg.def( py::init<>() );
     dg.def( py::init< RobotsGame const & >() );
-    dg.def( "copyX", &DenseGraph::copyX );
-    dg.def( "copyA", &DenseGraph::copyA );
-    dg.def( "copyE", &DenseGraph::copyE );
+    dg.def_readonly( "x", &DenseGraph::x );
+    dg.def_readonly( "a", &DenseGraph::a );
+    dg.def_readonly( "e", &DenseGraph::e );
+    dg.def_readonly( "cached_nodes", &DenseGraph::cached_nodes );
 
     //Pocket
     using namespace robots_core::pocket;

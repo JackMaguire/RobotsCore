@@ -25,6 +25,7 @@ struct DenseGraph {
   X x;
   A a;
   E e;
+  std::vector< Node > cached_nodes;
 
   DenseGraph(){}
 
@@ -92,11 +93,10 @@ struct DenseGraph {
 	}
       }
     }
+
+    cached_nodes = nodes; //maybe std::move someday
   }
 
-  X copyX() const{ return x; }
-  A copyA() const{ return a; }
-  E copyE() const{ return e; }
 };
 
 }
