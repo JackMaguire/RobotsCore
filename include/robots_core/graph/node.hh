@@ -43,7 +43,7 @@ special_case_is_move(
   static_assert( int(SpecialCaseNode::Z) < 9, "SpecialCaseNode order" );
   static_assert( int(SpecialCaseNode::X) < 9, "SpecialCaseNode order" );
   static_assert( int(SpecialCaseNode::C) < 9, "SpecialCaseNode order" );
-  return int(n) <= 9;
+  return int(n) < 9;
 }
 
 double calc_angle(
@@ -138,6 +138,7 @@ struct Node {
     case SpecialCaseNode::E:
       return 1;
     default:
+      std::cout << "FAILED " << int(special_case) << std::endl;
       RC_DEBUG_ASSERT( false );
     }
   };
