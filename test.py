@@ -40,6 +40,8 @@ for i in range( 0, 2 ):
 
 x, a, e, i = to_disjoint( Xs, [sparse.coo_matrix(a) for a in As], Es )
 
+#np.set_printoptions(threshold=np.inf)
+
 print( x.shape )
 print( a.shape )
 print( e.shape )
