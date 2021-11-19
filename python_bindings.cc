@@ -78,6 +78,8 @@ PYBIND11_MODULE(robots_core, m) {
 
     py::class_< RobotsGame > g( m, "RobotsGame" );
     g.def( py::init<>() );
+    g.def( py::init< int >() );
+    g.def( py::init< int, int >() );
     g.def( "load_from_stringified_representation", 
       &RobotsGame::load_from_stringified_representation );
     g.def( "reset", &RobotsGame::reset );

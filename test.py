@@ -9,7 +9,7 @@ from spektral.data.utils import to_disjoint
 
 def get_XAE():
 
-    g = robots_core.RobotsGame()
+    g = robots_core.RobotsGame( 30 )
 
     b = g.board()
     print( b.cell( 0, 0 ) )
@@ -39,13 +39,7 @@ for i in range( 0, 2 ):
     Es.append( E )
 
 x, a, e, i = to_disjoint( Xs, [sparse.coo_matrix(a) for a in As], Es )
-#print( x.shape[0] )
-#print( e.shape )
-#print( A )
-#print( a.shape )
-#print( i.shape )
-#np.set_printoptions(threshold=np.inf)
-#print( a.todense() )
+
 print( x.shape )
 print( a.shape )
 print( e.shape )

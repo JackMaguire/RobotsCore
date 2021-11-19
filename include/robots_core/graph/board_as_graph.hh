@@ -89,12 +89,12 @@ GraphDecorator::edge_should_exist(
   Occupant const occ_j = b.cell( j.position );
   if( occ_i == Occupant::ROBOT and occ_j == Occupant::ROBOT ){
     if( i.position.x == j.position.x or i.position.y == j.position.y ){
-      return true;
+      return i.position.distance( j.position ) < 10; //relatively arbitrary
     }
   }
 
   //4. TWO ROBOTS/EXPLOSIONS NOT IN LINE
-  return i.position.distance( j.position ) < 10; //relatively arbitrary
+  return i.position.distance( j.position ) < 5; //relatively arbitrary
 }
 
 
