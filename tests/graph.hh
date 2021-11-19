@@ -1,5 +1,6 @@
 #include <robots_core/board.hh>
 #include <robots_core/graph/node.hh>
+#include <robots_core/graph/dense.hh>
 #include <robots_core/asserts.hh>
 
 #include <iostream>
@@ -20,6 +21,7 @@ struct GraphTests {
     bool const passed = test_angle_calc()
       && test_node_vec_no_explosions()
       //&& test_node_vec_three_explosions()
+      && test_build_graph()
       ;
 
     if( passed ) std::cout << "PASSED GraphTests" << std::endl;
@@ -137,6 +139,20 @@ struct GraphTests {
 
     return true;
   }
+
+  static bool test_build_graph(){
+    RobotsGame const g;
+
+    DenseGraph const dg( g );
+    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.x.size() );
+    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.a.size() );
+    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.a[0].size() );
+    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.e.size() );
+    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.e[0].size() );
+    
+    return true;
+  }
+
 
 };
 

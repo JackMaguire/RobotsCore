@@ -101,7 +101,7 @@ GraphDecorator::calculate_node(
   std::array< float, F > data;
   data.fill( 0 );
 
-  Occupant const occ = b.cell( node.position );
+  Occupant const occ = cell_or_oob( b, node.position );
   data[ int(occ) ] = 1.0;
 
   constexpr unsigned int offset( NOccupantTypes );
