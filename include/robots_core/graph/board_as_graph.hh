@@ -69,14 +69,22 @@ GraphDecorator::edge_should_exist(
   Node const & j,
   Board const & b
 ){
-  //1. SPECIAL CASES
+  //1. TELEPORT
+  if( i.special_case == SpecialCaseNode::TELEPORT ){
+    return special_case_is_move( j.special_case );
+  }
+  if( j.special_case == SpecialCaseNode::TELEPORT ){
+    return special_case_is_move( i.special_case );
+  }
+
+  //2. SPECIAL CASES
   if( i.special_case != SpecialCaseNode::NONE
     or j.special_case != SpecialCaseNode::NONE ){
     //Edges for all things if they are special
     return true;
   }
 
-  //2. TWO ROBOTS THAT CAN COLLIDE
+  //3. TWO ROBOTS THAT CAN COLLIDE
   Occupant const occ_i = b.cell( i.position );
   Occupant const occ_j = b.cell( j.position );
   if( occ_i == Occupant::ROBOT and occ_j == Occupant::ROBOT ){
@@ -85,7 +93,7 @@ GraphDecorator::edge_should_exist(
     }
   }
 
-  //3. TWO ROBOTS/EXPLOSIONS NOT IN LINE
+  //4. TWO ROBOTS/EXPLOSIONS NOT IN LINE
   return i.position.distance( j.position ) < 10; //relatively arbitrary
 }
 

@@ -29,7 +29,9 @@ struct GraphTests {
   }
 
   static bool test_angle_calc(){
-    Board const b;
+    //All robots
+    Board const b( "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111211111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" );
+
     Position const h = b.human_position();
     using P = Position;
 
@@ -49,6 +51,9 @@ struct GraphTests {
     test_delta( P{ 0,-1 }, -pi/2   ); //-90 degrees
     test_delta( P{-1,-1 }, -3*pi/4 ); //-135 degrees
 
+    //std::cout << "!!!" << determine_orientation( b, h ) << std::endl;
+    //std::cout << h.x << " " << h.y << std::endl;
+
     RC_ASSERT_DELTA( determine_orientation( b, h ), -pi/2, 0.001 );
     
     return true;
@@ -61,8 +66,15 @@ struct GraphTests {
     // using P = Position;
 
     auto const nodes = get_all_nodes( b );
-    RC_ASSERT_EQUALS( nodes.size(), 9+4+b.n_robots_uint() );
-    
+    //                              MOVES
+    //                              | 
+    //                              | OOB
+    //                              | |
+    //                              | | TELE
+    //                              | | |
+    RC_ASSERT_EQUALS( nodes.size(), 9+4+1+b.n_robots_uint() );
+    //THIS ASSUMES ALL 9 MOVES ARE AVAILABLE
+
     std::array< SpecialCaseNode, 9 > const order_that_we_expect{
       SpecialCaseNode::Z,
       SpecialCaseNode::A,
@@ -89,8 +101,7 @@ struct GraphTests {
       //std::erase_if(special_nodes, [](Node x) { return x.special_case == SpecialCaseNode::NONE; });
       
       for( int i = 0; i < 9; ++i ){
-	//std::cout << i << " " << int(special_nodes[4+i].special_case) << std::endl;
-	RC_ASSERT_EQUALS(int(special_nodes[4+i].special_case), int(order_that_we_expect[i]));
+	RC_ASSERT_EQUALS(int(special_nodes[4+1+i].special_case), int(order_that_we_expect[i]));
       }
     }
 
@@ -144,15 +155,34 @@ struct GraphTests {
     RobotsGame const g;
 
     DenseGraph const dg( g );
-    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.x.size() );
-    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.a.size() );
+    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.x.size()    );
+    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.a.size()    );
     RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.a[0].size() );
-    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.e.size() );
+    RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.e.size()    );
     RC_ASSERT_EQUALS( dg.cached_nodes.size(), dg.e[0].size() );
+
+    {
+      unsigned int const t = 0;
+
+      RC_ASSERT_EQUALS(
+	int( dg.cached_nodes[t].special_case ), 
+	int( SpecialCaseNode::TELEPORT )
+      );
+
+      for( unsigned int i = 0; i < dg.cached_nodes.size(); ++i ){
+	if( i == t ) continue;
+	if( special_case_is_move( dg.cached_nodes[ i ].special_case ) ){
+	  RC_ASSERT_EQUALS( dg.a[t][i], 1.0 );
+	  RC_ASSERT_EQUALS( dg.a[i][t], 1.0 );
+	} else {
+	  RC_ASSERT_EQUALS( dg.a[t][i], 0.0 );
+	  RC_ASSERT_EQUALS( dg.a[i][t], 0.0 )
+	}
+      }
+    }
     
     return true;
   }
-
 
 };
 
