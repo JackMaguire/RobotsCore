@@ -139,12 +139,12 @@ GraphDecorator::calculate_edge(
   sm_int const y_dist = abs( i.position.y - j.position.y );
 
   if( x_dist < y_dist ){
-    data[ 1 ] = log( x_dist ) - 1;
-    data[ 2 ] = log( y_dist ) - 1;
+    data[ 1 ] = log( x_dist+1 ) - 1;
+    data[ 2 ] = log( y_dist+1 ) - 1;
     data[ 3 ] = float( x_dist ) / float( y_dist );
   } else {
-    data[ 1 ] = log( y_dist ) - 1;
-    data[ 2 ] = log( x_dist ) - 1;
+    data[ 1 ] = log( y_dist+1 ) - 1;
+    data[ 2 ] = log( x_dist+1 ) - 1;
     data[ 3 ] = float( y_dist ) / float( x_dist );
   }
 
@@ -158,6 +158,9 @@ GraphDecorator::calculate_edge(
   data[ 6 ] = sin( angle_from_i_to_j_rad );
   data[ 7 ] = cos( angle_from_i_to_j_rad );
 
+  //std::cout << angle_from_i_to_j_rad << " " << data[ 6 ] << " " << data[ 7 ] << std::endl;
+  //TODO check for rows of all zeros
+  
   return data;
 }
 
