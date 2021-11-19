@@ -21,13 +21,18 @@ constexpr static unsigned char F = NOccupantTypes + 3;
 //+1: number of safe teleports left
 //+2: 1 if legal move, 0 otherwise
 
-constexpr static unsigned char S = 6;
+constexpr static unsigned char S = 8;
+//TRANSLATION
 //0: ln( distance )-1
 //1: ln( small_leg_dist )-1 // smaller cathetus of right triangle
 //2: ln( long_leg_dist )-1  //  longer cathetus of right triangle
 //3: ratio of small_leg_dist / long_leg_dist
-//4: sin( d angle )
-//5: cos( d angle )
+//4: sin( trans angle )
+//5: cos( trans angle )
+
+//ROTATION
+//6: sin( rot angle )
+//7: cos( rot angle )
 
 constexpr static bool edges_are_symmetric = false;
 
@@ -126,6 +131,7 @@ GraphDecorator::calculate_edge(
   std::array< float, S > data;
   //data.fill( 0 );
 
+  //TRANSLATION
   float const distance = i.position.distance( j.position );
   data[ 0 ] = log( distance ) - 1;
 
@@ -142,9 +148,15 @@ GraphDecorator::calculate_edge(
     data[ 3 ] = float( y_dist ) / float( x_dist );
   }
 
+  double const abs_angle_to_j = calc_angle( i.position, j.position );
+  double const rel_angle_to_j = abs_angle_to_j - i.orientation;
+  data[ 4 ] = sin( rel_angle_to_j );
+  data[ 5 ] = cos( rel_angle_to_j );
+
+  //ROTATION
   double const angle_from_i_to_j_rad = j.orientation - i.orientation;
-  data[ 4 ] = sin( angle_from_i_to_j_rad );
-  data[ 5 ] = cos( angle_from_i_to_j_rad );
+  data[ 6 ] = sin( angle_from_i_to_j_rad );
+  data[ 7 ] = cos( angle_from_i_to_j_rad );
 
   return data;
 }
