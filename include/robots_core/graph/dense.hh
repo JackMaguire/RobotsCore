@@ -26,6 +26,7 @@ struct DenseGraph {
   A a;
   E e;
   std::vector< Node > cached_nodes;
+  unsigned int n_edges = 0;
 
   DenseGraph(){}
 
@@ -63,7 +64,8 @@ struct DenseGraph {
 	vec2.fill( 0.0 );
       }
     }
-	
+    n_edges = 0;
+
   }
 
   void
@@ -81,8 +83,6 @@ struct DenseGraph {
   ){
     //reset to all zeros
     reset( nodes.size() );
-
-    int n_edges = 0;
 
     for( uint i = 0; i < nodes.size(); ++i ){
       x[ i ] = GraphDecorator::calculate_node( nodes[i], game );
