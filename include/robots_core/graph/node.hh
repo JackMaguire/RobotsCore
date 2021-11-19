@@ -25,6 +25,8 @@ enum class SpecialCaseNode : unsigned char {
   TOP_OOB,
   RIGHT_OOB,
   BOTTOM_OOB,
+
+  TELEPORT,
   
   count, //these should stay at the end
   NONE = count //these should stay at the end
@@ -65,7 +67,9 @@ double determine_orientation(
   Position const p
 ){
   if( b.position_is_in_bounds(p) ){
-    if( b.cell(p) == Occupant::HUMAN ){
+    if( b.cell(p) == Occupant::HUMAN or b.cell(p) == Occupant::EMPTY ){
+      //includes TELEPORT!
+
       //Destination position is { 22, 14.5 }
       //but we need these as integers.
       //let's change units by doubling all numbers
@@ -189,6 +193,8 @@ get_all_nodes(
 
   Position const h = b.human_position();
   using P = Position;
+
+  nodes.emplace_back( b, h, SpecialCaseNode::TELEPORT );
 
   nodes.emplace_back( b, P{ h.x, Board::HEIGHT }, SpecialCaseNode::TOP_OOB );
   nodes.emplace_back( b, P{ h.x, -1 }, SpecialCaseNode::BOTTOM_OOB );
