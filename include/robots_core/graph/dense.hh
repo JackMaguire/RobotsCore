@@ -100,7 +100,7 @@ struct DenseGraph {
       }
     }
 
-    std::cout << "n_edges: " << n_edges << std::endl;
+    //std::cout << "n_edges: " << n_edges << std::endl;
 
     cached_nodes = nodes; //maybe std::move someday
   }
