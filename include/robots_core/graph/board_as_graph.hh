@@ -131,10 +131,12 @@ GraphDecorator::calculate_node(
     data[ LEGAL ] = 1.0;
   }
 
+#ifdef RC_DEBUG
   for( float const f : data ){
     RC_DEBUG_ASSERT( not std::isnan( f ) );
     RC_DEBUG_ASSERT( not std::isinf( f ) );
   }
+#endif
 
   return data;
 }
@@ -181,10 +183,12 @@ GraphDecorator::calculate_edge(
   data[ 6 ] = sin( angle_from_i_to_j_rad );
   data[ 7 ] = cos( angle_from_i_to_j_rad );
 
+#ifdef RC_DEBUG
   for( float const f : data ){
     RC_DEBUG_ASSERT( not std::isnan( f ) );
     RC_DEBUG_ASSERT( not std::isinf( f ) );
   }
+#endif
   //std::cout << angle_from_i_to_j_rad << " " << data[ 6 ] << " " << data[ 7 ] << std::endl;
   //TODO check for rows of all zeros
   

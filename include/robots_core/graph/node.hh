@@ -123,7 +123,8 @@ struct Node {
     case SpecialCaseNode::C:
       return 1;
     default:
-      RC_DEBUG_ASSERT( false );
+      RC_ASSERT( false );
+      return 2;
     }
   };
 
@@ -143,7 +144,8 @@ struct Node {
       return 1;
     default:
       std::cout << "FAILED " << int(special_case) << std::endl;
-      RC_DEBUG_ASSERT( false );
+      RC_ASSERT( false );
+      return 2;
     }
   };
 };
