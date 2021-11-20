@@ -88,8 +88,8 @@ struct DenseGraph {
       x[ i ] = GraphDecorator::calculate_node( nodes[i], game );
 
       for( uint j = i+1; j < nodes.size(); ++j ){
-	RC_ASSERT( a[ i ][ j ] == 0 );
-	RC_ASSERT( a[ j ][ i ] == 0 );
+	RC_DEBUG_ASSERT_EQUALS( a[ i ][ j ], 0 );
+	RC_DEBUG_ASSERT_EQUALS( a[ j ][ i ], 0 );
 	if( GraphDecorator::edge_should_exist( nodes[i], nodes[j], game.board() ) ){
 	  a[ i ][ j ] = a[ j ][ i ] = 1.0;
 	  e[ i ][ j ] = GraphDecorator::calculate_edge( nodes[i], nodes[j] );
