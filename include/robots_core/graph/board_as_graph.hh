@@ -131,6 +131,11 @@ GraphDecorator::calculate_node(
     data[ LEGAL ] = 1.0;
   }
 
+  for( unsigned int i = 0; i < F; ++i ){
+    RC_ASSERT( not std::isnan( data[i] ) );
+    RC_ASSERT( not std::isinf( data[i] ) );
+  }
+
   return data;
 }
 
@@ -143,6 +148,7 @@ GraphDecorator::calculate_edge(
   //data.fill( 0 );
 
   //TRANSLATION
+  RC_ASSERT( i.position != j.position );
   float const distance = i.position.distance( j.position );
   data[ 0 ] = log( distance ) - 1;
 
@@ -168,6 +174,12 @@ GraphDecorator::calculate_edge(
   double const angle_from_i_to_j_rad = j.orientation - i.orientation;
   data[ 6 ] = sin( angle_from_i_to_j_rad );
   data[ 7 ] = cos( angle_from_i_to_j_rad );
+
+  for( unsigned int i = 0; i < S; ++i ){
+    RC_ASSERT( not std::isnan( data[i] ) );
+    RC_ASSERT( not std::isinf( data[i] ) );
+  }
+    
 
   //std::cout << angle_from_i_to_j_rad << " " << data[ 6 ] << " " << data[ 7 ] << std::endl;
   //TODO check for rows of all zeros
