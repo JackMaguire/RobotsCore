@@ -131,9 +131,9 @@ GraphDecorator::calculate_node(
     data[ LEGAL ] = 1.0;
   }
 
-  for( unsigned int i = 0; i < F; ++i ){
-    RC_ASSERT( not std::isnan( data[i] ) );
-    RC_ASSERT( not std::isinf( data[i] ) );
+  for( float const f : data ){
+    RC_DEBUG_ASSERT( not std::isnan( f ) );
+    RC_DEBUG_ASSERT( not std::isinf( f ) );
   }
 
   return data;
@@ -145,10 +145,16 @@ GraphDecorator::calculate_edge(
   Node const & j
 ) {
   std::array< float, S > data;
-  //data.fill( 0 );
+  data.fill( 0.0 );
+
+  if( i.special_case == SpecialCaseNode::TELEPORT or
+    j.special_case == SpecialCaseNode::TELEPORT ){
+    data.fill( -2.0 );
+    return data;
+  }
 
   //TRANSLATION
-  RC_ASSERT( i.position != j.position );
+  RC_DEBUG_ASSERT( i.position != j.position );
   float const distance = i.position.distance( j.position );
   data[ 0 ] = log( distance ) - 1;
 
@@ -175,12 +181,10 @@ GraphDecorator::calculate_edge(
   data[ 6 ] = sin( angle_from_i_to_j_rad );
   data[ 7 ] = cos( angle_from_i_to_j_rad );
 
-  for( unsigned int i = 0; i < S; ++i ){
-    RC_ASSERT( not std::isnan( data[i] ) );
-    RC_ASSERT( not std::isinf( data[i] ) );
+  for( float const f : data ){
+    RC_DEBUG_ASSERT( not std::isnan( f ) );
+    RC_DEBUG_ASSERT( not std::isinf( f ) );
   }
-    
-
   //std::cout << angle_from_i_to_j_rad << " " << data[ 6 ] << " " << data[ 7 ] << std::endl;
   //TODO check for rows of all zeros
   

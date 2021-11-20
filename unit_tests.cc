@@ -2,6 +2,7 @@
 
 //keep this first!
 #define RC_TESTS
+#define RC_DEBUG
 
 //Unit Tests:
 #include "tests/board.hh" 
