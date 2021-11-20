@@ -113,6 +113,7 @@ GraphDecorator::calculate_node(
   data[ int(occ) ] = 1.0;
 
   constexpr unsigned int offset( NOccupantTypes );
+  constexpr unsigned int LEGAL = offset+2;
 
   if( special_case_is_move( node.special_case ) ){
     ForecastResults const forecast = forecast_move( b, node.dx(), node.dy() );
@@ -124,8 +125,10 @@ GraphDecorator::calculate_node(
       }
       data[ offset+1 ] = game.n_safe_teleports_remaining();
 
-      data[ offset+2 ] = 1.0;
+      data[ LEGAL ] = 1.0;
     }// if forecast.legal
+  } else if( node.special_case == SpecialCaseNode::TELEPORT ){
+    data[ LEGAL ] = 1.0;
   }
 
   return data;
