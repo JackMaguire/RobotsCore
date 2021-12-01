@@ -15,11 +15,13 @@ namespace graph{
 class GraphDecorator {
 public:
 
-constexpr static unsigned char F = NOccupantTypes + 3;
+constexpr static unsigned char F = NOccupantTypes + 5;
 //Extra 3 elements are for possible moves
 //+0: if legal move, ln( n_robots_killed ), -1 if n_robots_killed=0
-//+1: number of safe teleports left
-//+2: 1 if legal move, 0 otherwise
+//+1: if legal and cascade safe
+//+2: number of safe teleports left
+//+3: ln( number of robots left )
+//+4: 1 if legal move, 0 otherwise
 
 constexpr static unsigned char S = 8;
 //TRANSLATION
@@ -113,7 +115,7 @@ GraphDecorator::calculate_node(
   data[ int(occ) ] = 1.0;
 
   constexpr unsigned int offset( NOccupantTypes );
-  constexpr unsigned int LEGAL = offset+2;
+  constexpr unsigned int LEGAL = offset+4;
 
   if( special_case_is_move( node.special_case ) ){
     ForecastResults const forecast = forecast_move( b, node.dx(), node.dy() );
@@ -123,11 +125,18 @@ GraphDecorator::calculate_node(
       } else {
 	data[ offset ] = log( float(forecast.robots_killed) );
       }
-      data[ offset+1 ] = game.n_safe_teleports_remaining();
 
+      if( forecast.cascade_safe ){
+	data[ offset+1 ] = 1.0;
+      }
+
+      data[ offset+2 ] = game.n_safe_teleports_remaining();
+      data[ offset+3 ] = log( game.board().n_robots() );
       data[ LEGAL ] = 1.0;
     }// if forecast.legal
   } else if( node.special_case == SpecialCaseNode::TELEPORT ){
+    data[ offset+2 ] = game.n_safe_teleports_remaining();
+    data[ offset+3 ] = log( game.board().n_robots() );
     data[ LEGAL ] = 1.0;
   }
 
