@@ -151,6 +151,9 @@ PYBIND11_MODULE(robots_core, m) {
     node.def_readonly( "special_case", &graph::Node::special_case );
     node.def_readonly( "orientation", &graph::Node::orientation );
 
+    node.def( "dx", &graph::Node::dx );
+    node.def( "dy", &graph::Node::dy );
+
     using robots_core::graph::DenseGraph;
     py::class_< DenseGraph > dg( m_graph, "DenseGraph" );
     dg.def( py::init<>() );
