@@ -135,6 +135,8 @@ PYBIND11_MODULE(robots_core, m) {
       .value( "X", graph::SpecialCaseNode::X )
       .value( "C", graph::SpecialCaseNode::C )
 
+      .value( "TELEPORT", graph::SpecialCaseNode::TELEPORT )
+
       .value( "LEFT_OOB", graph::SpecialCaseNode::LEFT_OOB )
       .value( "TOP_OOB", graph::SpecialCaseNode::TOP_OOB )
       .value( "RIGHT_OOB", graph::SpecialCaseNode::RIGHT_OOB )
