@@ -9,6 +9,10 @@
 
 namespace robots_core {
 
+struct VisSettings {
+  bool label_elements = false;
+}
+
 //https://godbolt.org/z/dhPTbPon6
 //https://stackoverflow.com/questions/5878775/how-to-find-and-replace-string/5878802
 //TODO replace
@@ -35,22 +39,23 @@ format(
 template< typename Ostream >
 void
 to_svg( 
-  Board const &,
+  Board const & board,
+  VisSettings const settings,
   Ostream & out
 ) {
-  constexpr int PixPerCell = 9;
-  constexpr int CircleOffset = 5;
-  constexpr int CircleRadius = 4;
+  constexpr int PixPerCell = 10;
+  constexpr int CircleOffset = PixPerCell/2;
+  constexpr int CircleRadius = PixPerCell/2;
   constexpr int PicWidth = Board::WIDTH * PixPerCell;
   constexpr int PicHeight = Board::HEIGHT * PixPerCell;
 
   //std::string header = R"(<svg width="%" height="%")";
   //  format( 
 
-  std::string header = R"(<?xml version="1.0" encoding="UTF-8"?>
+  std::string header = R"12345(<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 %%PicWidth%% %%PicHeight%%">
-<rect id="c1" fill="rgb(220,220,220)" width="%%PicWidth%%" height="%%PicHeight%%"/>)"; //";
+<rect id="c1" fill="rgb(220,220,220)" width="%%PicWidth%%" height="%%PicHeight%%"/>)12345"; //";
 
   replaceFirstOccurrence( header, "%%PicWidth%%", std::to_string( PicWidth ) );
   replaceFirstOccurrence( header, "%%PicWidth%%", std::to_string( PicWidth ) );
@@ -73,24 +78,32 @@ to_svg(
       }
 
       // Elements
-      auto const x = i;
-      auto const y = Board::HEIGHT - j - 1;
-      auto const cx = x - CircleOffset;
-      auto const cy = y - CircleOffset;
-      RC_ASSERT( Board::position_is_in_bounds( x, y ) );
-      switch( board.cell( x, y ) ){
+      auto const bx = i;
+      auto const by = Board::HEIGHT - j - 1;
+      auto const cx = i*PixPerCell + CircleOffset;
+      auto const cy = j*PixPerCell + CircleOffset;
+      RC_ASSERT( Board::position_is_in_bounds( bx, by ) );
+      switch( board.cell( bx, by ) ){
       case( Occupant::EMPTY ):
       case( Occupant::OOB ):
 	break;
       case( Occupant::ROBOT ):
+	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"black\" "
+	  "r=\"" << CircleRadius << "\" "
+	  "cx=\"" << cx << "\" "
+	  "cy=\"" << cy << "\" />\n";
 	break;
       case( Occupant::FIRE ):
+	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"red\" "
+	  "r=\"" << CircleRadius << "\" "
+	  "cx=\"" << cx << "\" "
+	  "cy=\"" << cy << "\" />\n";
 	break;
       case( Occupant::HUMAN ):
-	out << "<circle r=\"" << CircleRadius << "\" "
+	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"green\" "
+	  "r=\"" << CircleRadius << "\" "
 	  "cx=\"" << cx << "\" "
-	  "cy=\"" << cy << "\" "
-	  "fill=\"rbg(10,200,10)\"/>";
+	  "cy=\"" << cy << "\" />\n";
 	break;
       }
     }
@@ -103,9 +116,12 @@ to_svg(
 }
 
 std::string
-to_svg_string( Board const & board ) {
+to_svg_string(
+  Board const & board,
+  VisSettings const settings
+) {
   std::stringstream ss;
-  to_svg( board, ss );
+  to_svg( board, settings, ss );
   return ss.str();
 }
 
