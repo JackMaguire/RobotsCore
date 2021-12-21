@@ -38,7 +38,9 @@ to_svg(
   Board const &,
   Ostream & out
 ) {
-  constexpr int PixPerCell = 10;
+  constexpr int PixPerCell = 9;
+  constexpr int CircleOffset = 5;
+  constexpr int CircleRadius = 4;
   constexpr int PicWidth = Board::WIDTH * PixPerCell;
   constexpr int PicHeight = Board::HEIGHT * PixPerCell;
 
@@ -65,22 +67,36 @@ to_svg(
   for( sm_int i = 0; i < Board::WIDTH; ++i ){
     for( sm_int j = 0; j < Board::HEIGHT; ++j ){
       use_c1 = !use_c1;
-      /*
-      std::string const & c = ( use_c1 ? c1 : c2 );
-      out << "<rect fill=\"" << c << "\" "
-	"stroke=\"#000\" stroke-width=\"0\" "
-	"x=\"" << i*PixPerCell << "\" "
-	"y=\"" << j*PixPerCell << "\" "
-	"width=\"" << PixPerCell << "\" "
-	"height=\"" << PixPerCell << "\"/>";
-	*/
       if( not use_c1 ){
 	out << "<rect fill=\"rgb(200,200,200)\" width=\"" << PixPerCell << "\" height=\"" << PixPerCell << "\" "
 	  "x=\"" << i*PixPerCell << "\" y=\"" << j*PixPerCell << "\" />\n";
       }
+
+      // Elements
+      auto const x = i;
+      auto const y = Board::HEIGHT - j - 1;
+      auto const cx = x - CircleOffset;
+      auto const cy = y - CircleOffset;
+      RC_ASSERT( Board::position_is_in_bounds( x, y ) );
+      switch( board.cell( x, y ) ){
+      case( Occupant::EMPTY ):
+      case( Occupant::OOB ):
+	break;
+      case( Occupant::ROBOT ):
+	break;
+      case( Occupant::FIRE ):
+	break;
+      case( Occupant::HUMAN ):
+	out << "<circle r=\"" << CircleRadius << "\" "
+	  "cx=\"" << cx << "\" "
+	  "cy=\"" << cy << "\" "
+	  "fill=\"rbg(10,200,10)\"/>";
+	break;
+      }
     }
     use_c1 = !use_c1;
   }
+  
 
   // Footer
   out << "</svg>\n";

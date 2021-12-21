@@ -129,6 +129,10 @@ public: //static utilities
     return p.x >= 0 && p.x < WIDTH && p.y >= 0 && p.y < HEIGHT;
   }
 
+  static bool position_is_in_bounds( sm_int const x, sm_int const y ){
+    return x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT;
+  }
+
 protected:
   //should this be const?
   Position
