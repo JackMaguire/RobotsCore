@@ -48,10 +48,7 @@ to_svg(
   std::string header = R"(<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 %%PicWidth%% %%PicHeight%%">
-<a xlink:href="http://www.w3.org/Graphics/SVG/" target="_parent"
-     xlink:title="W3C SVG Working Group home page">
-
-<rect id="c1" fill="#dcdcdc" width="%%PicWidth%%" height="%%PicHeight%%"/>)"; //";
+<rect id="c1" fill="rgb(220,220,220)" width="%%PicWidth%%" height="%%PicHeight%%"/>)"; //";
 
   replaceFirstOccurrence( header, "%%PicWidth%%", std::to_string( PicWidth ) );
   replaceFirstOccurrence( header, "%%PicWidth%%", std::to_string( PicWidth ) );
@@ -78,15 +75,15 @@ to_svg(
 	"height=\"" << PixPerCell << "\"/>";
 	*/
       if( not use_c1 ){
-	out << "<rect fill=\"c8c8c8\" width=\"" << PixPerCell << "\" height=\"" << PixPerCell << "\" "
-	  "x=\"" << i*PixPerCell << "\" y=\"" << j*PixPerCell << "\" />";
+	out << "<rect fill=\"rgb(200,200,200)\" width=\"" << PixPerCell << "\" height=\"" << PixPerCell << "\" "
+	  "x=\"" << i*PixPerCell << "\" y=\"" << j*PixPerCell << "\" />\n";
       }
     }
     use_c1 = !use_c1;
   }
 
   // Footer
-  out << "</a>\n</svg>\n";
+  out << "</svg>\n";
 }
 
 std::string
