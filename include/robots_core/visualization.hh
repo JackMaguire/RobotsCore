@@ -10,8 +10,8 @@
 namespace robots_core {
 
 struct VisSettings {
-  bool label_elements = false;
-}
+  bool label_elements = true;
+};
 
 //https://godbolt.org/z/dhPTbPon6
 //https://stackoverflow.com/questions/5878775/how-to-find-and-replace-string/5878802
@@ -43,7 +43,7 @@ to_svg(
   VisSettings const settings,
   Ostream & out
 ) {
-  constexpr int PixPerCell = 10;
+  constexpr int PixPerCell = 20;
   constexpr int CircleOffset = PixPerCell/2;
   constexpr int CircleRadius = PixPerCell/2;
   constexpr int PicWidth = Board::WIDTH * PixPerCell;
@@ -55,12 +55,16 @@ to_svg(
   std::string header = R"12345(<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 %%PicWidth%% %%PicHeight%%">
+<style>
+    .small { font: italic %%TextHeight%%px sans-serif; fill: white; }
+</style>
 <rect id="c1" fill="rgb(220,220,220)" width="%%PicWidth%%" height="%%PicHeight%%"/>)12345"; //";
 
   replaceFirstOccurrence( header, "%%PicWidth%%", std::to_string( PicWidth ) );
   replaceFirstOccurrence( header, "%%PicWidth%%", std::to_string( PicWidth ) );
   replaceFirstOccurrence( header, "%%PicHeight%%", std::to_string( PicHeight ) );
   replaceFirstOccurrence( header, "%%PicHeight%%", std::to_string( PicHeight ) );
+  replaceFirstOccurrence( header, "%%TextHeight%%", std::to_string( CircleRadius ) );
 
   // Header
   out << header << '\n';
@@ -82,6 +86,8 @@ to_svg(
       auto const by = Board::HEIGHT - j - 1;
       auto const cx = i*PixPerCell + CircleOffset;
       auto const cy = j*PixPerCell + CircleOffset;
+      auto const tx = i*PixPerCell + CircleOffset/2;
+      auto const ty = j*PixPerCell + (3*CircleOffset)/2;
       RC_ASSERT( Board::position_is_in_bounds( bx, by ) );
       switch( board.cell( bx, by ) ){
       case( Occupant::EMPTY ):
@@ -92,18 +98,27 @@ to_svg(
 	  "r=\"" << CircleRadius << "\" "
 	  "cx=\"" << cx << "\" "
 	  "cy=\"" << cy << "\" />\n";
+	if( settings.label_elements ){
+	  out << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"small\">R</text>\n";
+	}
 	break;
       case( Occupant::FIRE ):
 	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"red\" "
 	  "r=\"" << CircleRadius << "\" "
 	  "cx=\"" << cx << "\" "
 	  "cy=\"" << cy << "\" />\n";
+	if( settings.label_elements ){
+	  out << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"small\">X</text>\n";
+	}
 	break;
       case( Occupant::HUMAN ):
 	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"green\" "
 	  "r=\"" << CircleRadius << "\" "
 	  "cx=\"" << cx << "\" "
 	  "cy=\"" << cy << "\" />\n";
+	if( settings.label_elements ){
+	  out << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"small\">H</text>\n";
+	}
 	break;
       }
     }
@@ -118,7 +133,7 @@ to_svg(
 std::string
 to_svg_string(
   Board const & board,
-  VisSettings const settings
+  VisSettings const settings = VisSettings()
 ) {
   std::stringstream ss;
   to_svg( board, settings, ss );
