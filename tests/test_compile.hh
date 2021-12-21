@@ -6,7 +6,7 @@
 #include <robots_core/game.hh>
 #include <robots_core/global.hh>
 #include <robots_core/null_renderer.hh>
-#include <robots_core/visualization.hh.hh>
+#include <robots_core/visualization.hh>
 
 #include <robots_core/strategy/recursion.hh>
 #include <robots_core/strategy/stall.hh>
