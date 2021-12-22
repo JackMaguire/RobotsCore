@@ -40,6 +40,30 @@ add_all_edges_to_human(
   }
 }
 
+void
+add_all_robot_robot_edges(
+  RobotsGame const & game,
+  VisSettings & vs
+){
+  graph::DenseGraph dg( game );
+
+  for( unsigned int i = 0; i < dg.cached_nodes.size()-1; ++i ){
+    if( dg.cached_nodes[i].occupant != Occupant::ROBOT ) continue;
+    for( unsigned int j = i+1; j < dg.cached_nodes.size(); ++j ){
+      if( dg.cached_nodes[j].occupant != Occupant::ROBOT ) continue;
+
+      if( dg.a[i][j] > 0 ){
+	vs.edges.push_back({
+	    dg.cached_nodes[ i ].position,
+	      dg.cached_nodes[ j ].position
+	      });
+      }
+	
+    }
+  }
+  
+}
+
 int main(){
   RobotsGame const game;
   Board const & b = game.board();
@@ -50,7 +74,8 @@ int main(){
   //vs.edges.push_back({ Position{ 1, 1 }, Position{ 2, 2 } });
   //vs.edges.push_back({ Position{ 1, 1 }, Position{ 2, 1 } });
 
-  add_all_edges_to_human( game, vs );
+  //add_all_edges_to_human( game, vs );
+  add_all_robot_robot_edges( game, vs );
 
   std::cout << to_svg_string( b, vs ) << std::endl;
 }
