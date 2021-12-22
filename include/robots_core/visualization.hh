@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <unordered_map>
 
 #include <robots_core/board.hh>
 #include <robots_core/asserts.hh>
@@ -10,7 +11,19 @@
 namespace robots_core {
 
 struct VisSettings {
+  // If true, draw single-character labels on each element/
+  // 'H' for human, 'R' for robot, etc
   bool label_elements = true;
+
+  //                  | Position of node
+  //                  |         | Label for node
+  //                  |         |
+  //std::unordered_map< Position, char > extra_nodes;
+
+  //                      | Position for node 1
+  //                      |         | Position for node 2  
+  //                      |         |
+  std::vector< std::pair< Position, Position > > edges;
 };
 
 //https://godbolt.org/z/dhPTbPon6
@@ -36,11 +49,79 @@ format(
   }
 }*/
 
+template< int PixPerCell, int CircleOffset, int CircleRadius, typename Ostream >
+void
+draw_background( Ostream & out ) {
+  bool use_c1 = false;
+  for( sm_int i = 0; i < Board::WIDTH; ++i ){
+    for( sm_int j = 0; j < Board::HEIGHT; ++j ){
+      use_c1 = !use_c1;
+      if( not use_c1 ){
+	out << "<rect fill=\"rgb(200,200,200)\" width=\"" << PixPerCell << "\" height=\"" << PixPerCell << "\" "
+	  "x=\"" << i*PixPerCell << "\" y=\"" << j*PixPerCell << "\" />\n";
+      }
+    }
+    use_c1 = !use_c1;
+  }
+}
+
+template< int PixPerCell, int CircleOffset, int CircleRadius, typename Ostream >
+void
+draw_elements( 
+  Board const & board,
+  VisSettings const & settings,
+  Ostream & out
+) {
+  for( sm_int i = 0; i < Board::WIDTH; ++i ){
+    for( sm_int j = 0; j < Board::HEIGHT; ++j ){
+      auto const bx = i;
+      auto const by = Board::HEIGHT - j - 1;
+      auto const cx = i*PixPerCell + CircleOffset;
+      auto const cy = j*PixPerCell + CircleOffset;
+      auto const tx = i*PixPerCell + CircleOffset/2;
+      auto const ty = j*PixPerCell + (3*CircleOffset)/2;
+      RC_ASSERT( Board::position_is_in_bounds( bx, by ) );
+      switch( board.cell( bx, by ) ){
+      case( Occupant::EMPTY ):
+      case( Occupant::OOB ):
+	break;
+      case( Occupant::ROBOT ):
+	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"black\" "
+	  "r=\"" << CircleRadius << "\" "
+	  "cx=\"" << cx << "\" "
+	  "cy=\"" << cy << "\" />\n";
+	if( settings.label_elements ){
+	  out << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"small\">R</text>\n";
+	}
+	break;
+      case( Occupant::FIRE ):
+	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"red\" "
+	  "r=\"" << CircleRadius << "\" "
+	  "cx=\"" << cx << "\" "
+	  "cy=\"" << cy << "\" />\n";
+	if( settings.label_elements ){
+	  out << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"small\">X</text>\n";
+	}
+	break;
+      case( Occupant::HUMAN ):
+	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"green\" "
+	  "r=\"" << CircleRadius << "\" "
+	  "cx=\"" << cx << "\" "
+	  "cy=\"" << cy << "\" />\n";
+	if( settings.label_elements ){
+	  out << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"small\">H</text>\n";
+	}
+	break;
+      }
+    }
+  }
+}
+
 template< typename Ostream >
 void
 to_svg( 
   Board const & board,
-  VisSettings const settings,
+  VisSettings const & settings,
   Ostream & out
 ) {
   constexpr int PixPerCell = 20;
@@ -69,6 +150,7 @@ to_svg(
   // Header
   out << header << '\n';
 
+/*
   // Background
   //std::string const c1 = "dcdcdc";
   //std::string const c2 = "c8c8c8";
@@ -124,7 +206,9 @@ to_svg(
     }
     use_c1 = !use_c1;
   }
-  
+  */
+  draw_background< PixPerCell, CircleOffset, CircleRadius >(out);
+  draw_elements< PixPerCell, CircleOffset, CircleRadius >( board, settings, out );
 
   // Footer
   out << "</svg>\n";
@@ -133,7 +217,7 @@ to_svg(
 std::string
 to_svg_string(
   Board const & board,
-  VisSettings const settings = VisSettings()
+  VisSettings const & settings = VisSettings()
 ) {
   std::stringstream ss;
   to_svg( board, settings, ss );
