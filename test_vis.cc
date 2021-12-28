@@ -64,16 +64,52 @@ add_all_robot_robot_edges(
   
 }
 
+void
+add_all_edges(
+  RobotsGame const & game,
+  VisSettings & vs
+){
+  graph::DenseGraph dg( game );
+
+  for( unsigned int i = 0; i < dg.cached_nodes.size()-1; ++i ){
+    for( unsigned int j = i+1; j < dg.cached_nodes.size(); ++j ){
+
+      if( dg.a[i][j] > 0 ){
+	vs.edges.push_back({
+	    dg.cached_nodes[ i ].position,
+	      dg.cached_nodes[ j ].position
+	      });
+      }
+	
+    }
+  }
+  
+}
+
+void
+add_extra_nodes(
+  RobotsGame const & game,
+  VisSettings & vs
+){
+  graph::DenseGraph dg( game );
+
+  for( unsigned int i = 0; i < dg.cached_nodes.size(); ++i ){
+    if( dg.cached_nodes[i].occupant == Occupant::EMPTY ){
+      vs.extra_nodes.push_back({ dg.cached_nodes[i].position, ' ', "100,150,150" });  
+    }
+  }
+}
+
 int main(){
-  RobotsGame const game;
+  RobotsGame const game( 10 );
   Board const & b = game.board();
 
   VisSettings vs;
-  vs.label_elements = false;
-  //vs.extra_nodes.push_back({ Position{ 1, 1 }, '7', "20,50,150" });
-  //vs.edges.push_back({ Position{ 1, 1 }, Position{ 2, 2 } });
-  //vs.edges.push_back({ Position{ 1, 1 }, Position{ 2, 1 } });
+  //vs.label_elements = false;
 
+  //add_extra_nodes( game, vs );
+
+  //add_all_edges( game, vs );
   //add_all_edges_to_human( game, vs );
   add_all_robot_robot_edges( game, vs );
 

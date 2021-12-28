@@ -94,7 +94,7 @@ draw_elements(
       case( Occupant::OOB ):
 	break;
       case( Occupant::ROBOT ):
-	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"black\" "
+	out << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"rgb(20,50,150)\" "
 	  "r=\"" << CircleRadius << "\" "
 	  "cx=\"" << cx << "\" "
 	  "cy=\"" << cy << "\" />\n";
