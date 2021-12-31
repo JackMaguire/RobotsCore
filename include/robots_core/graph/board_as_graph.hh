@@ -158,7 +158,7 @@ GraphDecorator::edge_should_exist(
 
     bool is_legal( Node const & n ) const {
       //can assume n is a move
-      return *fcasts_[ n.dx()+1 ][ n.dy()+1 ].legal;
+      return (*fcasts_)[ n.dx()+1 ][ n.dy()+1 ].legal;
     }
   };
 

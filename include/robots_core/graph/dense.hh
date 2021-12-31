@@ -84,16 +84,19 @@ struct DenseGraph {
     //reset to all zeros
     reset( nodes.size() );
 
+    AllForecastResults const fcasts = forecast_all_moves( game.board() );
+
+    using GD = GraphDecorator;
     for( uint i = 0; i < nodes.size(); ++i ){
-      x[ i ] = GraphDecorator::calculate_node( nodes[i], game );
+      x[ i ] = GD::calculate_node( nodes[i], game );
 
       for( uint j = i+1; j < nodes.size(); ++j ){
 	RC_DEBUG_ASSERT_EQUALS( a[ i ][ j ], 0 );
 	RC_DEBUG_ASSERT_EQUALS( a[ j ][ i ], 0 );
-	if( GraphDecorator::edge_should_exist( nodes[i], nodes[j], game.board() ) ){
+	if( GD::edge_should_exist( nodes[i], nodes[j], game.board(), fcasts ) ){
 	  a[ i ][ j ] = a[ j ][ i ] = 1.0;
-	  e[ i ][ j ] = GraphDecorator::calculate_edge( nodes[i], nodes[j] );
-	  e[ j ][ i ] = GraphDecorator::calculate_edge( nodes[j], nodes[i] );
+	  e[ i ][ j ] = GD::calculate_edge( nodes[i], nodes[j] );
+	  e[ j ][ i ] = GD::calculate_edge( nodes[j], nodes[i] );
 
 	  n_edges += 2;
 	}
