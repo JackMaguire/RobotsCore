@@ -148,6 +148,11 @@ struct Node {
       return 2;
     }
   };
+
+  bool
+  calc_is_legal_move( Board const & b ) const {
+    return forecast_move( b, dx(), dy() ).legal;
+  }
 };
 
 SpecialCaseNode
@@ -208,7 +213,10 @@ get_all_nodes(
       Position const p{ x, y };
 
       if( is_adjacent9( h, p ) ){
-	nodes.emplace_back( b, p, get_direction( h, p ) );
+	Node const n( b, p, get_direction( h, p ) );
+	if( n.calc_is_legal_move( b ) ){
+	  nodes.push_back( n );
+	}
       } else if( b.cell(p) != Occupant::EMPTY ){
 	nodes.emplace_back( b, p );
       }

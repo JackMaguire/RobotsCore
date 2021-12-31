@@ -47,6 +47,15 @@ edge_should_exist(
   Board const & b
 );
 
+static
+bool
+edge_should_exist(
+  Node const & i,
+  Node const & j,
+  Board const & b,
+  AllForecastResults const & fcasts
+);
+
 public: //Generating Data
 
 static
@@ -65,18 +74,23 @@ calculate_edge(
   
 }; // class GraphDecorator
 
+
+
+namespace {
+template< typename MoveLawyer >
 bool
-GraphDecorator::edge_should_exist(
+edge_should_exist_tmpl(
   Node const & i,
   Node const & j,
-  Board const & b
+  Board const & b,
+  MoveLawyer const & lawyer
 ){
   //1. TELEPORT
   if( i.special_case == SpecialCaseNode::TELEPORT ){
-    return special_case_is_move( j.special_case );
+    return special_case_is_move( j.special_case ) and lawyer.is_legal( j );
   }
   if( j.special_case == SpecialCaseNode::TELEPORT ){
-    return special_case_is_move( i.special_case );
+    return special_case_is_move( i.special_case ) and lawyer.is_legal( i );
   }
 
   //2. SPECIAL CASES
@@ -85,6 +99,8 @@ GraphDecorator::edge_should_exist(
     //Edges for all things if they are special
     return true;
   }
+
+  return false; //!!!
 
   //3. TWO ROBOTS THAT CAN COLLIDE
   Occupant const occ_i = b.cell( i.position );
@@ -98,8 +114,58 @@ GraphDecorator::edge_should_exist(
   //4. TWO ROBOTS/EXPLOSIONS NOT IN LINE
   return i.position.distance( j.position ) < 5; //relatively arbitrary
 }
+}
 
+bool
+GraphDecorator::edge_should_exist(
+  Node const & i,
+  Node const & j,
+  Board const & b
+){
+  class IsLegal {
+    Board const * board_;
 
+  public:
+    IsLegal( Board const * b ):
+      board_( b )
+    {}
+
+    bool is_legal( Node const & n ) const {
+      //can assume n is a move
+      return n.calc_is_legal_move( *board_ );
+    }
+  };
+
+  IsLegal const lawyer( &b );
+
+  return edge_should_exist_tmpl( i, j, b, lawyer );
+}
+
+bool
+GraphDecorator::edge_should_exist(
+  Node const & i,
+  Node const & j,
+  Board const & b,
+  AllForecastResults const & fcasts
+){
+  class IsLegal {
+    AllForecastResults const * fcasts_;
+
+  public:
+    IsLegal( AllForecastResults const * fcasts ):
+      fcasts_( fcasts )
+    {}
+
+    bool is_legal( Node const & n ) const {
+      //can assume n is a move
+      return *fcasts_[ n.dx()+1 ][ n.dy()+1 ].legal;
+    }
+  };
+
+  IsLegal const lawyer( &fcasts );
+
+  return edge_should_exist_tmpl( i, j, b, lawyer );
+}
 
 std::array< float, GraphDecorator::F >
 GraphDecorator::calculate_node(

@@ -30,6 +30,8 @@ struct ForecastResults {
   }
 };
 
+using AllForecastResults = std::array< std::array< ForecastResults, 3 >, 3 >;
+
 ForecastResults
 forecast_move( Board const & board, sm_int const dx, sm_int const dy ){
   ForecastResults results;
@@ -55,9 +57,9 @@ forecast_move( Board const & board, sm_int const dx, sm_int const dy ){
 }
 
 
-std::array< std::array< ForecastResults, 3 >, 3 >
+AllForecastResults
 forecast_all_moves( Board const & board ) {
-  std::array< std::array< ForecastResults, 3 >, 3 > forecasts;
+  AllForecastResults forecasts;
 
   Position const human_position = board.human_position();
 
