@@ -19,6 +19,22 @@ using namespace robots_core;
 
 //g++ python_bindings.cc -o robots_core$(python3-config --extension-suffix) -O3 -Wall -Wextra -Iinclude -Iextern/pybind11/include -std=c++17 -fPIC $(python3 -m pybind11 --includes) -shared
 
+bool
+run_recursive_seach_dyn( RobotsGame & game, int const n_tele_desired, int const depth ){
+  switch( depth ){
+  case( 1 ): return run_recursive_seach< 1 >( game, n_tele_desired );
+  case( 2 ): return run_recursive_seach< 2 >( game, n_tele_desired );
+  case( 3 ): return run_recursive_seach< 3 >( game, n_tele_desired );
+  case( 4 ): return run_recursive_seach< 4 >( game, n_tele_desired );
+  case( 5 ): return run_recursive_seach< 5 >( game, n_tele_desired );
+  case( 6 ): return run_recursive_seach< 6 >( game, n_tele_desired );
+  case( 7 ): return run_recursive_seach< 7 >( game, n_tele_desired );
+  case( 8 ): return run_recursive_seach< 8 >( game, n_tele_desired );
+  case( 9 ): return run_recursive_seach< 9 >( game, n_tele_desired );
+  default: return false;
+  }
+}
+
 PYBIND11_MODULE(robots_core, m) {
     m.doc() = "Implementation of the Robots game"; // optional module docstring
     //m.def("add", &add, "A function which adds two numbers");
@@ -91,6 +107,7 @@ PYBIND11_MODULE(robots_core, m) {
     g.def( "round", &RobotsGame::round );
     g.def( "score", &RobotsGame::score );
     g.def( "latest_result", &RobotsGame::latest_result );
+    g.def( "game_is_over", &RobotsGame::game_is_over );
 
     py::class_< ForecastResults > fr( m, "ForecastResults" );
     fr.def_readonly( "legal", &ForecastResults::legal );
@@ -109,11 +126,14 @@ PYBIND11_MODULE(robots_core, m) {
     move.def( "nullop", &Move::nullop );
     move.def( "set_nullop", &Move::set_nullop );
 
+    m_strat.def( "run_recursive_seach_1", &run_recursive_seach<1> );
+    m_strat.def( "run_recursive_seach_2", &run_recursive_seach<2> );
     m_strat.def( "run_recursive_seach_3", &run_recursive_seach<3> );
     m_strat.def( "run_recursive_seach_4", &run_recursive_seach<4> );
     m_strat.def( "run_recursive_seach_5", &run_recursive_seach<5> );
     m_strat.def( "run_recursive_seach_6", &run_recursive_seach<6> );
     m_strat.def( "run_recursive_seach_7", &run_recursive_seach<7> );
+    m_strat.def( "run_recursive_seach", &run_recursive_seach_dyn );
 
     //m_strat.def( "stall_for_time", static_cast< bool( RobotsGame & game ) >( &stall_for_time ) )
     m_strat.def( "stall_for_time", &stall_for_time );

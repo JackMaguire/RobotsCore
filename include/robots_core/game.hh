@@ -75,6 +75,11 @@ public: //getters
     return latest_result_;
   }
 
+  bool game_is_over() const {
+    return latest_result_ == MoveResult::YOU_WIN_GAME
+      or latest_result_ == MoveResult::YOU_LOSE;
+  }
+
   long int score() const {
     return score_;
   }
