@@ -312,6 +312,7 @@ to_svg(
   replaceFirstOccurrence( header, "%%PicHeight%%", std::to_string( PicHeight ) );
   replaceFirstOccurrence( header, "%%PicHeight%%", std::to_string( PicHeight ) );
   replaceFirstOccurrence( header, "%%TextHeight%%", std::to_string( CircleRadius ) );
+  replaceFirstOccurrence( header, "%%TextHeight%%", std::to_string( CircleRadius ) ); //here twice on purpose
   //replaceFirstOccurrence( header, "%%75TextHeight%%", std::to_string( int(float(CircleRadius)*0.75) ) );
 
   // Header
