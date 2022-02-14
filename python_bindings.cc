@@ -229,11 +229,13 @@ PYBIND11_MODULE(robots_core, m) {
 
     
     py::class_< MoveAnnotation > move_ann( m_vis, "MoveAnnotation" );
+    move_ann.def( py::init<>() );
     move_ann.def_readwrite( "type", &MoveAnnotation::type );
     move_ann.def_readwrite( "rgb", &MoveAnnotation::rgb );
 
 
     py::class_< VisSettings > vis_settings( m_vis, "VisSettings" );
+    vis_settings.def( py::init<>() );
     vis_settings.def_readwrite( "label_elements", &VisSettings::label_elements );
     vis_settings.def_readwrite( "extra_nodes", &VisSettings::extra_nodes );
     vis_settings.def_readwrite( "edges", &VisSettings::edges );
