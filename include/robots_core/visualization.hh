@@ -7,6 +7,7 @@
 
 #include <robots_core/board.hh>
 #include <robots_core/asserts.hh>
+#include <robots_core/graph/node.hh>
 
 namespace robots_core {
 
@@ -17,6 +18,24 @@ struct VisNode {
 
   std::string label_str() const {
     return std::to_string( label );
+  }
+};
+
+struct MoveAnnotation {
+  graph::SpecialCaseNode type;
+  std::string rgb = "20,50,150";
+
+  template< int PixPerCell >
+  std::string
+  annotation_string( Position const hpos ){
+    std::stringstream ss;
+
+    if( type == SpecialCaseNode::TELEPORT ){
+      ss << "<text x=\"" << tx+(PixPerCell/4) << "\" y=\"" << ty-(PixPerCell/4) << "\" class=\"tele\" fill=\"rgb(" << rgb << ")\">T</text>\n";
+      return ss.str();
+    }
+
+    
   }
 };
 
@@ -32,6 +51,8 @@ struct VisSettings {
   //                      |         | Position for node 2  
   //                      |         |
   std::vector< std::pair< Position, Position > > edges;
+
+  std::vector< MoveAnnotation > moves;
 };
 
 //https://godbolt.org/z/dhPTbPon6
@@ -46,16 +67,6 @@ replaceFirstOccurrence(
   std::size_t pos = s.find( toReplace );
   s.replace( pos, toReplace.length(), replaceWith );
 }
-
-/*void
-format(
-  std::string & base,
-  std::vector< std::string > const & tokens
-){
-  for( std::string const & s : tokens ){
-    replaceFirstOccurrence( base, "%", s );
-  }
-}*/
 
 template< int PixPerCell, int CircleOffset, int CircleRadius, typename Ostream >
 void
@@ -120,8 +131,12 @@ draw_elements(
 	  out << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"small\">H</text>\n";
 	}
 	break;
-      }
-    }
+      }// switch cell type
+    }// HEIGHT
+  }// WIDTH
+
+  for( MoveAnnotation const & ann : settings.moves ){
+    out << ann.annotation_string( board.human_position() );
   }
 }
 
@@ -203,6 +218,7 @@ to_svg(
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 %%PicWidth%% %%PicHeight%%">
 <style>
     .small { font: italic %%TextHeight%%px sans-serif; fill: white; }
+    .tele { font: italic %%75TextHeight%%px sans-serif; }
 </style>
 <rect id="c1" fill="rgb(220,220,220)" width="%%PicWidth%%" height="%%PicHeight%%"/>)12345"; //";
 
@@ -211,6 +227,7 @@ to_svg(
   replaceFirstOccurrence( header, "%%PicHeight%%", std::to_string( PicHeight ) );
   replaceFirstOccurrence( header, "%%PicHeight%%", std::to_string( PicHeight ) );
   replaceFirstOccurrence( header, "%%TextHeight%%", std::to_string( CircleRadius ) );
+  replaceFirstOccurrence( header, "%%75TextHeight%%", std::to_string( int(float(CircleRadius)*0.75) ) );
 
   // Header
   out << header << '\n';
