@@ -11,6 +11,11 @@
 
 namespace robots_core {
 
+template< int PixPerCell, int CircleOffset >
+int convert_for_line( int const v ){
+  return PixPerCell * v + CircleOffset;
+}
+
 struct VisNode {
   Position pos;
   char label = '?';
@@ -23,16 +28,99 @@ struct VisNode {
 
 struct MoveAnnotation {
   graph::SpecialCaseNode type;
-  std::string rgb = "20,50,150";
+  std::string rgb = "10,20,0";
+
+  template< int PixPerCell >
+  std::string
+  annotation_string_for_tele( Position const hpos ){
+    std::stringstream ss;
+
+    constexpr int CircleOffset = PixPerCell/2;
+
+    int const bx = hpos.x;
+    int const by = hpos.y;
+    int const i = bx;
+    int const j = Board::HEIGHT - by - 1;
+    //int const cx = i*PixPerCell + CircleOffset;
+    //int const cy = j*PixPerCell + CircleOffset;
+    int const tx = i*PixPerCell + CircleOffset/2 + (PixPerCell/4);
+    int const ty = j*PixPerCell + (3*CircleOffset)/2 - (PixPerCell/4);
+
+    ss << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"tele\" fill=\"rgb(" << rgb << ")\">T</text>\n";
+
+    return ss.str();
+
+  }
+
+  template< int PixPerCell >
+  std::string
+  annotation_string_for_stay( Position const hpos ){
+    std::stringstream ss;
+
+    constexpr int CircleOffset = PixPerCell/2;
+    constexpr int CircleRadius = PixPerCell/4;
+
+    int const bx = hpos.x;
+    int const by = hpos.y;
+    int const i = bx;
+    int const j = Board::HEIGHT - by - 1;
+    int const cx = i*PixPerCell + CircleOffset;
+    int const cy = j*PixPerCell + CircleOffset;
+    //int const tx = i*PixPerCell + CircleOffset/2;
+    //int const ty = j*PixPerCell + (3*CircleOffset)/2;
+
+    ss << "<circle stroke=\"black\" stroke-width=\"0\" fill=\"rgb(" << rgb << ")\" "
+      "r=\"" << CircleRadius << "\" "
+      "cx=\"" << cx << "\" "
+      "cy=\"" << cy << "\" />\n";
+
+    return ss.str();
+
+  }
+
+  template< int PixPerCell >
+  std::string
+  annotation_string_for_move(
+    Position const hpos,
+    int const dx,
+    int const dy
+  ){
+    std::stringstream ss;
+
+    Position p2 = hpos;
+    p2.x += dx;
+    p2.y += dy;
+
+    constexpr int CircleOffset = PixPerCell/2;
+    constexpr int CircleRadius = PixPerCell/4;
+
+    int const hpos_i = convert_for_line< PixPerCell, CircleOffset >( hpos.x );
+
+    int const hpos_j = convert_for_line< PixPerCell, CircleOffset >( Board::HEIGHT-hpos.y-1 );
+
+    int const p2_i = convert_for_line< PixPerCell, CircleOffset >( p2.x );
+
+    int const p2_j = convert_for_line< PixPerCell, CircleOffset >( Board::HEIGHT-p2.y-1 );
+
+    ss << "<line x1=\"" << hpos_i << "\" y1=\"" << hpos_j << "\" x2=\"" << p2_i << "\" y2=\"" << p2_j << "\" style=\"stroke:rgb(" << rgb << ");stroke-width:3\" />\n";
+
+    return ss.str();
+
+  }
 
   template< int PixPerCell >
   std::string
   annotation_string( Position const hpos ){
-    std::stringstream ss;
 
     if( type == SpecialCaseNode::TELEPORT ){
-      ss << "<text x=\"" << tx+(PixPerCell/4) << "\" y=\"" << ty-(PixPerCell/4) << "\" class=\"tele\" fill=\"rgb(" << rgb << ")\">T</text>\n";
-      return ss.str();
+      return annotation_string_for_tele< PixPerCell >( hpos );
+    }
+
+    int const dx = graph::dx_for_node( type );
+    int const dy = graph::dx_for_node( type );
+
+    if( dx == 0 and dy == 0 ){
+      return annotation_string_for_stay< PixPerCell >( hpos );      
     }
 
     
@@ -136,7 +224,9 @@ draw_elements(
   }// WIDTH
 
   for( MoveAnnotation const & ann : settings.moves ){
-    out << ann.annotation_string( board.human_position() );
+    out << ann.annotation_string< PixPerCell >(
+      board.human_position()
+    );
   }
 }
 
@@ -167,11 +257,6 @@ draw_extra_nodes(
     }
 
   }
-}
-
-template< int PixPerCell, int CircleOffset >
-int convert_for_line( int const v ){
-  return PixPerCell * v + CircleOffset;
 }
 
 template< int PixPerCell, int CircleOffset, typename Ostream >
