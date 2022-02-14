@@ -32,7 +32,7 @@ struct MoveAnnotation {
 
   template< int PixPerCell >
   std::string
-  annotation_string_for_tele( Position const hpos ){
+  string_for_tele( Position const hpos ) const {
     std::stringstream ss;
 
     constexpr int CircleOffset = PixPerCell/2;
@@ -54,7 +54,7 @@ struct MoveAnnotation {
 
   template< int PixPerCell >
   std::string
-  annotation_string_for_stay( Position const hpos ){
+  string_for_stay( Position const hpos ) const {
     std::stringstream ss;
 
     constexpr int CircleOffset = PixPerCell/2;
@@ -80,11 +80,11 @@ struct MoveAnnotation {
 
   template< int PixPerCell >
   std::string
-  annotation_string_for_move(
+  string_for_move(
     Position const hpos,
     int const dx,
     int const dy
-  ){
+  ) const {
     std::stringstream ss;
 
     Position p2 = hpos;
@@ -92,7 +92,7 @@ struct MoveAnnotation {
     p2.y += dy;
 
     constexpr int CircleOffset = PixPerCell/2;
-    constexpr int CircleRadius = PixPerCell/4;
+    //constexpr int CircleRadius = PixPerCell/4;
 
     int const hpos_i = convert_for_line< PixPerCell, CircleOffset >( hpos.x );
 
@@ -110,20 +110,20 @@ struct MoveAnnotation {
 
   template< int PixPerCell >
   std::string
-  annotation_string( Position const hpos ){
+  annotation_string( Position const hpos ) const {
 
-    if( type == SpecialCaseNode::TELEPORT ){
-      return annotation_string_for_tele< PixPerCell >( hpos );
+    if( type == graph::SpecialCaseNode::TELEPORT ){
+      return string_for_tele< PixPerCell >( hpos );
     }
 
     int const dx = graph::dx_for_node( type );
     int const dy = graph::dx_for_node( type );
 
     if( dx == 0 and dy == 0 ){
-      return annotation_string_for_stay< PixPerCell >( hpos );      
+      return string_for_stay< PixPerCell >( hpos );      
     }
 
-    
+    return string_for_move< PixPerCell >( hpos, dx, dy );
   }
 };
 

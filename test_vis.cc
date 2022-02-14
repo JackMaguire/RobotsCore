@@ -113,5 +113,9 @@ int main(){
   //add_all_edges_to_human( game, vs );
   add_all_robot_robot_edges( game, vs );
 
+  vs.moves.push_back({ graph::SpecialCaseNode::S, "3,219,252"});
+  vs.moves.push_back({ graph::SpecialCaseNode::TELEPORT, "182,3,252"});
+  vs.moves.push_back({ graph::SpecialCaseNode::Q, "3,219,252"});
+
   std::cout << to_svg_string( b, vs ) << std::endl;
 }
