@@ -7,6 +7,7 @@
 #include <robots_core/graph/board_as_graph.hh>
 #include <robots_core/graph/dense.hh>
 #include <robots_core/pocket/pocket.hh>
+#include <robots_core/visualization.hh>
 
 #include <robots_core/asserts.hh>
 
@@ -214,6 +215,30 @@ PYBIND11_MODULE(robots_core, m) {
     
     m_pocket.def( "find_cardinal_posts", &find_cardinal_posts );
     m_pocket.def( "create_pocket", &create_pocket );
+
+    
+    //Visualization
+    py::module m_vis = m.def_submodule( "visualization" );
+    m_vis.def( "to_svg_string", &robots_core::to_svg_string );
+
+
+    py::class_< VisNode > vis_node( m_vis, "VisNode" );
+    vis_node.def_readwrite( "pos", &VisNode::pos );
+    vis_node.def_readwrite( "label", &VisNode::label );
+    vis_node.def_readwrite( "rgb", &VisNode::rgb );
+
+    
+    py::class_< MoveAnnotation > move_ann( m_vis, "MoveAnnotation" );
+    move_ann.def_readwrite( "type", &MoveAnnotation::type );
+    move_ann.def_readwrite( "rgb", &MoveAnnotation::rgb );
+
+
+    py::class_< VisSettings > vis_settings( m_vis, "VisSettings" );
+    vis_settings.def_readwrite( "label_elements", &VisSettings::label_elements );
+    vis_settings.def_readwrite( "extra_nodes", &VisSettings::extra_nodes );
+    vis_settings.def_readwrite( "edges", &VisSettings::edges );
+    vis_settings.def_readwrite( "moves", &VisSettings::moves );
+
 
 #ifndef RC_EXPAND_PYMODULE
 }
