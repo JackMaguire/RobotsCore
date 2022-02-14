@@ -303,7 +303,7 @@ to_svg(
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 %%PicWidth%% %%PicHeight%%">
 <style>
     .small { font: italic %%TextHeight%%px sans-serif; fill: white; }
-    .tele { font: italic %%75TextHeight%%px sans-serif; }
+    .tele { font: italic %%TextHeight%%px sans-serif; }
 </style>
 <rect id="c1" fill="rgb(220,220,220)" width="%%PicWidth%%" height="%%PicHeight%%"/>)12345"; //";
 
@@ -312,7 +312,7 @@ to_svg(
   replaceFirstOccurrence( header, "%%PicHeight%%", std::to_string( PicHeight ) );
   replaceFirstOccurrence( header, "%%PicHeight%%", std::to_string( PicHeight ) );
   replaceFirstOccurrence( header, "%%TextHeight%%", std::to_string( CircleRadius ) );
-  replaceFirstOccurrence( header, "%%75TextHeight%%", std::to_string( int(float(CircleRadius)*0.75) ) );
+  //replaceFirstOccurrence( header, "%%75TextHeight%%", std::to_string( int(float(CircleRadius)*0.75) ) );
 
   // Header
   out << header << '\n';
