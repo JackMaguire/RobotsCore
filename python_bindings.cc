@@ -240,6 +240,9 @@ PYBIND11_MODULE(robots_core, m) {
     vis_settings.def_readwrite( "extra_nodes", &VisSettings::extra_nodes );
     vis_settings.def_readwrite( "edges", &VisSettings::edges );
     vis_settings.def_readwrite( "moves", &VisSettings::moves );
+    vis_settings.def( "append_move", []( VisSettings & vs, MoveAnnotation & ma ){
+      vs.moves.push_back( ma );
+    } );
 
 
 #ifndef RC_EXPAND_PYMODULE
