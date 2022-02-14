@@ -110,7 +110,7 @@ int main(){
   //add_extra_nodes( game, vs );
 
   //add_all_edges( game, vs );
-  add_all_edges_to_human( game, vs );
+  //add_all_edges_to_human( game, vs );
   add_all_robot_robot_edges( game, vs );
 
   vs.moves.push_back({ graph::SpecialCaseNode::S, "3,219,252"});
