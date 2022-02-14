@@ -4,6 +4,7 @@
 //#include <algorithm>
 #include <math.h> //sqrt
 #include <type_traits>
+#include <stdlib.h> //abs
 
 namespace robots_core {
 
