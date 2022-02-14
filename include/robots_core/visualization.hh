@@ -32,7 +32,7 @@ struct MoveAnnotation {
 
   template< int PixPerCell >
   std::string
-  string_for_tele( Position const hpos ) const {
+  string_for_tele( Position const hpos, int const offset ) const {
     std::stringstream ss;
 
     constexpr int CircleOffset = PixPerCell/2;
@@ -43,8 +43,8 @@ struct MoveAnnotation {
     int const j = Board::HEIGHT - by - 1;
     //int const cx = i*PixPerCell + CircleOffset;
     //int const cy = j*PixPerCell + CircleOffset;
-    int const tx = i*PixPerCell + CircleOffset/2 + (PixPerCell/4);
-    int const ty = j*PixPerCell + (3*CircleOffset)/2 - (PixPerCell/4);
+    int const tx = i*PixPerCell + CircleOffset/2 + (PixPerCell/4) + offset;
+    int const ty = j*PixPerCell + (3*CircleOffset)/2 - (PixPerCell/4) + offset;
 
     ss << "<text x=\"" << tx << "\" y=\"" << ty << "\" class=\"tele\" fill=\"rgb(" << rgb << ")\">T</text>\n";
 
@@ -54,7 +54,7 @@ struct MoveAnnotation {
 
   template< int PixPerCell >
   std::string
-  string_for_stay( Position const hpos ) const {
+  string_for_stay( Position const hpos, int const offset ) const {
     std::stringstream ss;
 
     constexpr int CircleOffset = PixPerCell/2;
@@ -64,8 +64,8 @@ struct MoveAnnotation {
     int const by = hpos.y;
     int const i = bx;
     int const j = Board::HEIGHT - by - 1;
-    int const cx = i*PixPerCell + CircleOffset;
-    int const cy = j*PixPerCell + CircleOffset;
+    int const cx = i*PixPerCell + CircleOffset + offset;
+    int const cy = j*PixPerCell + CircleOffset + offset;
     //int const tx = i*PixPerCell + CircleOffset/2;
     //int const ty = j*PixPerCell + (3*CircleOffset)/2;
 
@@ -83,7 +83,8 @@ struct MoveAnnotation {
   string_for_move(
     Position const hpos,
     int const dx,
-    int const dy
+    int const dy,
+    int const offset
   ) const {
     std::stringstream ss;
 
@@ -94,13 +95,13 @@ struct MoveAnnotation {
     constexpr int CircleOffset = PixPerCell/2;
     //constexpr int CircleRadius = PixPerCell/4;
 
-    int const hpos_i = convert_for_line< PixPerCell, CircleOffset >( hpos.x );
+    int const hpos_i = convert_for_line< PixPerCell, CircleOffset >( hpos.x ) + offset;
 
-    int const hpos_j = convert_for_line< PixPerCell, CircleOffset >( Board::HEIGHT-hpos.y-1 );
+    int const hpos_j = convert_for_line< PixPerCell, CircleOffset >( Board::HEIGHT-hpos.y-1 ) + offset;
 
-    int const p2_i = convert_for_line< PixPerCell, CircleOffset >( p2.x );
+    int const p2_i = convert_for_line< PixPerCell, CircleOffset >( p2.x ) + offset;
 
-    int const p2_j = convert_for_line< PixPerCell, CircleOffset >( Board::HEIGHT-p2.y-1 );
+    int const p2_j = convert_for_line< PixPerCell, CircleOffset >( Board::HEIGHT-p2.y-1 ) + offset;
 
     ss << "<line x1=\"" << hpos_i << "\" y1=\"" << hpos_j << "\" x2=\"" << p2_i << "\" y2=\"" << p2_j << "\" style=\"stroke:rgb(" << rgb << ");stroke-width:3\" />\n";
 
@@ -110,20 +111,20 @@ struct MoveAnnotation {
 
   template< int PixPerCell >
   std::string
-  annotation_string( Position const hpos ) const {
+  annotation_string( Position const hpos, int const offset ) const {
 
     if( type == graph::SpecialCaseNode::TELEPORT ){
-      return string_for_tele< PixPerCell >( hpos );
+      return string_for_tele< PixPerCell >( hpos, offset );
     }
 
     int const dx = graph::dx_for_node( type );
     int const dy = graph::dy_for_node( type );
 
     if( dx == 0 and dy == 0 ){
-      return string_for_stay< PixPerCell >( hpos );      
+      return string_for_stay< PixPerCell >( hpos, offset );
     }
 
-    return string_for_move< PixPerCell >( hpos, dx, dy );
+    return string_for_move< PixPerCell >( hpos, dx, dy, offset );
   }
 };
 
@@ -223,9 +224,10 @@ draw_elements(
     }// HEIGHT
   }// WIDTH
 
-  for( MoveAnnotation const & ann : settings.moves ){
-    out << ann.annotation_string< PixPerCell >(
-      board.human_position()
+  for( uint i = 0; i < settings.moves.size(); ++i ) {
+    out << settings.moves[i].annotation_string< PixPerCell >(
+      board.human_position(),
+      i
     );
   }
 }
@@ -303,7 +305,7 @@ to_svg(
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 %%PicWidth%% %%PicHeight%%">
 <style>
     .small { font: italic %%TextHeight%%px sans-serif; fill: white; }
-    .tele { font: italic %%TextHeight%%px sans-serif; }
+    .tele { font: bold %%TextHeight%%px sans-serif; }
 </style>
 <rect id="c1" fill="rgb(220,220,220)" width="%%PicWidth%%" height="%%PicHeight%%"/>)12345"; //";
 
