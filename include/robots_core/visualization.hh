@@ -117,7 +117,7 @@ struct MoveAnnotation {
     }
 
     int const dx = graph::dx_for_node( type );
-    int const dy = graph::dx_for_node( type );
+    int const dy = graph::dy_for_node( type );
 
     if( dx == 0 and dy == 0 ){
       return string_for_stay< PixPerCell >( hpos );      
